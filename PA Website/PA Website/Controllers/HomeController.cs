@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using PA_Website.Models;
+using PA_Website.ViewModels;
 
 namespace PA_Website.Controllers
 {
@@ -15,7 +16,7 @@ namespace PA_Website.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("Index");
         }
 
         public IActionResult Privacy()

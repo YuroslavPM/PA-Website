@@ -1,4 +1,4 @@
-namespace PA_Website.Models
+namespace PA_Website.ViewModels
 {
     public class ErrorViewModel
     {
