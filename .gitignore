@@ -1,0 +1,13 @@
+.vs/
+*.user
+*.suo
+*.vcxproj.user
+*.vcxproj.filters
+
+bin/
+obj/
+*.log
+
+*.exe
+*.dll
+*.pdb
