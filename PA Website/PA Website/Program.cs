@@ -15,6 +15,8 @@ app.UseStaticFiles();
 // Usar enrutamiento
 app.UseRouting();
 app.UseAuthorization();
+app.UseStaticFiles();
+
 
 // Configurar ruta predeterminada
 app.MapControllerRoute(
