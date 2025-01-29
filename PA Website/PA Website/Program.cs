@@ -1,29 +1,40 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
+using PA_Website.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar servicios necesarios
-builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
-// Configurar middleware para servir archivos estáticos (opcional)
+app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-// Usar enrutamiento
 app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
 
-
-// Configurar ruta predeterminada
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
-);
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();
-
-

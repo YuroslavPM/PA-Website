@@ -1,65 +1,39 @@
 ﻿@model IEnumerable<PA_Website.Models.User>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Users";
 }
 
-<h1>Index</h1>
+<h1>Users</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a href="@Url.Action("Create")" class="btn btn-primary">Create New User</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Password)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Zodiacal_Sign)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Birth_Date)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.FName)</th>
+            <th>@Html.DisplayNameFor(model => model.LName)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>@Html.DisplayNameFor(model => model.UserName)</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Password)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Zodiacal_Sign)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Birth_Date)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FName</td>
+                <td>@user.LName</td>
+                <td>@user.Email</td>
+                <td>@user.UserName</td>
+                <td>
+                    <a href="@Url.Action("Details", new { id = user.Id })" class="btn btn-info">Details</a>
+                    <a href="@Url.Action("Edit", new { id = user.Id })" class="btn btn-warning">Edit</a>
+                    <a href="@Url.Action("Delete", new { id = user.Id })" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

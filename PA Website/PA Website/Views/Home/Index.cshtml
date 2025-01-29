@@ -29,12 +29,23 @@
         .navbar-brand, .nav-link {
             color: #4a0e78 !important;
             font-weight: 600;
+            transition: color 0.3s ease-in-out;
+        }
+
+            .nav-link:hover {
+                color: #ff9800 !important;
+            }
+
+        .nav-item:hover {
+            background: rgba(74, 14, 120, 0.1);
+            border-radius: 5px;
+            transition: background 0.3s ease-in-out;
         }
 
         .hero {
             background: url('/Images/psy.png') no-repeat center center;
             background-size: cover;
-            height: 80vh;
+            height: 64vh;
             position: relative;
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
@@ -49,53 +60,20 @@
             background: rgba(0, 0, 0, 0.5);
         }
 
-        .section-title {
-            color: #4a0e78;
-            position: relative;
-            display: inline-block;
-            margin-bottom: 2rem;
-        }
-
-            .section-title::after {
-                content: '';
-                position: absolute;
-                left: 0;
-                bottom: -10px;
-                width: 50px;
-                height: 3px;
-                background-color: #4a0e78;
-            }
-
-        .card {
-            border: none;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-            .card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            }
-
-        .btn-primary {
-            background-color: #4a0e78;
-            border-color: #4a0e78;
-        }
-
-            .btn-primary:hover {
-                background-color: #3a0b5e;
-                border-color: #3a0b5e;
-            }
-
         .author-image {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
+            width: 300px;
+            height: 300px;
+            border-radius: 45%;
             object-fit: cover;
             border: 5px solid white;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
+
+            .author-image:hover {
+                transform: scale(1.1);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            }
 
         footer {
             background-color: #4a0e78;
@@ -198,7 +176,7 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-4 mb-4 mb-md-0 text-center">
-                        <img src="https://via.placeholder.com/250x250?text=👤" alt="Авторът" class="author-image">
+                        <img src="https://scontent-sof1-1.xx.fbcdn.net/v/t39.30808-6/302195698_5857696764254845_2285300799275694232_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=aLPMEIvX5X0Q7kNvgE_MWQo&_nc_zt=23&_nc_ht=scontent-sof1-1.xx&_nc_gid=AePZ0I9RzAjoRokLUXdJmRS&oh=00_AYAnYzRNS8Vfaj9ixp-rAAlHfZimq3t0ca-sZXDxYtxjgg&oe=679EB646" alt="Авторът" class="author-image">
                     </div>
                     <div class="col-md-4 text-center">
                         <h2 class="section-title playfair">За автора</h2>
@@ -211,7 +189,7 @@
                         </p>
                     </div>
                     <div class="col-md-4 text-center">
-                        <img src="https://via.placeholder.com/250x250?text=🌌" alt="Илюстрация" class="author-image">
+                        <img src="https://tgeorgieva.com/wp-content/uploads/2019/01/razlika-mezhdu-pshiholog-i-psihoterapevt.jpg" alt="Илюстрация" class="author-image">
                     </div>
                 </div>
             </div>

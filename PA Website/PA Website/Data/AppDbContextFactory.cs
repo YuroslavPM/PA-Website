@@ -5,11 +5,11 @@ using System.IO;
 
 namespace PA_Website.Data
 {
-    public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+    public class AppDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
-        public AppDbContext CreateDbContext(string[] args)
+        public ApplicationDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
             // Carga la configuración del archivo appsettings.json
             IConfigurationRoot configuration = new ConfigurationBuilder()
@@ -21,7 +21,7 @@ namespace PA_Website.Data
 
             optionsBuilder.UseSqlServer(connectionString);
 
-            return new AppDbContext(optionsBuilder.Options);
+            return new ApplicationDbContext(optionsBuilder.Options);
         }
     }
 }

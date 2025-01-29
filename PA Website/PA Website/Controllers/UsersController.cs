@@ -12,9 +12,9 @@ namespace PA_Website.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public UsersController(AppDbContext context)
+        public UsersController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -26,7 +26,7 @@ namespace PA_Website.Controllers
         }
 
         // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
@@ -50,11 +50,9 @@ namespace PA_Website.Controllers
         }
 
         // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FName,LName,Email,Password,Zodiacal_Sign,Birth_Date")] User user)
+        public async Task<IActionResult> Create([Bind("Id,FName,LName,Password,Zodiacal_Sign,Birth_Date,Email,UserName")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +64,7 @@ namespace PA_Website.Controllers
         }
 
         // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
@@ -82,11 +80,9 @@ namespace PA_Website.Controllers
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FName,LName,Email,Password,Zodiacal_Sign,Birth_Date")] User user)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,FName,LName,Password,Zodiacal_Sign,Birth_Date,Email,UserName")] User user)
         {
             if (id != user.Id)
             {
@@ -97,27 +93,39 @@ namespace PA_Website.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    var userToUpdate = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+
+                    if (userToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Обновяваме стойностите само ако те са се променили
+                    userToUpdate.FName = user.FName;
+                    userToUpdate.LName = user.LName;
+                    userToUpdate.Password = user.Password;
+                    userToUpdate.Zodiacal_Sign = user.Zodiacal_Sign;
+                    userToUpdate.Birth_Date = user.Birth_Date;
+                    userToUpdate.Email = user.Email;
+                    userToUpdate.UserName = user.UserName;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError(string.Empty, "Записът беше променен от друг потребител. Моля, опитайте отново.");
+                    return View(user);
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(user);
         }
 
+
         // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -137,19 +145,19 @@ namespace PA_Website.Controllers
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
                 _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
+            // След изтриването на потребителя, пренасочваме към Index
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(int id)
+        private bool UserExists(string id)
         {
             return _context.Users.Any(e => e.Id == id);
         }

@@ -12,9 +12,9 @@ namespace PA_Website.Controllers
 {
     public class ArticlesController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public ArticlesController(AppDbContext context)
+        public ArticlesController(ApplicationDbContext context)
         {
             _context = context;
         }
