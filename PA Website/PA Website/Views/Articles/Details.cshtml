@@ -1,42 +1,41 @@
 ﻿@model PA_Website.Models.Article
-
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
+@inject RoleManager<IdentityRole> RoleManager
 @{
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+            <h1 class="card-title text-center fw-bold text-primary">@Model.Title</h1>
+            <hr />
 
-<div>
-    <h4>Article</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatorId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatorId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PublicationDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PublicationDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-    </dl>
+            <p class="text-muted fst-italic">Категория: <strong>@Model.Category</strong></p>
+            <p class="text-muted">Публикувано на: <strong>@Model.PublicationDate.ToString("dd MMM yyyy")</strong></p>
+
+            <div class="mt-4">
+                <h5 class="fw-semibold">Описание:</h5>
+                <p class="fs-5">@Model.Description</p>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between bg-light p-3 rounded-bottom-4">
+            @if (isAdmin)
+            {
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm px-4">Редактирай</a>
+            }
+            <a asp-action="Index" class="btn btn-secondary btn-sm px-4">Обратно към списъка</a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

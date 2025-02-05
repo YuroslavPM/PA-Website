@@ -1,6 +1,8 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@{
     ViewData["Title"] = "Начало";
 }
+
 
 <!DOCTYPE html>
 <html lang="bg">
@@ -90,30 +92,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">Душевна Музайка</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">НАЧАЛО</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Articles")">СТАТИИ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Privacy", "Home")">ПОВЕРИТЕЛНОСТ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    
 
     <header class="hero d-flex align-items-center">
         <div class="hero-overlay"></div>
@@ -179,7 +158,7 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-4 mb-4 mb-md-0 text-center">
-                        <img src="https://scontent-sof1-1.xx.fbcdn.net/v/t39.30808-6/302195698_5857696764254845_2285300799275694232_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=aLPMEIvX5X0Q7kNvgE_MWQo&_nc_zt=23&_nc_ht=scontent-sof1-1.xx&_nc_gid=AePZ0I9RzAjoRokLUXdJmRS&oh=00_AYAnYzRNS8Vfaj9ixp-rAAlHfZimq3t0ca-sZXDxYtxjgg&oe=679EB646" alt="Авторът" class="author-image">
+                        <img src="https://scontent-sof1-1.xx.fbcdn.net/v/t39.30808-6/302195698_5857696764254845_2285300799275694232_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=XKnE9c0ZEeQQ7kNvgFa3egE&_nc_zt=23&_nc_ht=scontent-sof1-1.xx&_nc_gid=AYOF0aEpczQ3K8gQEJ7rsDO&oh=00_AYB-1IiASZR2Myi2BNZ1UXP4HbQI8-Ha3PhBDpXO5F-EaQ&oe=67A8D1C6" alt="Авторът" class="author-image">
                     </div>
                     <div class="col-md-4 text-center">
                         <h2 class="section-title playfair">За автора</h2>

@@ -14,6 +14,8 @@ namespace PA_Website.Models
         public string? CreatorId { get; set; }
         public User? Creator { get; set; }
 
+        public string Description { get; set; }
+
         [Required]
         public DateTime PublicationDate { get; set; }
         [Required]

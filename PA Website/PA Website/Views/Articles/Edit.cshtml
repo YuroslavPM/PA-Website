@@ -1,49 +1,56 @@
 ﻿@model PA_Website.Models.Article
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактирай Статия";
+
 }
 
-<h1>Edit</h1>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+            <h1 class="card-title text-center fw-bold text-primary">Редактирай Статия</h1>
+            <hr />
 
-<h4>Article</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatorId" class="control-label"></label>
-                <input asp-for="CreatorId" class="form-control" />
-                <span asp-validation-for="CreatorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PublicationDate" class="control-label"></label>
-                <input asp-for="PublicationDate" class="form-control" />
-                <span asp-validation-for="PublicationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-semibold">Заглавие</label>
+                    <input asp-for="Title" class="form-control shadow-sm" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-semibold">Описание</label>
+                    <textarea asp-for="Description" rows="6" class="form-control shadow-sm"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PublicationDate" class="form-label fw-semibold">Дата на Публикация</label>
+                    <input asp-for="PublicationDate" type="date" class="form-control shadow-sm" />
+                    <span asp-validation-for="PublicationDate" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Category" class="form-label fw-semibold">Категория</label>
+                    <input asp-for="Category" class="form-control shadow-sm" />
+                    <span asp-validation-for="Category" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between bg-light p-3 rounded-bottom-4">
+
+                    <a asp-action="Index" class="btn btn-secondary btn-sm px-4">Обратно към списъка</a>
+                    <button type="submit" class="btn btn-primary btn-sm px-4">Запази</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
