@@ -20,3 +20,50 @@ html {
 body {
   margin-bottom: 60px;
 }
+/* Hover effect for buttons */
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for input fields */
+.form-control:hover {
+    border-color: #667eea;
+    transition: all 0.3s ease;
+}
+
+/* Focus effect for input fields */
+.form-control:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 0 0.2rem rgba(118, 75, 162, 0.25);
+    transition: all 0.3s ease;
+}
+/*-*/
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for buttons */
+.btn-warning:hover {
+    background-color: #e0a800;
+    transition: all 0.3s ease;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for table rows */
+.table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+    transition: all 0.3s ease;
+}

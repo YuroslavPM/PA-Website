@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PA_Website.styles.css" asp-append-version="true" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -47,6 +53,7 @@
                 .footer a:hover {
                     text-decoration: underline;
                 }
+
     </style>
 </head>
 <body>
@@ -71,7 +78,7 @@
                         <a class="nav-link" href="@Url.Action("Index", "Articles")">СТАТИИ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Privacy", "Home")">ПОВЕРИТЕЛНОСТ</a>
+                        <a class="nav-link" href="@Url.Action("Index", "Services")">УСЛУГИ</a>
                     </li>
                     @if (SignInManager.IsSignedIn(User))
                     {

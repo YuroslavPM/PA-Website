@@ -1,0 +1,52 @@
+﻿@model PA_Website.Models.Service
+
+@{
+    ViewData["Title"] = "Детайли";
+}
+
+<!-- Add cosmic background image -->
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: url('https://png.pngtree.com/background/20250108/original/pngtree-twinkling-star-field-a-captivating-cosmic-background-for-your-banner-picture-image_13347278.jpg') no-repeat center center; background-size: cover;">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="width: 100%; max-width: 800px; background: rgba(255, 255, 255, 0.95);">
+        <div class="card-body">
+            <!-- Heading -->
+            <h1 class="text-center text-primary mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">Детайли за Услугата</h1>
+
+            <!-- Service Details -->
+            <div class="mb-4">
+                <dl class="row">
+                    <!-- Name of Service -->
+                    <dt class="col-sm-3 fw-bold">Име на Услугата</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.NameService)</dd>
+
+                    <!-- Category of Service -->
+                    <dt class="col-sm-3 fw-bold">Категория</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.CategoryOfService)</dd>
+
+                    <!-- Reservation Date -->
+                    <dt class="col-sm-3 fw-bold">Дата за Резервация</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.ReservationDate)</dd>
+
+                    <!-- Description -->
+                    <dt class="col-sm-3 fw-bold">Описание</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+                </dl>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-lg rounded-pill px-4">
+                    <i class="fas fa-edit me-2"></i>Редактирай
+                </a>
+                <a asp-action="Index" class="btn btn-secondary btn-lg rounded-pill px-4">
+                    <i class="fas fa-arrow-left me-2"></i>Обратно към Списъка
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

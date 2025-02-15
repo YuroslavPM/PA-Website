@@ -1,0 +1,84 @@
+﻿@model PA_Website.Models.Service
+
+@{
+    ViewData["Title"] = "Създай Услуга";
+}
+
+<!-- Add a calming gradient background -->
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.95);">
+        <div class="card-body">
+            <!-- Heading -->
+            <h2 class="text-center text-primary mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">Създай Нова Услуга</h2>
+
+            <!-- Form -->
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- Name of Service -->
+                <div class="mb-4 position-relative">
+                    <label asp-for="NameService" class="form-label fw-bold">Име на Услугата</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-pencil-alt"></i> <!-- Icon for Name -->
+                        </span>
+                        <input asp-for="NameService" class="form-control form-control-lg" placeholder="Въведете име" />
+                    </div>
+                    <span asp-validation-for="NameService" class="text-danger small"></span>
+                </div>
+
+                <!-- Category of Service -->
+                <div class="mb-4 position-relative">
+                    <label asp-for="CategoryOfService" class="form-label fw-bold">Категория</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-tags"></i> <!-- Icon for Category -->
+                        </span>
+                        <input asp-for="CategoryOfService" class="form-control form-control-lg" placeholder="Въведете категория" />
+                    </div>
+                    <span asp-validation-for="CategoryOfService" class="text-danger small"></span>
+                </div>
+
+                <!-- Reservation Date -->
+                <div class="mb-4 position-relative">
+                    <label asp-for="ReservationDate" class="form-label fw-bold">Дата за Резервация</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-calendar-alt"></i> <!-- Icon for Date -->
+                        </span>
+                        <input asp-for="ReservationDate" type="date" class="form-control form-control-lg" />
+                    </div>
+                    <span asp-validation-for="ReservationDate" class="text-danger small"></span>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4 position-relative">
+                    <label asp-for="Description" class="form-label fw-bold">Описание</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-align-left"></i> <!-- Icon for Description -->
+                        </span>
+                        <textarea asp-for="Description" rows="4" class="form-control form-control-lg" placeholder="Въведете описание"></textarea>
+                    </div>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        <i class="fas fa-arrow-left me-2"></i>Обратно
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4">
+                        <i class="fas fa-plus me-2"></i>Създай
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
