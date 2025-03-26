@@ -1,0 +1,25 @@
+﻿@model IEnumerable<PA_Website.Models.UserService>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2 class="mb-4">Моите Резервации</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Услуга</th>
+            <th>Дата на резервация</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.Service.NameService</td>
+                <td>@reservation.ReservationDate.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

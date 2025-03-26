@@ -10,6 +10,7 @@ namespace PA_Website.Models
         public string NameService { get; set; }
         [Required]
         public string CategoryOfService { get; set; }
+
         
         public DateTime ReservationDate { get; set; }
 

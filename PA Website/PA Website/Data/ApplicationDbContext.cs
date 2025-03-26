@@ -12,6 +12,7 @@ namespace PA_Website.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<PA_Website.Models.Service> Service { get; set; } = default!;
+        public DbSet<UserService> userServices { get; set; }
  
     }
 }

@@ -67,3 +67,6 @@ body {
     background-color: rgba(102, 126, 234, 0.1);
     transition: all 0.3s ease;
 }
+.dropdown-menu {
+    min-width: 200px;
+}

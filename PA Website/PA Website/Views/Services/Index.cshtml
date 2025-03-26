@@ -55,17 +55,87 @@
                                     <i class="fas fa-trash-alt me-1"></i>Изтрий
                                 </a>
                                 }
+                                @if(user !=null){
+                                @if (item.CategoryOfService.ToLower() == "психология")
+                                {
+
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Резервирай</a>
+                                }
+                                else if (item.CategoryOfService.ToLower() == "астрология")
+                                {
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Резервирай</a>
+                                }
+                                }else{
+                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary">Резервирай</a>
+                                }
                             </div>
                         </div>
                     </div>
                 }
+
+            </div>
+               
+        </div>
+    </div>
+    <!-- Модал за психология -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Потвърждение на резервация</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Сигурни ли сте, че искате да резервирате тази услуга?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                    <button type="button" class="btn btn-primary" onclick="submitReservation()">Да, резервирай</button>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Модал за астрология -->
+    <div class="modal fade" id="confirmModalAstro" tabindex="-1" aria-labelledby="confirmModalLabelAstro" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabelAstro">Потвърждение на резервация</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Сигурни ли сте, че искате да резервирате тази услуга?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                    <button type="button" class="btn btn-success" onclick="submitReservationAstro()">Да, резервирай</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script>
+            function prepareReservation(serviceId) {
+                document.getElementById("serviceId").value = serviceId;
+            }
+
+            function prepareReservationAstro(serviceId) {
+                document.getElementById("serviceIdAstro").value = serviceId;
+            }
+
+            function submitReservation() {
+                document.getElementById("reservationForm").submit();
+            }
+
+            function submitReservationAstro() {
+                document.getElementById("reservationFormAstro").submit();
+            }
+        </script>
     }
 }

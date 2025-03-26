@@ -1,52 +1,179 @@
-﻿@model PA_Website.Models.Service
-
+﻿@using Microsoft.AspNetCore.Identity
+@model PA_Website.Models.Service
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
+@inject RoleManager<IdentityRole> RoleManager
 @{
+    var reservedTimes = ViewData["ReservedTimes"] as List<DateTime> ?? new List<DateTime>();
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     ViewData["Title"] = "Детайли";
 }
 
-<!-- Add cosmic background image -->
 <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: url('https://png.pngtree.com/background/20250108/original/pngtree-twinkling-star-field-a-captivating-cosmic-background-for-your-banner-picture-image_13347278.jpg') no-repeat center center; background-size: cover;">
     <div class="card shadow-lg border-0 rounded-4 p-4" style="width: 100%; max-width: 800px; background: rgba(255, 255, 255, 0.95);">
         <div class="card-body">
-            <!-- Heading -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            <!-- Display Error Messages -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             <h1 class="text-center text-primary mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">Детайли за Услугата</h1>
-
-            <!-- Service Details -->
             <div class="mb-4">
                 <dl class="row">
-                    <!-- Name of Service -->
                     <dt class="col-sm-3 fw-bold">Име на Услугата</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.NameService)</dd>
-
-                    <!-- Category of Service -->
                     <dt class="col-sm-3 fw-bold">Категория</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.CategoryOfService)</dd>
-
-                    <!-- Reservation Date -->
-                    <dt class="col-sm-3 fw-bold">Дата за Резервация</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.ReservationDate)</dd>
-
-                    <!-- Description -->
                     <dt class="col-sm-3 fw-bold">Описание</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
                 </dl>
             </div>
 
-            <!-- Buttons -->
-            <div class="d-flex justify-content-between mt-4">
-                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-lg rounded-pill px-4">
-                    <i class="fas fa-edit me-2"></i>Редактирай
-                </a>
-                <a asp-action="Index" class="btn btn-secondary btn-lg rounded-pill px-4">
-                    <i class="fas fa-arrow-left me-2"></i>Обратно към Списъка
-                </a>
+            <form id="reservationForm" method="post" class="d-inline" action="/Services/CreateReservation">
+                <input type="hidden" name="ServiceId" value="@Model.Id" />
+                @if (user != null && Model.CategoryOfService.ToLower() != "астрология")
+                {
+                    <div class="mb-3">
+                        <label for="reservationDate" class="form-label">Дата</label>
+                        <input type="date" id="reservationDate" name="reservationDate" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="reservationTime" class="form-label">Час</label>
+                        <input type="time" id="reservationTime" name="reservationTime" class="form-control" required />
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label for="astrologicalDate" class="form-label">Дата и час на раждане</label>
+                        <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" required />
+                    </div>
+                }
+                <button type="button" id="confirmReservationBtn" class="btn btn-primary">
+                    Резервирай
+                </button>
+            </form>
+
+            <a asp-action="Index" class="btn btn-secondary btn-lg rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Обратно към услуги
+            </a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmReservationModal" tabindex="-1" aria-labelledby="confirmReservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmReservationModalLabel">Потвърждение на резервацията</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Сигурни ли сте, че искате да резервирате тази услуга?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                    <button id="modalConfirmBtn" type="button" class="btn btn-primary">Да, резервирай</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Функция за декодиране на HTML entities
+            function decodeHTMLEntities(text) {
+                var parser = new DOMParser();
+                var decodedString = parser.parseFromString(text, "text/html").body.textContent;
+                return decodedString;
+            }
+
+            var confirmBtn = document.getElementById("confirmReservationBtn");
+            var reservationForm = document.getElementById("reservationForm");
+
+            confirmBtn.addEventListener("click", function () {
+                // Декодиране на категорията
+                var category = decodeHTMLEntities("@Model.CategoryOfService").trim().toLowerCase();
+                var reservationDate = document.getElementById("reservationDate");
+                var reservationTime = document.getElementById("reservationTime");
+                var astrologicalDate = document.getElementById("astrologicalDate");
+
+                console.log("Category:", category); // Debugging
+                console.log("Reservation Date Input:", reservationDate?.value); // Debugging
+                console.log("Reservation Time Input:", reservationTime?.value); // Debugging
+                console.log("Astrological Date Input:", astrologicalDate?.value); // Debugging
+
+                if (category === "астрология") {
+                    // Validate astrological date and time
+                    if (!astrologicalDate || astrologicalDate.value.trim() === "") {
+                        alert("Моля, въведете дата и час на раждане.");
+                        return;
+                    }
+
+                    // Submit the form directly for astrology services
+                    reservationForm.submit();
+                } else if (category === "психология") {
+                    // Validate reservation date and time for psychology services
+                    if (!reservationDate || reservationDate.value.trim() === "" || !reservationTime || reservationTime.value.trim() === "") {
+                        alert("Моля, изберете дата и час за резервация.");
+                        return;
+                    }
+
+                    // Show the confirmation modal for psychology services
+                    var modal = new bootstrap.Modal(document.getElementById('confirmReservationModal'));
+                    modal.show();
+                } else {
+                    // Handle invalid categories
+                    alert("Невалидна категория на услугата: " + category);
+                }
+            });
+
+            // Handle the confirmation button in the modal for psychology services
+            var modalConfirmBtn = document.getElementById("modalConfirmBtn");
+            if (modalConfirmBtn) {
+                modalConfirmBtn.addEventListener("click", function () {
+                    console.log("Modal Confirm Button Clicked"); // Debugging
+                    reservationForm.submit(); // Submit the form
+                });
+            }
+
+            // Automatically hide success/error messages after 5 seconds
+            var alerts = document.querySelectorAll(".alert");
+            alerts.forEach(function (alert) {
+                setTimeout(function () {
+                    alert.classList.remove("show");
+                    alert.classList.add("fade");
+                }, 5000);
+            });
+        });
+    </script>
+
 }

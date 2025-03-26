@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -41,8 +43,20 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
 
+            var reservedTimes = await _context.userServices
+            .Where(r => r.ServiceId == id)
+            .Select(r => r.ReservationTime)
+            .Where(rt => rt.HasValue)
+            .Select(rt => rt.Value.ToString(@"hh\:mm"))
+            .ToListAsync();
+
+            ViewData["ReservedTimes"] = reservedTimes;
+
+
             return View(service);
         }
+
+
 
         // GET: Services/Create
         public IActionResult Create()
@@ -82,6 +96,106 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
             return View(service);
+        }
+
+
+        // POST: Services/CreateReservation
+        [HttpPost]
+        public async Task<IActionResult> CreateReservation(int ServiceId, string reservationDate, string reservationTime, string astrologicalDate)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Трябва да влезете в профила си, за да направите резервация.";
+                return RedirectToAction("Details", new { id = ServiceId });
+            }
+
+            var service = await _context.Service.FindAsync(ServiceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            if ((string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime)) && string.IsNullOrEmpty(astrologicalDate))
+            {
+                TempData["ErrorMessage"] = "Трябва да изберете дата и час за консултация.";
+                return RedirectToAction("Details", new { id = ServiceId });
+            }
+
+
+            DateTime reservationDateTime;
+            try
+            {
+                if (service.CategoryOfService.ToLower() != "астрология")
+                {
+                    reservationDateTime = DateTime.ParseExact($"{reservationDate} {reservationTime}", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    reservationDateTime = DateTime.Parse(astrologicalDate);
+                }
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = "Невалиден формат на датата или часа.";
+                return RedirectToAction("Details", new { id = ServiceId });
+            }
+
+            // Проверка дали услугата е астрология или психология
+            if (service.CategoryOfService.ToLower() == "астрология")
+            {
+
+                var astroReservation = new UserService
+                {
+                    UserId = user.Id,
+                    ServiceId = ServiceId,
+                    AstrologicalDate = reservationDateTime, 
+                    ReservationTime = null
+                };
+
+                _context.userServices.Add(astroReservation);
+            }
+            else
+            {
+                // Проверка дали часът е свободен
+                var existingReservation = await _context.userServices
+                    .AnyAsync(r => r.ServiceId == ServiceId && r.ReservationDate == reservationDateTime);
+
+                if (existingReservation)
+                {
+                    TempData["ErrorMessage"] = "Този час вече е зает. Моля, изберете друг.";
+                    return RedirectToAction("Details", new { id = ServiceId });
+                }
+
+                // Проверка за конфликтни резервации в рамките на 1 час
+                var oneHourBefore = reservationDateTime.AddMinutes(-59);
+                var oneHourAfter = reservationDateTime.AddMinutes(59);
+
+                var conflictingReservation = await _context.userServices
+                    .Where(r => r.ServiceId == ServiceId)
+                    .AnyAsync(r => r.ReservationDate >= oneHourBefore && r.ReservationDate <= oneHourAfter);
+
+                if (conflictingReservation)
+                {
+                    TempData["ErrorMessage"] = "Часът трябва да бъде поне 1 час преди или след съществуваща резервация.";
+                    return RedirectToAction("Details", new { id = ServiceId });
+                }
+
+                var reservation = new UserService
+                {
+                    UserId = user.Id,
+                    ServiceId = ServiceId,
+                    ReservationDate = reservationDateTime,
+                    ReservationTime = reservationDateTime.TimeOfDay
+                };
+
+                _context.userServices.Add(reservation);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Резервацията е успешна!";
+            return RedirectToAction("Details", new { id = ServiceId });
         }
 
         // POST: Services/Edit/5

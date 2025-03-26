@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Админ Панел: Резервации";
+    var currentPage = (int)ViewData["CurrentPage"];
+    var totalPages = (int)ViewData["TotalPages"];
+    var sortOrder = ViewData["SortOrder"] as string;
+}
+
+<h2 class="mb-4">Админ Панел: Резервации</h2>
+
+<div class="mb-3">
+    <label for="sortDropdown" class="form-label">Сортиране по:</label>
+    <select id="sortDropdown" class="form-select">
+        <option value="date_desc" selected="@((sortOrder == "date_desc") ? "selected" : null)">Последни резервации</option>
+        <option value="date_asc" selected="@((sortOrder == "date_asc") ? "selected" : null)">Най-стари резервации</option>
+        <option value="category_asc" selected="@((sortOrder == "category_asc") ? "selected" : null)">Категория (А-Я)</option>
+        <option value="category_desc" selected="@((sortOrder == "category_desc") ? "selected" : null)">Категория (Я-А)</option>
+        <option value="status_asc" selected="@((sortOrder == "status_asc") ? "selected" : null)">Актуални първи</option>
+        <option value="status_desc" selected="@((sortOrder == "status_desc") ? "selected" : null)">Изтекли първи</option>
+    </select>
+</div>
+
+<div id="reservationsTable">
+    @await Html.PartialAsync("_ReservationsTable", (IEnumerable<PA_Website.Models.UserService>)Model)
+</div>
+
+<div class="pagination mt-4">
+    <button id="prevPage" class="btn btn-primary" @(currentPage <= 1 ? "disabled" : "")>Предишна</button>
+    <span class="mx-3">Страница @currentPage от @totalPages</span>
+    <button id="nextPage" class="btn btn-primary" @(currentPage >= totalPages ? "disabled" : "")>Следваща</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        function loadReservations(page, sort) {
+            $.ajax({
+                url: '@Url.Action("IndexAdmin", "UserServices")',
+                type: 'GET',
+                data: { pageNumber: page, sortOrder: sort },
+                success: function (data) {
+                    $('#reservationsTable').html($(data).find('#reservationsTable').html());
+                    $('.pagination').html($(data).find('.pagination').html());
+                },
+                error: function () {
+                    alert("Грешка при зареждане на данните.");
+                }
+            });
+        }
+
+        $('#sortDropdown').change(function () {
+            var selectedSort = $(this).val();
+            loadReservations(1, selectedSort); // Връща на първа страница при промяна на сортирането
+        });
+
+        $(document).on('click', '#prevPage', function () {
+            var currentPage = parseInt($('.pagination span').text().match(/\d+/)[0]);
+            if (currentPage > 1) {
+                loadReservations(currentPage - 1, $('#sortDropdown').val());
+            }
+        });
+
+        $(document).on('click', '#nextPage', function () {
+            var currentPage = parseInt($('.pagination span').text().match(/\d+/)[0]);
+            var totalPages = parseInt($('.pagination span').text().match(/\d+/g)[1]);
+            if (currentPage < totalPages) {
+                loadReservations(currentPage + 1, $('#sortDropdown').val());
+            }
+        });
+    });
+</script>

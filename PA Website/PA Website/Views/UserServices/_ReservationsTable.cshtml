@@ -1,0 +1,23 @@
+﻿@model IEnumerable<PA_Website.Models.UserService>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Потребител</th>
+            <th>Услуга</th>
+            <th>Дата на резервация</th>
+            <th>Статус</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.User.UserName</td>
+                <td>@reservation.Service.NameService</td>
+                <td>@reservation.ReservationDate.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@(DateTime.Now > reservation.ReservationDate ? "Изтекло" : "Актуално")</td>
+            </tr>
+        }
+    </tbody>
+</table>
