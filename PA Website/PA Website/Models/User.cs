@@ -19,5 +19,11 @@ namespace PA_Website.Models
         public string Zodiacal_Sign { get; set; }
         [Required]
         public DateTime Birth_Date { get; set; }
+
+
+
+
+        
+
     }
 }

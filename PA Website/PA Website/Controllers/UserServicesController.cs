@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
@@ -25,16 +27,43 @@ namespace PA_Website.Controllers
         }
 
         // GET: UserServices
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 12)
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
 
-            var applicationDbContext = _context.userServices
-                .Where(u =>u.UserId==user.Id)
+            var reservations = _context.userServices
+                .Where(u => u.UserId == user.Id)
                 .Include(u => u.Service)
-                .Include(u => u.User);
-            return View(await applicationDbContext.ToListAsync());
+                .AsQueryable();
+
+            reservations = sortOrder switch
+            {
+                "date_desc" => reservations.OrderByDescending(r => r.ReservationDate),
+                "date_asc" => reservations.OrderBy(r => r.ReservationDate),
+                "category_asc" => reservations.OrderBy(r => r.Service.CategoryOfService),
+                "category_desc" => reservations.OrderByDescending(r => r.Service.CategoryOfService),
+                "status_asc" => reservations.OrderBy(r => r.ReservationDate < DateTime.Now),
+                "status_desc" => reservations.OrderByDescending(r => r.ReservationDate < DateTime.Now),
+                _ => reservations.OrderByDescending(r => r.ReservationDate)
+            };
+
+            int totalRecords = await reservations.CountAsync();
+            var pagedReservations = await reservations
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = pageNumber;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
+            ViewData["SortOrder"] = sortOrder;
+
+            return View(pagedReservations);
         }
+
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> IndexAdmin(string sortOrder, int pageNumber = 1, int pageSize = 12)
         {
@@ -68,13 +97,12 @@ namespace PA_Website.Controllers
 
 
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SortReservations(string sortOrder)
         {
             var reservations = _context.userServices
-                .Include(u => u.Service)
-                .Include(u => u.User)
-                .AsQueryable();
+        .Include(u => u.Service)
+        .Include(u => u.User)
+        .AsQueryable();
 
             switch (sortOrder)
             {
@@ -101,7 +129,7 @@ namespace PA_Website.Controllers
                     break;
             }
 
-            return PartialView("_ReservationsTable", await reservations.ToListAsync());
+            return PartialView("ReservedTable", await reservations.ToListAsync());
         }
 
         // GET: UserServices/Create
@@ -236,6 +264,35 @@ namespace PA_Website.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", userService.UserId);
             return View(userService);
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var userService = await _context.userServices
+                .Include(u => u.User)
+                .Include(u => u.Service)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (userService == null)
+            {
+                return NotFound();
+            }
+
+            // Проверка дали текущият потребител е собственик на резервацията
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userService.User.Id != currentUserId && !User.IsInRole("Admin"))
+            {
+                return Forbid(); 
+            }
+
+            return View(userService);
+        }
+
+
 
         // GET: UserServices/Delete/5
         [Authorize(Roles = "Admin")]

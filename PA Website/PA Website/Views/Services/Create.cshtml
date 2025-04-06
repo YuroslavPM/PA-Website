@@ -2,74 +2,195 @@
 
 @{
     ViewData["Title"] = "Създай Услуга";
+    Layout = "_Layout";
 }
 
-<!-- Add a calming gradient background -->
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="card shadow-lg border-0 rounded-4 p-4" style="width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.95);">
-        <div class="card-body">
-            <!-- Heading -->
-            <h2 class="text-center text-primary mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">Създай Нова Услуга</h2>
+@section Styles {
+    <style>
+        .create-service-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 3rem 0;
+            min-height: calc(100vh - 80px);
+        }
 
-            <!-- Form -->
-            <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        .create-service-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
 
-                <!-- Name of Service -->
-                <div class="mb-4 position-relative">
-                    <label asp-for="NameService" class="form-label fw-bold">Име на Услугата</label>
+            .create-service-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            }
+
+        .create-service-header {
+            padding: 2rem 2rem 1rem;
+            background: white;
+        }
+
+        .create-service-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+            .create-service-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 2px;
+            }
+
+        .create-service-body {
+            padding: 0 2rem 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a0e78;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                border-color: #6a3093;
+                box-shadow: 0 0 0 0.25rem rgba(106, 48, 147, 0.25);
+            }
+
+        .input-group-text {
+            background-color: rgba(106, 48, 147, 0.1);
+            border-color: #ddd;
+            color: #4a0e78;
+        }
+
+        .text-danger {
+            font-size: 0.85rem;
+        }
+
+        .btn-service {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .btn-service:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                color: white;
+            }
+
+        .btn-outline-service {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-service:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        @@media (max-width: 768px) {
+            .create-service-title {
+                font-size: 1.8rem;
+            }
+
+            .create-service-header,
+            .create-service-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="create-service-container">
+    <div class="container">
+        <div class="create-service-card">
+            <div class="create-service-header">
+                <h1 class="create-service-title">Създай Нова Услуга</h1>
+            </div>
+
+            <form asp-action="Create" class="create-service-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                <div class="mb-4">
+                    <label asp-for="NameService" class="form-label">Име на услугата</label>
                     <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-pencil-alt"></i> <!-- Icon for Name -->
-                        </span>
-                        <input asp-for="NameService" class="form-control form-control-lg" placeholder="Въведете име" />
+                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <input asp-for="NameService" class="form-control" placeholder="Въведете име на услугата" />
                     </div>
-                    <span asp-validation-for="NameService" class="text-danger small"></span>
+                    <span asp-validation-for="NameService" class="text-danger"></span>
                 </div>
 
-                <!-- Category of Service -->
-                <div class="mb-4 position-relative">
-                    <label asp-for="CategoryOfService" class="form-label fw-bold">Категория</label>
+                <div class="mb-4">
+                    <label asp-for="CategoryOfService" class="form-label">Категория</label>
                     <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-tags"></i> <!-- Icon for Category -->
-                        </span>
-                        <input asp-for="CategoryOfService" class="form-control form-control-lg" placeholder="Въведете категория" />
+                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                        <select asp-for="CategoryOfService" class="form-control">
+                            <option value="">Изберете категория</option>
+                            <option value="Психология">Психология</option>
+                            <option value="Астрология">Астрология</option>
+                            <option value="Друго">Друго</option>
+                        </select>
                     </div>
-                    <span asp-validation-for="CategoryOfService" class="text-danger small"></span>
+                    <span asp-validation-for="CategoryOfService" class="text-danger"></span>
                 </div>
 
-                <!-- Reservation Date -->
-                <div class="mb-4 position-relative">
-                    <label asp-for="ReservationDate" class="form-label fw-bold">Дата за Резервация</label>
+                <div class="mb-4">
+                    <label asp-for="ReservationDate" class="form-label">Дата за резервация</label>
                     <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-calendar-alt"></i> <!-- Icon for Date -->
-                        </span>
-                        <input asp-for="ReservationDate" type="date" class="form-control form-control-lg" />
+                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                        <input asp-for="ReservationDate" type="date" class="form-control" />
                     </div>
-                    <span asp-validation-for="ReservationDate" class="text-danger small"></span>
+                    <span asp-validation-for="ReservationDate" class="text-danger"></span>
                 </div>
 
-                <!-- Description -->
-                <div class="mb-4 position-relative">
-                    <label asp-for="Description" class="form-label fw-bold">Описание</label>
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label">Описание</label>
                     <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-align-left"></i> <!-- Icon for Description -->
-                        </span>
-                        <textarea asp-for="Description" rows="4" class="form-control form-control-lg" placeholder="Въведете описание"></textarea>
+                        <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Въведете описание на услугата"></textarea>
                     </div>
-                    <span asp-validation-for="Description" class="text-danger small"></span>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
-                <!-- Buttons -->
-                <div class="d-flex justify-content-between mt-4">
-                    <a asp-action="Index" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
-                        <i class="fas fa-arrow-left me-2"></i>Обратно
+                <div class="d-flex justify-content-between mt-5">
+                    <a asp-action="Index" class="btn btn-outline-service">
+                        <i class="fas fa-arrow-left me-2"></i> Отказ
                     </a>
-                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4">
-                        <i class="fas fa-plus me-2"></i>Създай
+                    <button type="submit" class="btn btn-service">
+                        <i class="fas fa-plus me-2"></i> Създай услуга
                     </button>
                 </div>
             </form>

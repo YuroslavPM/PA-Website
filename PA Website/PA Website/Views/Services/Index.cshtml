@@ -8,134 +8,332 @@
     ViewData["Title"] = "Услуги";
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
+    Layout = "_Layout";
 }
 
-<!-- Add cosmic background image -->
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: url('https://png.pngtree.com/background/20250108/original/pngtree-twinkling-star-field-a-captivating-cosmic-background-for-your-banner-picture-image_13347278.jpg') no-repeat center center; background-size: cover;">
-    <div class="card shadow-lg border-0 rounded-4 p-4" style="width: 100%; max-width: 1200px; background: rgba(255, 255, 255, 0.95);">
-        <div class="card-body">
-            <!-- Heading -->
-            <h1 class="text-center text-primary mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">Услуги</h1>
+@section Styles {
+    <style>
+        .services-page {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 3rem 0;
+            min-height: calc(100vh - 80px);
+        }
 
-            <!-- Add New Service Button (Admin Only) -->
+        .services-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .services-container:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+            .page-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 2px;
+            }
+
+        .service-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+        }
+
+            .service-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            }
+
+        .service-card-body {
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .service-card-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-card-category {
+            font-size: 0.9rem;
+            color: #6a3093 !important;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .service-card-text {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card-footer {
+            padding: 1rem 1.5rem;
+            background: rgba(106, 48, 147, 0.05);
+            border-top: 1px solid rgba(106, 48, 147, 0.1);
+        }
+
+        .btn-service {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+            .btn-service:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                color: white;
+            }
+
+        .btn-service-outline {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+            .btn-service-outline:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .no-services {
+            text-align: center;
+            padding: 3rem 0;
+            color: #6a3093;
+        }
+
+            .no-services i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                color: #c3cfe2;
+            }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+        }
+
+        @@media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .service-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+}
+
+<div class="services-page">
+    <div class="container">
+        <div class="services-container">
+            <h1 class="page-title">Нашите Услуги</h1>
+
             @if (isAdmin)
             {
                 <div class="text-center mb-4">
-                    <a asp-action="Create" class="btn btn-primary btn-lg rounded-pill px-4">
-                        <i class="fas fa-plus me-2"></i>Добави Нова Услуга
+                    <a asp-action="Create" class="btn btn-service">
+                        <i class="fas fa-plus me-2"></i>Добави нова услуга
                     </a>
                 </div>
             }
 
-            <!-- Services Grid -->
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                @foreach (var item in Model)
-                {
-                    <div class="col">
-                        <div class="card h-100 shadow-sm border-0 rounded-4">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">@Html.DisplayFor(modelItem => item.NameService)</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">@Html.DisplayFor(modelItem => item.CategoryOfService)</h6>
-                                <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
-                            </div>
-                            <div class="card-footer bg-transparent border-0 text-center">
-                                
-                                @if(isAdmin){
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm rounded-pill px-3">
-                                    <i class="fas fa-edit me-1"></i>Редактирай
-                                </a>
-                                }
-                                
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm rounded-pill px-3 text-white">
-                                    <i class="fas fa-info-circle me-1"></i>Детайли
-                                </a>
-                                @if (isAdmin)
-                                {
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm rounded-pill px-3">
-                                    <i class="fas fa-trash-alt me-1"></i>Изтрий
-                                </a>
-                                }
-                                @if(user !=null){
-                                @if (item.CategoryOfService.ToLower() == "психология")
-                                {
+            @if (Model.Any())
+            {
+                <div class="row g-4">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-lg-4 col-md-6">
+                            <div class="service-card">
+                                <div class="service-card-body">
+                                    <h5 class="service-card-title">@item.NameService</h5>
+                                    <h6 class="service-card-category">@item.CategoryOfService</h6>
+                                    <p class="service-card-text">@item.Description</p>
+                                </div>
+                                <div class="service-card-footer">
+                                    <div class="action-buttons">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-service-outline btn-sm">
+                                            <i class="fas fa-info-circle me-1"></i> Детайли
+                                        </a>
 
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Резервирай</a>
-                                }
-                                else if (item.CategoryOfService.ToLower() == "астрология")
-                                {
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Резервирай</a>
-                                }
-                                }else{
-                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary">Резервирай</a>
-                                }
+                                        @if (user != null)
+                                        {
+                                            @if (item.CategoryOfService.ToLower() == "психология" || item.CategoryOfService.ToLower() == "астрология")
+                                            {
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-service btn-sm">Резервирай</a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path"
+                                               class="btn btn-service btn-sm">
+                                                <i class="fas fa-calendar-check me-1"></i> Резервирай
+                                            </a>
+                                        }
+
+                                        @if (isAdmin)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
-
-            </div>
-               
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-services">
+                    <i class="fas fa-concierge-bell"></i>
+                    <h3>Все още няма добавени услуги</h3>
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Create" class="btn btn-service mt-3">
+                            <i class="fas fa-plus me-2"></i>Добави първата услуга
+                        </a>
+                    }
+                </div>
+            }
         </div>
     </div>
-    <!-- Модал за психология -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Потвърждение на резервация</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Сигурни ли сте, че искате да резервирате тази услуга?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
-                    <button type="button" class="btn btn-primary" onclick="submitReservation()">Да, резервирай</button>
-                </div>
-            </div>
-        </div>
-    </div>
+</div>
 
-    <!-- Модал за астрология -->
-    <div class="modal fade" id="confirmModalAstro" tabindex="-1" aria-labelledby="confirmModalLabelAstro" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabelAstro">Потвърждение на резервация</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Сигурни ли сте, че искате да резервирате тази услуга?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
-                    <button type="button" class="btn btn-success" onclick="submitReservationAstro()">Да, резервирай</button>
-                </div>
+<!-- Модал за потвърждение -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Потвърждение на резервация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Сигурни ли сте, че искате да резервирате тази услуга?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-article" data-bs-dismiss="modal">Отказ</button>
+                <form id="reservationForm" asp-action="Reserve" method="post" style="display: none;">
+                    <input type="hidden" id="serviceId" name="serviceId" />
+                </form>
+                <button type="button" class="btn btn-service" onclick="submitReservation()">
+                    <i class="fas fa-check me-1"></i> Потвърди
+                </button>
             </div>
         </div>
     </div>
+</div>
 
+<!-- Модал за потвърждение (астрология) -->
+<div class="modal fade" id="confirmModalAstro" tabindex="-1" aria-labelledby="confirmModalLabelAstro" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Потвърждение на резервация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Сигурни ли сте, че искате да резервирате тази астрологична услуга?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-article" data-bs-dismiss="modal">Отказ</button>
+                <form id="reservationFormAstro" asp-action="ReserveAstro" method="post" style="display: none;">
+                    <input type="hidden" id="serviceIdAstro" name="serviceId" />
+                </form>
+                <button type="button" class="btn btn-service" onclick="submitReservationAstro()">
+                    <i class="fas fa-check me-1"></i> Потвърди
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        <script>
-            function prepareReservation(serviceId) {
-                document.getElementById("serviceId").value = serviceId;
-            }
-
-            function prepareReservationAstro(serviceId) {
-                document.getElementById("serviceIdAstro").value = serviceId;
-            }
-
-            function submitReservation() {
-                document.getElementById("reservationForm").submit();
-            }
-
-            function submitReservationAstro() {
-                document.getElementById("reservationFormAstro").submit();
-            }
-        </script>
     }
+    <script>
+        function prepareReservation(serviceId) {
+            document.getElementById("serviceId").value = serviceId;
+        }
+
+        function prepareReservationAstro(serviceId) {
+            document.getElementById("serviceIdAstro").value = serviceId;
+        }
+
+        function submitReservation() {
+            document.getElementById("reservationForm").submit();
+        }
+
+        function submitReservationAstro() {
+            document.getElementById("reservationFormAstro").submit();
+        }
+    </script>
 }

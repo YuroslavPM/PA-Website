@@ -20,6 +20,15 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.fas, .fa {
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+}
+
+
 /* Hover effect for buttons */
 .btn-outline-secondary:hover {
     background-color: #6c757d;

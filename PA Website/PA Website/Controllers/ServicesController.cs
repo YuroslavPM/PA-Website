@@ -29,7 +29,7 @@ namespace PA_Website.Controllers
         }
 
         // GET: Services/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string selectedDate)
         {
             if (id == null)
             {
@@ -51,6 +51,7 @@ namespace PA_Website.Controllers
             .ToListAsync();
 
             ViewData["ReservedTimes"] = reservedTimes;
+            ViewData["SelectedDate"] = selectedDate;
 
 
             return View(service);
@@ -99,7 +100,6 @@ namespace PA_Website.Controllers
         }
 
 
-        // POST: Services/CreateReservation
         [HttpPost]
         public async Task<IActionResult> CreateReservation(int ServiceId, string reservationDate, string reservationTime, string astrologicalDate)
         {
@@ -116,23 +116,22 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
 
-            if ((string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime)) && string.IsNullOrEmpty(astrologicalDate))
+            if (string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime) && string.IsNullOrEmpty(astrologicalDate))
             {
                 TempData["ErrorMessage"] = "Трябва да изберете дата и час за консултация.";
                 return RedirectToAction("Details", new { id = ServiceId });
             }
 
-
             DateTime reservationDateTime;
             try
             {
-                if (service.CategoryOfService.ToLower() != "астрология")
+                if (service.CategoryOfService.ToLower() == "астрология")
                 {
-                    reservationDateTime = DateTime.ParseExact($"{reservationDate} {reservationTime}", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                    reservationDateTime = DateTime.ParseExact(astrologicalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    reservationDateTime = DateTime.Parse(astrologicalDate);
+                    reservationDateTime = DateTime.ParseExact($"{reservationDate} {reservationTime}", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
                 }
             }
             catch
@@ -144,40 +143,31 @@ namespace PA_Website.Controllers
             // Проверка дали услугата е астрология или психология
             if (service.CategoryOfService.ToLower() == "астрология")
             {
-
                 var astroReservation = new UserService
                 {
                     UserId = user.Id,
                     ServiceId = ServiceId,
-                    AstrologicalDate = reservationDateTime, 
+                    AstrologicalDate = reservationDateTime,
                     ReservationTime = null
                 };
-
                 _context.userServices.Add(astroReservation);
             }
             else
             {
-                // Проверка дали часът е свободен
-                var existingReservation = await _context.userServices
-                    .AnyAsync(r => r.ServiceId == ServiceId && r.ReservationDate == reservationDateTime);
+                if (reservationDateTime.DayOfWeek == DayOfWeek.Saturday || reservationDateTime.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    TempData["ErrorMessage"] = "Не може да резервирате в събота и неделя.";
+                    return RedirectToAction("Details", new { id = ServiceId });
+                }
+
+                TimeSpan selectedTime = TimeSpan.Parse(reservationTime);
+
+                bool existingReservation = await _context.userServices
+                    .AnyAsync(r => r.ServiceId == ServiceId && r.ReservationDate.Date == reservationDateTime.Date && r.ReservationTime == selectedTime);
 
                 if (existingReservation)
                 {
                     TempData["ErrorMessage"] = "Този час вече е зает. Моля, изберете друг.";
-                    return RedirectToAction("Details", new { id = ServiceId });
-                }
-
-                // Проверка за конфликтни резервации в рамките на 1 час
-                var oneHourBefore = reservationDateTime.AddMinutes(-59);
-                var oneHourAfter = reservationDateTime.AddMinutes(59);
-
-                var conflictingReservation = await _context.userServices
-                    .Where(r => r.ServiceId == ServiceId)
-                    .AnyAsync(r => r.ReservationDate >= oneHourBefore && r.ReservationDate <= oneHourAfter);
-
-                if (conflictingReservation)
-                {
-                    TempData["ErrorMessage"] = "Часът трябва да бъде поне 1 час преди или след съществуваща резервация.";
                     return RedirectToAction("Details", new { id = ServiceId });
                 }
 
@@ -186,17 +176,45 @@ namespace PA_Website.Controllers
                     UserId = user.Id,
                     ServiceId = ServiceId,
                     ReservationDate = reservationDateTime,
-                    ReservationTime = reservationDateTime.TimeOfDay
+                    ReservationTime = selectedTime
                 };
 
                 _context.userServices.Add(reservation);
             }
 
             await _context.SaveChangesAsync();
-
             TempData["SuccessMessage"] = "Резервацията е успешна!";
             return RedirectToAction("Details", new { id = ServiceId });
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableTimes(DateTime date, int serviceId)
+        {
+            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return Json(new { success = false, message = "Изберете делничен ден." });
+            }
+
+            var reservedTimes = await _context.userServices
+                .Where(r => r.ServiceId == serviceId && r.ReservationTime.HasValue && r.ReservationDate.Date == date.Date)
+                .Select(r => r.ReservationTime.Value) // Взимаме стойността на TimeSpan?
+                .ToListAsync();
+
+            var availableTimes = new List<string>();
+            for (int hour = 9; hour <= 17; hour++)
+            {
+                var time = new TimeSpan(hour, 0, 0);
+                if (!reservedTimes.Contains(time))
+                {
+                    availableTimes.Add($"{hour:00}:00");
+                }
+            }
+
+            return Json(new { success = true, availableTimes });
+        }
+
+
 
         // POST: Services/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.

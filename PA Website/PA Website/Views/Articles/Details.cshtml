@@ -7,29 +7,179 @@
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     ViewData["Title"] = "Details";
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-4">
-            <h1 class="card-title text-center fw-bold text-primary">@Model.Title</h1>
-            <hr />
+@section Styles {
+    <style>
+        .article-detail-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem 0;
+            min-height: calc(100vh - 80px);
+        }
 
-            <p class="text-muted fst-italic">Категория: <strong>@Model.Category</strong></p>
-            <p class="text-muted">Публикувано на: <strong>@Model.PublicationDate.ToString("dd MMM yyyy")</strong></p>
+        .article-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
 
-            <div class="mt-4">
-                <h5 class="fw-semibold">Описание:</h5>
-                <p class="fs-5">@Model.Description</p>
-            </div>
-        </div>
-
-        <div class="card-footer d-flex justify-content-between bg-light p-3 rounded-bottom-4">
-            @if (isAdmin)
-            {
-                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm px-4">Редактирай</a>
+            .article-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
             }
-            <a asp-action="Index" class="btn btn-secondary btn-sm px-4">Обратно към списъка</a>
+
+        .article-header {
+            padding: 2rem;
+            background: white;
+        }
+
+        .article-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            color: #6a3093;
+            font-size: 0.95rem;
+        }
+
+        .article-meta-item {
+            display: flex;
+            align-items: center;
+        }
+
+            .article-meta-item i {
+                margin-right: 8px;
+            }
+
+        .article-content {
+            padding: 2rem;
+            background: white;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .article-footer {
+            padding: 1.5rem;
+            background: rgba(106, 48, 147, 0.05);
+            border-top: 1px solid rgba(106, 48, 147, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-article {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+            .btn-article:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.3);
+                color: white;
+            }
+
+        .btn-outline-article {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-article:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        .btn-warning {
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
+
+        @@media (max-width: 768px) {
+            .article-title {
+                font-size: 1.8rem;
+            }
+
+            .article-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            .article-footer {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+}
+
+<div class="article-detail-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="article-card">
+                    <div class="article-header">
+                        <h1 class="article-title">@Model.Title</h1>
+                        <div class="article-meta">
+                            <div class="article-meta-item">
+                                <i class="fas fa-tag"></i>
+                                <span>@Model.Category</span>
+                            </div>
+                            <div class="article-meta-item">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>@Model.PublicationDate.ToString("dd MMMM yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="article-content">
+                        @Html.Raw(Model.Description.Replace("\n", "<br/>"))
+                    </div>
+
+                    <div class="article-footer">
+                        <a asp-action="Index" class="btn btn-outline-article">
+                            <i class="fas fa-arrow-left me-1"></i> Обратно към статиите
+                        </a>
+                        @if (isAdmin)
+                        {
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">
+                                    <i class="fas fa-edit me-1"></i> Редактирай
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt me-1"></i> Изтрий
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

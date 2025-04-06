@@ -1,192 +1,567 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @{
     ViewData["Title"] = "Начало";
+    Layout = "_Layout";
 }
 
-
-<!DOCTYPE html>
-<html lang="bg">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - Душевна Музайка</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+@section Styles {
     <style>
+        /* Основни стилове */
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #333;
+            padding-top: 0;
+            overflow-x: hidden;
         }
 
         .playfair {
             font-family: 'Playfair Display', serif;
         }
 
-        .navbar {
-            background-color: rgba(255, 255, 255, 0.9) !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand, .nav-link {
-            color: #4a0e78 !important;
-            font-weight: 600;
-            transition: color 0.3s ease-in-out;
-        }
-
-            .nav-link:hover {
-                color: #ff9800 !important;
-            }
-
-        .nav-item:hover {
-            background: rgba(74, 14, 120, 0.1);
-            border-radius: 5px;
-            transition: background 0.3s ease-in-out;
-        }
-
+        /* Hero секция */
         .hero {
-            background: url('/Images/psy.png') no-repeat center center;
+            background: linear-gradient(rgba(74, 14, 120, 0.7), rgba(106, 48, 147, 0.7)), url('/Images/psy.png') no-repeat center center;
             background-size: cover;
-            height: 64vh;
+            background-attachment: fixed;
+            height: 90vh;
+            min-height: 650px;
             position: relative;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            margin-top: -80px;
+            padding-top: 80px;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
         }
 
-        .hero-overlay {
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-title {
+            font-size: 3.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            animation: textFadeIn 1.5s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.6rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            animation: textFadeIn 1.8s ease-out;
+        }
+
+        /* Бутон с ефекти */
+        .hero-btn {
+            background: linear-gradient(135deg, #6a3093 0%, #4a0e78 100%);
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+            .hero-btn:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #4a0e78 0%, #6a3093 100%);
+                z-index: -1;
+                opacity: 0;
+                transition: opacity 0.4s ease;
+            }
+
+            .hero-btn:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            }
+
+                .hero-btn:hover:before {
+                    opacity: 1;
+                }
+
+            .hero-btn:active {
+                transform: translateY(-2px);
+                box-shadow: 0 7px 25px rgba(0,0,0,0.4);
+            }
+
+            .hero-btn i {
+                margin-right: 10px;
+                transition: transform 0.3s ease;
+            }
+
+            .hero-btn:hover i {
+                transform: translateY(-3px);
+            }
+
+        /* Floating елементи */
+        .floating-elements {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            animation: float 7s infinite linear;
+        }
+
+        /* Секции */
+        .section {
+            padding: 7rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            margin-bottom: 3.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+            .section-title:after {
+                content: '';
+                position: absolute;
+                bottom: -15px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100px;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 3px;
+            }
+
+        .bg-purple-light {
+            background-color: rgba(106, 48, 147, 0.05);
+        }
+
+        /* Картички */
+        .service-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            height: 100%;
+            background: white;
+        }
+
+            .service-card:hover {
+                transform: translateY(-12px);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            }
+
+            .service-card img {
+                height: 280px;
+                object-fit: cover;
+                transition: transform 0.7s;
+            }
+
+            .service-card:hover img {
+                transform: scale(1.08);
+            }
+
+            .service-card .card-body {
+                padding: 2.5rem;
+            }
+
+            .service-card .card-title {
+                font-size: 1.7rem;
+                margin-bottom: 1.2rem;
+                color: #4a0e78;
+            }
+
+            .service-card .btn {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                border: none;
+                border-radius: 50px;
+                padding: 10px 30px;
+                font-weight: 500;
+                letter-spacing: 0.5px;
+                transition: all 0.3s;
+            }
+
+                .service-card .btn:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                }
+
+        /* Автор секция */
+        .author-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 6rem 0;
+            position: relative;
         }
 
         .author-image {
-            width: 300px;
-            height: 300px;
-            border-radius: 45%;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
             object-fit: cover;
-            border: 5px solid white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 10px solid white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            transition: all 0.5s;
         }
 
             .author-image:hover {
-                transform: scale(1.1);
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                transform: scale(1.08);
+                box-shadow: 0 25px 60px rgba(0,0,0,0.2);
             }
 
-        footer {
-            background-color: #4a0e78;
-            color: white;
+        .author-quote {
+            font-style: italic;
+            font-size: 1.3rem;
+            color: #4a0e78;
+            position: relative;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            line-height: 1.6;
         }
 
-            footer a {
-                color: #c3cfe2;
+            .author-quote:before {
+                content: '"';
+                font-size: 5rem;
+                position: absolute;
+                top: -20px;
+                left: 15px;
+                color: rgba(106, 48, 147, 0.1);
+                font-family: serif;
+                line-height: 1;
             }
 
-                footer a:hover {
-                    color: white;
-                }
+        /* Анимации */
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes textFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .animate {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 5rem 0;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .hero {
+                height: 80vh;
+                min-height: 600px;
+                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .author-image {
+                width: 240px;
+                height: 240px;
+                margin-bottom: 2rem;
+            }
+
+            .service-card .card-body {
+                padding: 2rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .hero {
+                height: 70vh;
+                min-height: 500px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .author-image {
+                width: 200px;
+                height: 200px;
+            }
+        }
     </style>
-</head>
-<body>
-    
+}
 
-    <header class="hero d-flex align-items-center">
-        <div class="hero-overlay"></div>
-        <div class="container text-center position-relative">
-            <h1 class="display-2 mb-4 playfair">Добре дошли в Душевна Музайка</h1>
-            <p class="lead">Вашето място за хороскопи и психология</p>
-        </div>
-    </header>
+<header class="hero">
+    <div class="floating-elements">
+        @* звезди *@
+        @for (var i = 0; i < 15; i++)
+        {
+            <div class="star" style="
+                width: @(new Random().Next(3, 7))px;
+                height: @(new Random().Next(3, 7))px;
+                left: @(new Random().Next(0, 100))%;
+                top: @(new Random().Next(0, 100))%;
+                animation-delay: @(new Random().Next(0, 5))s;
+                animation-duration: @(new Random().Next(5, 15))s;
+                    "></div>
+        }
+    </div>
+    <div class="container text-center hero-content">
+        <h1 class="hero-title playfair">Добре дошли в Душевна Музайка</h1>
+        <p class="hero-subtitle">Вашето място за хороскопи и психология</p>
+        <a href="#services" class="btn hero-btn animate delay-1">
+            <i class="fas fa-chevron-down"></i> Разгледайте услугите ни
+        </a>
+    </div>
+</header>
 
-    <main>
-        <section class="py-5">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-4 mb-4 mb-md-0">
-                        <img src="https://www.explorepsychology.com/wp-content/uploads/2021/09/personality-psych2.png" alt="Psychology illustration" class="img-fluid rounded shadow">
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <h2 class="section-title playfair">Кои сме ние?</h2>
-                        <p>
-                            В Душевна Музайка вярваме, че личностното развитие и разбирането на звездите са ключове към хармоничен живот.
-                            Нашата цел е да помогнем на хората да намерят баланс между духовното и психическото си здраве.
-                        </p>
-                        <p>
-                            Съчетаваме древните мъдрости на астрологията с модерната психология, за да предоставим полезни инструменти за осъзнат живот.
-                        </p>
-                    </div>
-                    <div class="col-md-4">
-                        <img src="https://studymind.co.uk/wp-content/uploads/2022/02/Screenshot-2022-02-05-at-19.52.21.png" alt="Astrology illustration" class="img-fluid rounded shadow">
-                    </div>
+<main>
+    <!-- За нас секция -->
+    <section class="section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0 animate">
+                    <img src="https://www.explorepsychology.com/wp-content/uploads/2021/09/personality-psych2.png"
+                         alt="Psychology illustration"
+                         class="img-fluid rounded shadow-lg">
+                </div>
+                <div class="col-lg-6 animate delay-1">
+                    <h2 class="section-title playfair text-center text-lg-start">Кои сме ние?</h2>
+                    <p class="lead">
+                        В Душевна Музайка вярваме, че личностното развитие и разбирането на звездите са ключове към хармоничен живот.
+                    </p>
+                    <p>
+                        Нашата мисия е да помогнем на хората да намерят баланс между духовното и психическото си здраве чрез съчетаване на
+                        древните мъдрости на астрологията с модерната психология. Предоставяме инструменти и знания за осъзнат живот,
+                        базирани на индивидуалния ви хоросоп и психологически профил.
+                    </p>
+                    <p>
+                        Нашият екип от специалисти ще ви напътства в пътешествието към себепознанието и личностното израстване.
+                    </p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="py-5 bg-white">
-            <div class="container">
-                <h2 class="section-title text-center playfair mb-5">Нашите услуги</h2>
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100">
-                            <img src="https://cdn.knd.ro/media/521/2863/1682/20227288/1/horoscop-2-iunie-2022.jpeg" class="card-img-top" alt="Хороскопи" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h3 class="card-title playfair">Хороскопи</h3>
-                                <p class="card-text">Открийте своето място под звездите с нашите ежедневни, седмични и месечни хороскопи.</p>
-                                <a href='@Url.Action("Index", "Horoscopes")' class="btn btn-primary">Прочети хороскоп</a>
-                            </div>
+    <!-- Услуги секция -->
+    <section id="services" class="section bg-purple-light">
+        <div class="container">
+            <h2 class="section-title playfair text-center">Нашите услуги</h2>
+            <div class="row g-4">
+                <div class="col-md-6 animate">
+                    <div class="service-card">
+                        <img src="https://cdn.knd.ro/media/521/2863/1682/20227288/1/horoscop-2-iunie-2022.jpeg"
+                             class="card-img-top"
+                             alt="Хороскопи">
+                        <div class="card-body text-center">
+                            <h3 class="card-title playfair">Хороскопи</h3>
+                            <p class="card-text">
+                                Персонализирани хороскопи, базирани на точната ви дата, час и място на раждане. Разберете как звездите
+                                влияят на вашия характер, взаимоотношения и житейски път.
+                            </p>
+                            <a href='@Url.Action("Index", "Services")' class="btn btn-primary">Прочети хороскоп</a>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100">
-                            <img src="https://www.ollusa.edu/blog/_resources/top-10-psychologist-skills-you-must-have.png" class="card-img-top" alt="Психологически консултации" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h3 class="card-title playfair">Психологически консултации</h3>
-                                <p class="card-text">Нуждаете се от подкрепа? Запазете час за индивидуална консултация с нашия психолог.</p>
-                                <a href='@Url.Action("Index", "Appointments")' class="btn btn-primary">Запази час</a>
-                            </div>
+                </div>
+                <div class="col-md-6 animate delay-1">
+                    <div class="service-card">
+                        <img src="https://www.ollusa.edu/blog/_resources/top-10-psychologist-skills-you-must-have.png"
+                             class="card-img-top"
+                             alt="Психологически консултации">
+                        <div class="card-body text-center">
+                            <h3 class="card-title playfair">Психологически консултации</h3>
+                            <p class="card-text">
+                                Индивидуални сесии с опитни психолози, които ще ви помогнат да се справите с ежедневни предизвикателства,
+                                стресови ситуации и да подобрите качеството на живота си.
+                            </p>
+                            <a href='@Url.Action("Index", "Services")' class="btn btn-primary">Запази час</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="py-5">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-4 mb-4 mb-md-0 text-center">
-                        <img src="https://scontent-sof1-1.xx.fbcdn.net/v/t39.30808-6/302195698_5857696764254845_2285300799275694232_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=XKnE9c0ZEeQQ7kNvgFa3egE&_nc_zt=23&_nc_ht=scontent-sof1-1.xx&_nc_gid=AYOF0aEpczQ3K8gQEJ7rsDO&oh=00_AYB-1IiASZR2Myi2BNZ1UXP4HbQI8-Ha3PhBDpXO5F-EaQ&oe=67A8D1C6" alt="Авторът" class="author-image">
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <h2 class="section-title playfair">За автора</h2>
-                        <p>
-                            Иван Петров е експерт в областта на астрологията и психологията, с дългогодишен опит в подпомагането на хора да открият себе си.
-                            Завършил психология в Софийския университет и астрология във Виена.
-                        </p>
-                        <p class="font-weight-bold">
-                            Мото: „Познай себе си и Вселената ще ти покаже пътя."
-                        </p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <img src="https://tgeorgieva.com/wp-content/uploads/2019/01/razlika-mezhdu-pshiholog-i-psihoterapevt.jpg" alt="Илюстрация" class="author-image">
+    <!-- Автор секция -->
+    <section class="section author-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center mb-5 mb-md-0 animate">
+                    <img src="https://scontent.fsof9-1.fna.fbcdn.net/v/t39.30808-6/302195698_5857696764254845_2285300799275694232_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=PfQV_QfBkRgQ7kNvwFYXhGq&_nc_oc=AdlcDs4XR_veDbQUSU8cAq3jDzaoImnLDBAtmOOFpGxiNa8zbzr351HnZrCFrPMrUCI1tgHdOdzctcA-s7LkDHUz&_nc_zt=23&_nc_ht=scontent.fsof9-1.fna&_nc_gid=GcVHYTywBqjdG70FyojemA&oh=00_AYG96-SAYD30dJUT6Zdi3_CgvzzvFMCJ-fNHGHuvXuPgNA&oe=67F70AC6"
+                         alt="Авторът"
+                         class="author-image">
+                </div>
+                <div class="col-md-4 text-center mb-5 mb-md-0 animate delay-1">
+                    <h2 class="section-title playfair">За автора</h2>
+                    <p>
+                        Иван Петров е експерт в областта на астрологията и психологията с над 15 години опит. Завършил психология в
+                        Софийския университет и специализирал астрология във Виена.
+                    </p>
+                    <p>
+                        Автор е на няколко книги за взаимоотношенията между астрологията и модерната психология.
+                    </p>
+                    <div class="author-quote mt-4">
+                        „Познай себе си и Вселената ще ти покаже пътя."
                     </div>
                 </div>
+                <div class="col-md-4 text-center animate delay-2">
+                    <img src="https://tgeorgieva.com/wp-content/uploads/2019/01/razlika-mezhdu-pshiholog-i-psihoterapevt.jpg"
+                         alt="Илюстрация"
+                         class="author-image">
+                </div>
             </div>
-        </section>
-    </main>
-
-    <footer class="py-4 mt-5">
-        <div class="container text-center">
-            <p>
-                &copy; @DateTime.Now.Year Душевна Музайка -
-                <a href='@Url.Action("Privacy", "Home")'>Поверителност</a>
-            </p>
         </div>
-    </footer>
+    </section>
+</main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@section Scripts {
+    <script>
+        // Анимация при скрол
+        $(document).ready(function() {
+            // Активиране на анимациите при скрол
+            $(window).scroll(function() {
+                $('.animate').each(function() {
+                    var position = $(this).offset().top;
+                    var scroll = $(window).scrollTop();
+                    var windowHeight = $(window).height();
+
+                    if (scroll > position - windowHeight + 200) {
+                        $(this).addClass('fadeInUp');
+                    }
+                });
+            });
+
+            // Гладко скролиране към секциите
+            $('a[href^="#"]').on('click', function(event) {
+                var target = $($(this).attr('href'));
+                if (target.length) {
+                    event.preventDefault();
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 80
+                    }, 800);
+                }
+            });
+
+            // Генериране на случайни звезди
+            function createStars() {
+                var starsContainer = $('.floating-elements');
+                for (var i = 0; i < 20; i++) {
+                    var star = $('<div class="star"></div>');
+                    var size = Math.random() * 4 + 3;
+                    var posX = Math.random() * 100;
+                    var posY = Math.random() * 100;
+                    var delay = Math.random() * 5;
+                    var duration = Math.random() * 10 + 5;
+
+                    star.css({
+                        'width': size + 'px',
+                        'height': size + 'px',
+                        'left': posX + '%',
+                        'top': posY + '%',
+                        'animation-delay': delay + 's',
+                        'animation-duration': duration + 's'
+                    });
+
+                    starsContainer.append(star);
+                }
+            }
+
+            createStars();
+        });
+    </script>
+}

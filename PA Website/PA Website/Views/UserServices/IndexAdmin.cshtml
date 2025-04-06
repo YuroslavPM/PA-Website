@@ -1,70 +1,331 @@
-﻿@{
-    ViewData["Title"] = "Админ Панел: Резервации";
+﻿@model IEnumerable<PA_Website.Models.UserService>
+
+@{
+    ViewData["Title"] = "Административен Панел - Резервации";
     var currentPage = (int)ViewData["CurrentPage"];
     var totalPages = (int)ViewData["TotalPages"];
     var sortOrder = ViewData["SortOrder"] as string;
+    Layout = "_Layout";
 }
 
-<h2 class="mb-4">Админ Панел: Резервации</h2>
-
-<div class="mb-3">
-    <label for="sortDropdown" class="form-label">Сортиране по:</label>
-    <select id="sortDropdown" class="form-select">
-        <option value="date_desc" selected="@((sortOrder == "date_desc") ? "selected" : null)">Последни резервации</option>
-        <option value="date_asc" selected="@((sortOrder == "date_asc") ? "selected" : null)">Най-стари резервации</option>
-        <option value="category_asc" selected="@((sortOrder == "category_asc") ? "selected" : null)">Категория (А-Я)</option>
-        <option value="category_desc" selected="@((sortOrder == "category_desc") ? "selected" : null)">Категория (Я-А)</option>
-        <option value="status_asc" selected="@((sortOrder == "status_asc") ? "selected" : null)">Актуални първи</option>
-        <option value="status_desc" selected="@((sortOrder == "status_desc") ? "selected" : null)">Изтекли първи</option>
-    </select>
-</div>
-
-<div id="reservationsTable">
-    @await Html.PartialAsync("_ReservationsTable", (IEnumerable<PA_Website.Models.UserService>)Model)
-</div>
-
-<div class="pagination mt-4">
-    <button id="prevPage" class="btn btn-primary" @(currentPage <= 1 ? "disabled" : "")>Предишна</button>
-    <span class="mx-3">Страница @currentPage от @totalPages</span>
-    <button id="nextPage" class="btn btn-primary" @(currentPage >= totalPages ? "disabled" : "")>Следваща</button>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        function loadReservations(page, sort) {
-            $.ajax({
-                url: '@Url.Action("IndexAdmin", "UserServices")',
-                type: 'GET',
-                data: { pageNumber: page, sortOrder: sort },
-                success: function (data) {
-                    $('#reservationsTable').html($(data).find('#reservationsTable').html());
-                    $('.pagination').html($(data).find('.pagination').html());
-                },
-                error: function () {
-                    alert("Грешка при зареждане на данните.");
-                }
-            });
+@section Styles {
+    <style>
+        .admin-panel-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 3rem 0;
+            min-height: calc(100vh - 80px);
         }
 
-        $('#sortDropdown').change(function () {
-            var selectedSort = $(this).val();
-            loadReservations(1, selectedSort); // Връща на първа страница при промяна на сортирането
-        });
+        .admin-panel-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
 
-        $(document).on('click', '#prevPage', function () {
-            var currentPage = parseInt($('.pagination span').text().match(/\d+/)[0]);
-            if (currentPage > 1) {
-                loadReservations(currentPage - 1, $('#sortDropdown').val());
+            .admin-panel-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
             }
-        });
 
-        $(document).on('click', '#nextPage', function () {
-            var currentPage = parseInt($('.pagination span').text().match(/\d+/)[0]);
-            var totalPages = parseInt($('.pagination span').text().match(/\d+/g)[1]);
-            if (currentPage < totalPages) {
-                loadReservations(currentPage + 1, $('#sortDropdown').val());
+        .admin-panel-header {
+            padding: 2rem 2rem 1rem;
+            background: white;
+        }
+
+        .admin-panel-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+            .admin-panel-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 2px;
             }
+
+        .admin-panel-body {
+            padding: 0 2rem 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a0e78;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-select {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+            max-width: 300px;
+        }
+
+            .form-select:focus {
+                border-color: #6a3093;
+                box-shadow: 0 0 0 0.25rem rgba(106, 48, 147, 0.25);
+            }
+
+        .reservation-card {
+            border-left: 4px solid #6a3093;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+            .reservation-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+        .reservation-card-header {
+            background-color: rgba(106, 48, 147, 0.05);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: #4a0e78;
+        }
+
+        .reservation-card-body {
+            padding: 1.5rem;
+        }
+
+        .reservation-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .reservation-meta-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .reservation-meta-label {
+            font-weight: 600;
+            color: #4a0e78;
+            margin-bottom: 0.25rem;
+        }
+
+        .reservation-meta-value {
+            color: #333;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+            .btn-admin:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.3);
+                color: white;
+            }
+
+        .btn-outline-admin {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-admin:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .page-info {
+            margin: 0 1.5rem;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-expired {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        @@media (max-width: 768px) {
+            .admin-panel-title {
+                font-size: 1.8rem;
+            }
+
+            .admin-panel-header,
+            .admin-panel-body {
+                padding: 1.5rem;
+            }
+
+            .reservation-meta-item {
+                min-width: 100%;
+            }
+        }
+    </style>
+}
+
+<div class="admin-panel-container">
+    <div class="container">
+        <div class="admin-panel-card">
+            <div class="admin-panel-header">
+                <h1 class="admin-panel-title">Административен Панел</h1>
+                <p class="text-center text-muted">Управление на потребителски резервации</p>
+            </div>
+
+            <div class="admin-panel-body">
+                <div class="mb-4">
+                    <label for="sortDropdown" class="form-label">Сортиране по:</label>
+                    <select id="sortDropdown" class="form-select">
+                        <option value="date_desc" selected="@((sortOrder == "date_desc") ? "selected" : null)">Последни резервации</option>
+                        <option value="date_asc" selected="@((sortOrder == "date_asc") ? "selected" : null)">Най-стари резервации</option>
+                        <option value="category_asc" selected="@((sortOrder == "category_asc") ? "selected" : null)">Категория (А-Я)</option>
+                        <option value="category_desc" selected="@((sortOrder == "category_desc") ? "selected" : null)">Категория (Я-А)</option>
+                        <option value="status_asc" selected="@((sortOrder == "status_asc") ? "selected" : null)">Актуални първи</option>
+                        <option value="status_desc" selected="@((sortOrder == "status_desc") ? "selected" : null)">Изтекли първи</option>
+                    </select>
+                </div>
+
+                <div id="reservationsTable">
+                    @foreach (var item in Model)
+                    {
+                        <div class="reservation-card">
+                            <div class="reservation-card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    Резервация #@item.Id
+                                    <span class="status-badge @(item.ReservationDate >= DateTime.Now ? "status-active" : "status-expired") ms-2">
+                                        @(item.ReservationDate >= DateTime.Now ? "Активна" : "Изтекла")
+                                    </span>
+                                </div>
+                                <div>
+                                    <a href="@Url.Action("Details", "UserServices", new { id = item.Id })" class="btn btn-admin btn-sm">
+                                        <i class="fas fa-info-circle me-1"></i> Детайли
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="reservation-card-body">
+                                <div class="reservation-meta">
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Потребител</div>
+                                        <div class="reservation-meta-value">@item.User.Email</div>
+                                    </div>
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Услуга</div>
+                                        <div class="reservation-meta-value">@item.Service.NameService</div>
+                                    </div>
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Категория</div>
+                                        <div class="reservation-meta-value">@item.Service.CategoryOfService</div>
+                                    </div>
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Дата на резервация</div>
+                                        <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-info text-center">
+                            Няма намерени резервации.
+                        </div>
+                    }
+                </div>
+
+                <div class="pagination-container">
+                    <button id="prevPage" class="btn btn-outline-admin" @(currentPage <= 1 ? "disabled" : "")>
+                        <i class="fas fa-chevron-left me-1"></i> Предишна
+                    </button>
+                    <span class="page-info">Страница @currentPage от @totalPages</span>
+                    <button id="nextPage" class="btn btn-outline-admin" @(currentPage >= totalPages ? "disabled" : "")>
+                        Следваща <i class="fas fa-chevron-right ms-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function loadReservations(page, sort) {
+                $.ajax({
+                    url: '@Url.Action("IndexAdmin", "UserServices")',
+                    type: 'GET',
+                    data: { pageNumber: page, sortOrder: sort },
+                    success: function (data) {
+                        $('#reservationsTable').html($(data).find('#reservationsTable').html());
+                        $('.pagination-container').html($(data).find('.pagination-container').html());
+                    },
+                    error: function () {
+                        alert("Грешка при зареждане на данните.");
+                    }
+                });
+            }
+
+            $('#sortDropdown').change(function () {
+                var selectedSort = $(this).val();
+                loadReservations(1, selectedSort);
+            });
+
+            $(document).on('click', '#prevPage', function () {
+                var currentPage = parseInt($('.page-info').text().match(/\d+/)[0]);
+                if (currentPage > 1) {
+                    loadReservations(currentPage - 1, $('#sortDropdown').val());
+                }
+            });
+
+            $(document).on('click', '#nextPage', function () {
+                var currentPage = parseInt($('.page-info').text().match(/\d+/)[0]);
+                var totalPages = parseInt($('.page-info').text().match(/\d+/g)[1]);
+                if (currentPage < totalPages) {
+                    loadReservations(currentPage + 1, $('#sortDropdown').val());
+                }
+            });
         });
-    });
-</script>
+    </script>
+}

@@ -3,43 +3,204 @@
 @inject UserManager<User> UserManager
 
 @{
-    ViewData["Title"] = "Create Article";
+    ViewData["Title"] = "Създай Статия";
     var currentUser = await UserManager.GetUserAsync(User);
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-sm p-4">
-        <h2 class="text-center mb-4 text-primary">Create New Article</h2>
+@section Styles {
+    <style>
+        .create-article-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 3rem 0;
+            min-height: calc(100vh - 80px);
+        }
 
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        .create-article-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
 
-            <div class="mb-3">
-                <label asp-for="Title" class="form-label">Title</label>
-                <input asp-for="Title" class="form-control" placeholder="Enter article title" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+            .create-article-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            }
+
+        .create-article-header {
+            padding: 2rem 2rem 1rem;
+            background: white;
+        }
+
+        .create-article-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+            .create-article-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 2px;
+            }
+
+        .create-article-body {
+            padding: 0 2rem 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a0e78;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                border-color: #6a3093;
+                box-shadow: 0 0 0 0.25rem rgba(106, 48, 147, 0.25);
+            }
+
+        .input-group-text {
+            background-color: rgba(106, 48, 147, 0.1);
+            border-color: #ddd;
+            color: #4a0e78;
+        }
+
+        .text-danger {
+            font-size: 0.85rem;
+        }
+
+        .btn-article {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .btn-article:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                color: white;
+            }
+
+        .btn-outline-article {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-article:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        @@media (max-width: 768px) {
+            .create-article-title {
+                font-size: 1.8rem;
+            }
+
+            .create-article-header,
+            .create-article-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="create-article-container">
+    <div class="container">
+        <div class="create-article-card">
+            <div class="create-article-header">
+                <h1 class="create-article-title">Създай Нова Статия</h1>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Description" class="form-label">Description</label>
-                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter article description"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+            <form asp-action="Create" class="create-article-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
-            <div class="mb-3">
-                <label asp-for="Category" class="form-label">Category</label>
-                <input asp-for="Category" class="form-control" placeholder="Enter category" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
+                <div class="mb-4">
+                    <label asp-for="Title" class="form-label">Заглавие</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                        <input asp-for="Title" class="form-control" placeholder="Въведете заглавие на статията" />
+                    </div>
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
 
-            <input type="hidden" asp-for="CreatorId" value="@currentUser?.Id" />
-            <input type="hidden" asp-for="PublicationDate" value="@DateTime.Now" />
+                @* <div class="mb-4">
+                    <label asp-for="Description" class="form-label">Кратко описание</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Въведете кратко описание"></textarea>
+                    </div>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div> *@
 
-            <div class="d-flex justify-content-between">
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                <button type="submit" class="btn btn-success">Create Article</button>
-            </div>
-        </form>
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label">Съдържание</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
+                        <textarea asp-for="Description" class="form-control" rows="8" placeholder="Въведете пълното съдържание"></textarea>
+                    </div>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Category" class="form-label">Категория</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                        <select asp-for="Category" class="form-control">
+                            <option value="">Изберете категория</option>
+                            <option value="Психология">Психология</option>
+                            <option value="Астрология">Астрология</option>
+                            <option value="Личностно развитие">Личностно развитие</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+
+                <input type="hidden" asp-for="CreatorId" value="@currentUser?.Id" />
+                <input type="hidden" asp-for="PublicationDate" value="@DateTime.Now" />
+
+                <div class="d-flex justify-content-between mt-5">
+                    <a asp-action="Index" class="btn btn-outline-article">
+                        <i class="fas fa-arrow-left me-2"></i> Отказ
+                    </a>
+                    <button type="submit" class="btn btn-article">
+                        <i class="fas fa-plus me-2"></i> Създай статия
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

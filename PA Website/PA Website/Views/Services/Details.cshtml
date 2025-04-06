@@ -8,172 +8,360 @@
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     ViewData["Title"] = "Детайли";
+    var serviceId = Model.Id;
+    Layout = "_Layout";
 }
 
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: url('https://png.pngtree.com/background/20250108/original/pngtree-twinkling-star-field-a-captivating-cosmic-background-for-your-banner-picture-image_13347278.jpg') no-repeat center center; background-size: cover;">
-    <div class="card shadow-lg border-0 rounded-4 p-4" style="width: 100%; max-width: 800px; background: rgba(255, 255, 255, 0.95);">
-        <div class="card-body">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+@section Styles {
+    <style>
+        .service-detail-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 3rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .service-detail-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
+
+            .service-detail-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
             }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+
+        .service-detail-header {
+            padding: 2rem;
+            background: white;
+        }
+
+        .service-detail-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+            .service-detail-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 2px;
             }
-            <!-- Display Error Messages -->
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <ul>
-                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                        {
-                            <li>@error.ErrorMessage</li>
-                        }
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+
+        .service-detail-body {
+            padding: 0 2rem 2rem;
+        }
+
+        .service-detail-dl dt {
+            font-weight: 600;
+            color: #4a0e78;
+            width: 200px;
+        }
+
+        .service-detail-dl dd {
+            margin-left: 220px;
+            color: #333;
+        }
+
+        .reservation-section {
+            background: rgba(106, 48, 147, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .reservation-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a0e78;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                border-color: #6a3093;
+                box-shadow: 0 0 0 0.25rem rgba(106, 48, 147, 0.25);
             }
-            <h1 class="text-center text-primary mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">Детайли за Услугата</h1>
-            <div class="mb-4">
-                <dl class="row">
-                    <dt class="col-sm-3 fw-bold">Име на Услугата</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.NameService)</dd>
-                    <dt class="col-sm-3 fw-bold">Категория</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.CategoryOfService)</dd>
-                    <dt class="col-sm-3 fw-bold">Описание</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
-                </dl>
+
+        .time-slot-btn {
+            min-width: 100px;
+            margin: 5px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-service {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .btn-service:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                color: white;
+            }
+
+        .btn-outline-service {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-service:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        .alert {
+            border-radius: 10px;
+        }
+
+        @@media (max-width: 768px) {
+            .service-detail-dl dt {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .service-detail-dl dd {
+                margin-left: 0;
+                margin-bottom: 1rem;
+            }
+
+            .service-detail-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+}
+
+<div class="service-detail-container">
+    <div class="container">
+        <div class="service-detail-card">
+            <div class="service-detail-header">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (!ViewContext.HttpContext.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase) && !ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <h1 class="service-detail-title">Детайли за услугата</h1>
             </div>
 
-            <form id="reservationForm" method="post" class="d-inline" action="/Services/CreateReservation">
-                <input type="hidden" name="ServiceId" value="@Model.Id" />
-                @if (user != null && Model.CategoryOfService.ToLower() != "астрология")
+            <div class="service-detail-body">
+                <dl class="service-detail-dl">
+                    <dt>Име на услугата:</dt>
+                    <dd>@Html.DisplayFor(model => model.NameService)</dd>
+
+                    <dt>Категория:</dt>
+                    <dd>@Html.DisplayFor(model => model.CategoryOfService)</dd>
+
+                    <dt>Описание:</dt>
+                    <dd>@Html.DisplayFor(model => model.Description)</dd>
+                </dl>
+
+                @if (user != null)
                 {
-                    <div class="mb-3">
-                        <label for="reservationDate" class="form-label">Дата</label>
-                        <input type="date" id="reservationDate" name="reservationDate" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="reservationTime" class="form-label">Час</label>
-                        <input type="time" id="reservationTime" name="reservationTime" class="form-control" required />
+                    <div class="reservation-section">
+                        @if (Model.CategoryOfService.ToLower() == "астрология")
+                        {
+                            <h3 class="reservation-title">Резервация за астрологична консултация</h3>
+                            <form id="reservationForm" method="post" action="/Services/CreateReservation">
+                                <input type="hidden" name="ServiceId" value="@Model.Id" />
+                                <div class="mb-3">
+                                    <label for="astrologicalDate" class="form-label">Дата и час на раждане</label>
+                                    <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" required />
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-service">
+                                        <i class="fas fa-calendar-check me-2"></i> Резервирай
+                                    </button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <h3 class="reservation-title">Изберете дата и час</h3>
+                            <div class="mb-3 text-center">
+                                <label for="reservationDate" class="form-label">Изберете дата:</label>
+                                <input type="date" id="reservationDate" class="form-control mx-auto" style="max-width: 250px;"
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")">
+                            </div>
+
+                            <div id="timeSlotsContainer" class="text-center d-none">
+                                <h5 class="mb-3">Свободни часове:</h5>
+                                <div id="timeSlots" class="d-flex flex-wrap justify-content-center gap-2 mb-4"></div>
+                            </div>
+
+                            <div id="errorMessage" class="alert alert-danger text-center d-none mt-3"></div>
+
+                            <form id="timeReservationForm" method="post" action="/Services/CreateReservation" class="d-none text-center">
+                                <input type="hidden" name="ServiceId" value="@Model.Id" />
+                                <input type="hidden" id="selectedReservationDate" name="reservationDate" />
+                                <input type="hidden" id="selectedReservationTime" name="reservationTime" />
+                                <button type="submit" id="confirmReservationBtn" class="btn btn-service">
+                                    <i class="fas fa-calendar-check me-2"></i> Потвърди резервация
+                                </button>
+                            </form>
+                        }
                     </div>
                 }
                 else
                 {
-                    <div class="mb-3">
-                        <label for="astrologicalDate" class="form-label">Дата и час на раждане</label>
-                        <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" required />
+                    <div class="alert alert-info text-center mt-4">
+                        <p>За да резервирате услуга, моля <a asp-area="Identity" asp-page="/Account/Login" class="alert-link">влезте</a> в профила си.</p>
                     </div>
                 }
-                <button type="button" id="confirmReservationBtn" class="btn btn-primary">
-                    Резервирай
-                </button>
-            </form>
 
-            <a asp-action="Index" class="btn btn-secondary btn-lg rounded-pill px-4">
-                <i class="fas fa-arrow-left me-2"></i>Обратно към услуги
-            </a>
-        </div>
-    </div>
-
-    <div class="modal fade" id="confirmReservationModal" tabindex="-1" aria-labelledby="confirmReservationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmReservationModalLabel">Потвърждение на резервацията</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Сигурни ли сте, че искате да резервирате тази услуга?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
-                    <button id="modalConfirmBtn" type="button" class="btn btn-primary">Да, резервирай</button>
+                <div class="text-center mt-4">
+                    <a asp-action="Index" class="btn btn-outline-service">
+                        <i class="fas fa-arrow-left me-2"></i> Обратно към услугите
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+</div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Функция за декодиране на HTML entities
-            function decodeHTMLEntities(text) {
-                var parser = new DOMParser();
-                var decodedString = parser.parseFromString(text, "text/html").body.textContent;
-                return decodedString;
-            }
+        document.addEventListener("DOMContentLoaded", function() {
+            const reservationDateInput = document.getElementById("reservationDate");
+            const timeSlotsContainer = document.getElementById("timeSlotsContainer");
+            const timeSlotsDiv = document.getElementById("timeSlots");
+            const errorDiv = document.getElementById("errorMessage");
+            const timeReservationForm = document.getElementById("timeReservationForm");
+            const selectedDateInput = document.getElementById("selectedReservationDate");
+            const selectedTimeInput = document.getElementById("selectedReservationTime");
 
-            var confirmBtn = document.getElementById("confirmReservationBtn");
-            var reservationForm = document.getElementById("reservationForm");
+            if (reservationDateInput) {
+                reservationDateInput.addEventListener("change", function() {
+                    const selectedDate = this.value;
+                    const serviceId = @serviceId;
 
-            confirmBtn.addEventListener("click", function () {
-                // Декодиране на категорията
-                var category = decodeHTMLEntities("@Model.CategoryOfService").trim().toLowerCase();
-                var reservationDate = document.getElementById("reservationDate");
-                var reservationTime = document.getElementById("reservationTime");
-                var astrologicalDate = document.getElementById("astrologicalDate");
+                    fetch(`/Services/GetAvailableTimes?date=${selectedDate}&serviceId=${serviceId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            timeSlotsDiv.innerHTML = "";
+                            errorDiv.classList.add("d-none");
 
-                console.log("Category:", category); // Debugging
-                console.log("Reservation Date Input:", reservationDate?.value); // Debugging
-                console.log("Reservation Time Input:", reservationTime?.value); // Debugging
-                console.log("Astrological Date Input:", astrologicalDate?.value); // Debugging
+                            if (!data.success) {
+                                errorDiv.textContent = data.message;
+                                errorDiv.classList.remove("d-none");
+                                timeSlotsContainer.classList.add("d-none");
+                                timeReservationForm.classList.add("d-none");
+                                return;
+                            }
 
-                if (category === "астрология") {
-                    // Validate astrological date and time
-                    if (!astrologicalDate || astrologicalDate.value.trim() === "") {
-                        alert("Моля, въведете дата и час на раждане.");
-                        return;
-                    }
+                            if (data.availableTimes.length === 0) {
+                                errorDiv.textContent = "Няма свободни часове за избраната дата.";
+                                errorDiv.classList.remove("d-none");
+                                timeSlotsContainer.classList.add("d-none");
+                                timeReservationForm.classList.add("d-none");
+                                return;
+                            }
 
-                    // Submit the form directly for astrology services
-                    reservationForm.submit();
-                } else if (category === "психология") {
-                    // Validate reservation date and time for psychology services
-                    if (!reservationDate || reservationDate.value.trim() === "" || !reservationTime || reservationTime.value.trim() === "") {
-                        alert("Моля, изберете дата и час за резервация.");
-                        return;
-                    }
+                            data.availableTimes.forEach(time => {
+                                const button = document.createElement("button");
+                                button.type = "button";
+                                button.className = "btn btn-outline-primary time-slot-btn";
+                                button.textContent = time;
+                                button.onclick = function() {
+                                    document.querySelectorAll('.time-slot-btn').forEach(btn => {
+                                        btn.classList.remove('btn-primary');
+                                        btn.classList.add('btn-outline-primary');
+                                    });
+                                    this.classList.remove('btn-outline-primary');
+                                    this.classList.add('btn-primary');
 
-                    // Show the confirmation modal for psychology services
-                    var modal = new bootstrap.Modal(document.getElementById('confirmReservationModal'));
-                    modal.show();
-                } else {
-                    // Handle invalid categories
-                    alert("Невалидна категория на услугата: " + category);
-                }
-            });
+                                    selectedDateInput.value = selectedDate;
+                                    selectedTimeInput.value = time;
+                                    timeReservationForm.classList.remove("d-none");
+                                };
+                                timeSlotsDiv.appendChild(button);
+                            });
 
-            // Handle the confirmation button in the modal for psychology services
-            var modalConfirmBtn = document.getElementById("modalConfirmBtn");
-            if (modalConfirmBtn) {
-                modalConfirmBtn.addEventListener("click", function () {
-                    console.log("Modal Confirm Button Clicked"); // Debugging
-                    reservationForm.submit(); // Submit the form
+                            timeSlotsContainer.classList.remove("d-none");
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            errorDiv.textContent = "Възникна грешка при зареждането на часовете.";
+                            errorDiv.classList.remove("d-none");
+                            timeSlotsContainer.classList.add("d-none");
+                            timeReservationForm.classList.add("d-none");
+                        });
                 });
             }
 
-            // Automatically hide success/error messages after 5 seconds
-            var alerts = document.querySelectorAll(".alert");
-            alerts.forEach(function (alert) {
-                setTimeout(function () {
-                    alert.classList.remove("show");
-                    alert.classList.add("fade");
-                }, 5000);
-            });
+            if (timeReservationForm) {
+                timeReservationForm.addEventListener("submit", function(e) {
+                    if (!selectedDateInput.value || !selectedTimeInput.value) {
+                        e.preventDefault();
+                        alert("Моля, изберете дата и час преди да резервирате.");
+                    }
+                });
+            }
         });
     </script>
-
 }

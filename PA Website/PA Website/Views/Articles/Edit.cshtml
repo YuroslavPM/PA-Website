@@ -2,49 +2,192 @@
 
 @{
     ViewData["Title"] = "Редактирай Статия";
-
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-4">
-            <h1 class="card-title text-center fw-bold text-primary">Редактирай Статия</h1>
-            <hr />
+@section Styles {
+    <style>
+        .edit-article-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem 0;
+            min-height: calc(100vh - 80px);
+        }
 
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                <input type="hidden" asp-for="Id" />
+        .edit-article-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
 
-                <div class="mb-3">
-                    <label asp-for="Title" class="form-label fw-semibold">Заглавие</label>
-                    <input asp-for="Title" class="form-control shadow-sm" />
-                    <span asp-validation-for="Title" class="text-danger small"></span>
+            .edit-article-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            }
+
+        .edit-article-header {
+            padding: 2rem 2rem 1rem;
+            background: white;
+        }
+
+        .edit-article-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .edit-article-body {
+            padding: 1rem 2rem 2rem;
+            background: white;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a0e78;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                border-color: #6a3093;
+                box-shadow: 0 0 0 0.25rem rgba(106, 48, 147, 0.25);
+            }
+
+        .text-danger {
+            font-size: 0.85rem;
+        }
+
+        .edit-article-footer {
+            padding: 1.5rem;
+            background: rgba(106, 48, 147, 0.05);
+            border-top: 1px solid rgba(106, 48, 147, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-article {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 25px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+            .btn-article:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.3);
+                color: white;
+            }
+
+        .btn-outline-article {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 25px;
+            padding: 8px 25px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-article:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        textarea.form-control {
+            min-height: 150px;
+        }
+
+        @@media (max-width: 768px) {
+            .edit-article-title {
+                font-size: 1.8rem;
+            }
+
+            .edit-article-header,
+            .edit-article-body {
+                padding: 1.5rem;
+            }
+
+            .edit-article-footer {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+}
+
+<div class="edit-article-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="edit-article-card">
+                    <div class="edit-article-header">
+                        <h1 class="edit-article-title">Редактирай Статия</h1>
+                    </div>
+
+                    <form asp-action="Edit" class="edit-article-body">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label">Заглавие</label>
+                            <input asp-for="Title" class="form-control" placeholder="Въведете заглавие на статията" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Кратко описание</label>
+                            <textarea asp-for="Description" class="form-control" placeholder="Въведете кратко описание"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="PublicationDate" class="form-label">Дата на публикация</label>
+                                <input asp-for="PublicationDate" type="date" class="form-control" />
+                                <span asp-validation-for="PublicationDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="Category" class="form-label">Категория</label>
+                                <input asp-for="Category" class="form-control" placeholder="Въведете категория" />
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Съдържание</label>
+                            <textarea asp-for="Description" class="form-control" rows="10" placeholder="Въведете пълното съдържание на статията"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </form>
+
+                    <div class="edit-article-footer">
+                        <a asp-action="Index" class="btn btn-outline-article">
+                            <i class="fas fa-arrow-left me-1"></i> Отказ
+                        </a>
+                        <button type="submit" form="editForm" class="btn btn-article">
+                            <i class="fas fa-save me-1"></i> Запази промените
+                        </button>
+                    </div>
                 </div>
-
-                <div class="mb-3">
-                    <label asp-for="Description" class="form-label fw-semibold">Описание</label>
-                    <textarea asp-for="Description" rows="6" class="form-control shadow-sm"></textarea>
-                    <span asp-validation-for="Description" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="PublicationDate" class="form-label fw-semibold">Дата на Публикация</label>
-                    <input asp-for="PublicationDate" type="date" class="form-control shadow-sm" />
-                    <span asp-validation-for="PublicationDate" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Category" class="form-label fw-semibold">Категория</label>
-                    <input asp-for="Category" class="form-control shadow-sm" />
-                    <span asp-validation-for="Category" class="text-danger small"></span>
-                </div>
-
-                <div class="d-flex justify-content-between bg-light p-3 rounded-bottom-4">
-
-                    <a asp-action="Index" class="btn btn-secondary btn-sm px-4">Обратно към списъка</a>
-                    <button type="submit" class="btn btn-primary btn-sm px-4">Запази</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

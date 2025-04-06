@@ -81,6 +81,8 @@ namespace PA_Website.Controllers
             return View(user);
         }
 
+
+
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -125,6 +127,7 @@ namespace PA_Website.Controllers
 
             return View(user);
         }
+
 
 
         [Authorize(Roles = "Admin")]

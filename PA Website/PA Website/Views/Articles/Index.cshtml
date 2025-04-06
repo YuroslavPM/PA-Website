@@ -9,43 +9,270 @@
     ViewData["Title"] = "Articles";
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
+    Layout = "_Layout";
 }
 
-<div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-4 text-center text-indigo-600">Статии</h1>
+@section Styles {
+    <style>
+        .articles-page {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem 0;
+        }
 
-    @if (isAdmin)
-    {
-        <div class="text-right mb-4">
-            <a asp-action="Create" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Създай Нова Статия</a>
-        </div>
-    }
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+            font-size: 2rem;
+        }
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach (var item in Model.OrderByDescending(prop=> prop.PublicationDate))
+            .page-title:after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 3px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 2px;
+            }
+
+        .article-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+            .article-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            }
+
+            .article-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            }
+
+            .article-card .card-body {
+                padding: 1.25rem;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .article-card .card-title {
+                font-family: 'Playfair Display', serif;
+                color: #4a0e78;
+                font-size: 1.25rem;
+                margin-bottom: 0.5rem;
+                line-height: 1.4;
+            }
+
+            .article-card .meta-info {
+                font-size: 0.8rem;
+                color: #6a3093;
+                margin-bottom: 0.75rem;
+                display: flex;
+                align-items: center;
+            }
+
+            .article-card .card-text {
+                font-size: 0.85rem;
+                color: #555;
+                flex: 1;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 4;
+                -webkit-box-orient: vertical;
+                line-height: 1.5;
+                margin-bottom: 0.75rem;
+            }
+
+            .article-card .card-footer {
+                background: rgba(106, 48, 147, 0.03);
+                border-top: 1px solid rgba(106, 48, 147, 0.1);
+                padding: 0.75rem 1.25rem;
+            }
+
+        .btn-article {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            min-width: 100px;
+            text-align: center;
+        }
+
+            .btn-article:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.2);
+                color: white;
+            }
+
+        .btn-article-outline {
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            min-width: 100px;
+            text-align: center;
+        }
+
+            .btn-article-outline:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+            }
+
+        .category-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.95);
+            color: #4a0e78;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-sm {
+            min-width: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .card-footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .no-articles {
+            text-align: center;
+            padding: 3rem 0;
+            color: #6a3093;
+        }
+
+            .no-articles i {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+                color: #c3cfe2;
+            }
+
+            .no-articles h3 {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+        @@media (max-width: 768px) {
+            .article-card {
+                height: auto;
+                min-height: 320px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+}
+
+<div class="articles-page">
+    <div class="container">
+        <h1 class="page-title text-center">Статии</h1>
+
+        @if (isAdmin)
         {
-            <div class="bg-white shadow-md rounded-lg p-4 hover:shadow-xl transition">
-                <h2 class="text-xl font-semibold text-gray-800">@item.Title</h2>
-                <p class="text-gray-600">Категория: @item.Category</p>
-                <p class="text-sm text-gray-500">Публикувано на: @item.PublicationDate.ToShortDateString()</p>
-                <div class="mt-3 flex justify-between items-center">
-                    <a asp-action="Details" asp-route-id="@item.Id" class="text-blue-500 hover:underline">Детайли</a>
-                    @if (isAdmin)
-                    {
-                        <div class="space-x-2">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="px-2 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500">Редактирай</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">Изтрий</a>
+            <div class="text-center mb-4">
+                <a asp-action="Create" class="btn btn-article">
+                    <i class="fas fa-plus me-1"></i>Нова статия
+                </a>
+            </div>
+        }
+
+        @if (Model.Any())
+        {
+            <div class="row">
+                @foreach (var item in Model.OrderByDescending(prop => prop.PublicationDate))
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="article-card">
+                            <div class="category-badge">@item.Category</div>
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Title</h5>
+                                <div class="meta-info">
+                                    <i class="far fa-calendar-alt me-1"></i>
+                                    <span>@item.PublicationDate.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                <p class="card-text">
+                                    @(item.Description.Length > 480 ? item.Description.Substring(0, 480) + "..." : item.Description)
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-footer-content">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-article-outline">
+                                        <i class="fas fa-book-open me-1"></i>Прочети
+                                    </a>
+                                    @if (isAdmin)
+                                    {
+                                        <div class="action-buttons">
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                    }
-                </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="no-articles">
+                <i class="fas fa-book-open"></i>
+                <h3>Все още няма публикувани статии</h3>
+                <p>Очаквайте скоро нови материали</p>
+                @if (isAdmin)
+                {
+                    <a asp-action="Create" class="btn btn-article mt-3">
+                        <i class="fas fa-plus me-1"></i>Създай първата статия
+                    </a>
+                }
             </div>
         }
     </div>
 </div>
-
-<style>
-    body {
-        background-color: #f9fafb;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-</style>
