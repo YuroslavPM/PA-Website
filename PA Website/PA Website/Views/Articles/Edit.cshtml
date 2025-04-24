@@ -170,10 +170,19 @@
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
                         </div>
+                        <div class="mb-4">
+                            <label asp-for="ImageFile" class="form-label">Снимка на статията</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-image"></i></span>
+                                <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
+                            </div>
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                            <small class="text-muted">Препоръчителен размер: 1200x630 пиксела</small>
+                        </div>
 
                         <div class="mb-4">
                             <label asp-for="Description" class="form-label">Съдържание</label>
-                            <textarea asp-for="Description" class="form-control" rows="10" placeholder="Въведете пълното съдържание на статията"></textarea>
+                            <textarea asp-for="Description" class="form-control" id="editor" rows="10" placeholder="Въведете пълното съдържание"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                     </form>
@@ -193,7 +202,25 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: [
+                    'undo', 'redo', '|',
+                    'bold', 'italic', 'underline', '|',
+                    'bulletedList', 'numberedList', '|',
+                    'alignment', 'blockQuote', '|',
+                    'link', 'insertTable', '|',
+                    'removeFormat'
+                ],
+                language: 'bg'
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+

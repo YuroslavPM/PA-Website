@@ -21,5 +21,9 @@ namespace PA_Website.Models
         [Required]
         [StringLength(30)]
         public string Category { get; set; }
+        public string? ImagePath { get; set; }      
+
+        [NotMapped] 
+        public IFormFile? ImageFile { get; set; }
     }
 }

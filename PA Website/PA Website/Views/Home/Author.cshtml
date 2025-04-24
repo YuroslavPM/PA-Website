@@ -1,0 +1,225 @@
+﻿@{
+    ViewData["Title"] = "За автора";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .author-page {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 3rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .author-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .author-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
+        }
+
+            .author-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            }
+
+        .author-header {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .author-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+            .author-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+                border-radius: 2px;
+            }
+
+        .author-subtitle {
+            color: #6a3093;
+            font-size: 1.1rem;
+        }
+
+        .author-content {
+            padding: 2rem;
+        }
+
+        .author-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(106, 48, 147, 0.1);
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        .author-bio {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        .author-details {
+            background: rgba(106, 48, 147, 0.03);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .detail-icon {
+            color: #6a3093;
+            font-size: 1.2rem;
+            width: 30px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+            .section-title:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 50px;
+                height: 3px;
+                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            }
+
+        .btn-contact {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+
+            .btn-contact:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.2);
+                color: white;
+            }
+
+        @@media (max-width: 768px) {
+            .author-header {
+                padding: 1.5rem;
+            }
+
+            .author-content {
+                padding: 1.5rem;
+            }
+
+            .author-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+}
+
+<div class="author-page">
+    <div class="author-container">
+        <div class="author-card">
+            <div class="author-header">
+                <h1 class="author-title">За автора</h1>
+                <p class="author-subtitle">Психолог и астролог с повече от 10 години опит</p>
+            </div>
+
+            <div class="author-content">
+                <img src="/images/author-avatar.jpg" alt="Автор" class="author-avatar" onerror="this.src='https://via.placeholder.com/150'">
+
+                <div class="author-bio">
+                    <p>Здравейте, аз съм Мария Иванова и съм професионален психолог и астролог. С повече от десет години опит в областта на душевното здраве и астрологичните изследвания, моята мисия е да помагам на хората да открият баланс и хармония в живота си.</p>
+
+                    <p>Специализирана съм в когнитивно-поведенческата терапия и психосоматиката, а астрологичните ми анализи се основават на традиционни техники комбинирани със съвременни интерпретации.</p>
+                </div>
+
+                <div class="author-details">
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <div>
+                            <strong>Образование:</strong> Психология в Софийски университет "Св. Климент Охридски"
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-award"></i></div>
+                        <div>
+                            <strong>Сертификати:</strong> Когнитивно-поведенческа терапия, Астропсихология
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-star"></i></div>
+                        <div>
+                            <strong>Специализации:</strong> Психосоматика, Семейни отношения, Кармична астрология
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-book"></i></div>
+                        <div>
+                            <strong>Публикации:</strong> Над 50 статии и 2 книги
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Моята философия</h3>
+                <p class="author-bio">
+                    Вярвам, че всеки човек носи в себе си отговорите, от които се нуждае. Моята роля е да ви насоча и да ви дам инструментите, с които да откриете своя път. Комбинирам научни психологични подходи с древната мъдрост на астрологията, за да предложа уникален и целостен подход.
+                </p>
+
+                <h3 class="section-title">Контакти</h3>
+                <p>Ако искате да се свържете с мен за консултация или имате въпроси, можете да използвате формата за контакт или да ми пишете директно:</p>
+
+                <a href="/Contact" class="btn-contact">
+                    <i class="fas fa-envelope me-1"></i> Свържете се с мен
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

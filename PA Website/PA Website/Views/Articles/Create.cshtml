@@ -144,7 +144,7 @@
                 <h1 class="create-article-title">Създай Нова Статия</h1>
             </div>
 
-            <form asp-action="Create" class="create-article-body">
+            <form asp-action="Create" class="create-article-body" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
                 <div class="mb-4">
@@ -169,7 +169,8 @@
                     <label asp-for="Description" class="form-label">Съдържание</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
-                        <textarea asp-for="Description" class="form-control" rows="8" placeholder="Въведете пълното съдържание"></textarea>
+                        <textarea asp-for="Description" class="form-control" id="editor" rows="8" placeholder="Въведете пълното съдържание"></textarea>
+
                     </div>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
@@ -186,6 +187,16 @@
                         </select>
                     </div>
                     <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ImageFile" class="form-label">Снимка на статията</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-image"></i></span>
+                        <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
+                    </div>
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                    <small class="text-muted">Препоръчителен размер: 1200x630 пиксела</small>
                 </div>
 
                 <input type="hidden" asp-for="CreatorId" value="@currentUser?.Id" />
@@ -205,7 +216,25 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: [
+                    'undo', 'redo', '|',
+                    'bold', 'italic', 'underline', '|',
+                    'bulletedList', 'numberedList', '|',
+                    'alignment', 'blockQuote', '|',
+                    'link', 'insertTable', '|',
+                    'removeFormat'
+                ],
+                language: 'bg'
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+

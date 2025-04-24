@@ -12,162 +12,234 @@
 @section Styles {
     <style>
         .reservation-details-container {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        padding: 3rem 0;
-        min-height: calc(100vh - 80px);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem 0;
+            min-height: calc(100vh - 80px);
         }
 
         .reservation-details-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-        overflow: hidden;
-        position: relative;
-        background: white;
-        max-width: 800px;
-        margin: 0 auto;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
+            background: white;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .reservation-details-card:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 5px;
-        background: linear-gradient(90deg, #007bff, #00bfff);
-        }
+            .reservation-details-card:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #007bff, #00bfff);
+            }
 
         .reservation-details-header {
-        padding: 2rem 2rem 1rem;
-        background: white;
+            padding: 2rem 2rem 1rem;
+            background: white;
         }
 
         .reservation-details-title {
-        font-family: 'Playfair Display', serif;
-        color: #007bff;
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        text-align: center;
-        position: relative;
+            font-family: 'Playfair Display', serif;
+            color: #007bff;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
         }
 
-        .reservation-details-title:after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(90deg, #007bff, #00bfff);
-        border-radius: 2px;
-        }
+            .reservation-details-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(90deg, #007bff, #00bfff);
+                border-radius: 2px;
+            }
 
         .reservation-details-body {
-        padding: 2rem;
+            padding: 2rem;
         }
 
         .details-list {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
         }
 
         .details-item {
-        margin-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .details-label {
-        font-weight: 600;
-        color: #007bff;
-        margin-bottom: 0.5rem;
-        display: block;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
         .details-value {
-        padding: 10px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        border-left: 3px solid #007bff;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #007bff;
         }
 
         .status-badge {
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
         }
 
         .status-active {
-        background-color: rgba(40, 167, 69, 0.1);
-        color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
         }
 
         .status-expired {
-        background-color: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
         }
 
         .action-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 2rem;
-        flex-wrap: wrap;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
         }
 
         .btn-user {
-        background: linear-gradient(135deg, #007bff, #00bfff);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 8px 20px;
-        font-size: 0.9rem;
-        transition: all 0.3s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
+            background: linear-gradient(135deg, #007bff, #00bfff);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
         }
 
-        .btn-user:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-        color: white;
-        }
+            .btn-user:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+                color: white;
+            }
 
         .btn-outline-user {
-        border: 1px solid #007bff;
-        color: #007bff;
-        border-radius: 25px;
-        padding: 8px 20px;
-        font-size: 0.9rem;
-        transition: all 0.3s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
+            border: 1px solid #007bff;
+            color: #007bff;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
         }
 
-        .btn-outline-user:hover {
-        background: linear-gradient(135deg, #007bff, #00bfff);
-        color: white;
+            .btn-outline-user:hover {
+                background: linear-gradient(135deg, #007bff, #00bfff);
+                color: white;
+            }
+
+        /* Astro card download section */
+        .astro-card-section {
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+            padding-top: 2rem;
+        }
+
+        .astro-card-header {
+            font-family: 'Playfair Display', serif;
+            color: #007bff;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .file-info-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #6a3093;
+        }
+
+        .file-info-grid {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 0.75rem 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-info-label {
+            font-weight: 600;
+            color: #6a3093;
+        }
+
+        /* Admin upload form */
+        .upload-form {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px dashed #6a3093;
+        }
+
+        .form-control-file {
+            margin-bottom: 1rem;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-confirmed {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-completed {
+            background-color: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .status-cancelled {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
         }
 
         @@media (max-width: 768px) {
-        .details-list {
-        grid-template-columns: 1fr;
-        }
+            .details-list {
+                grid-template-columns: 1fr;
+            }
 
-        .reservation-details-title {
-        font-size: 1.8rem;
-        }
+            .reservation-details-title {
+                font-size: 1.8rem;
+            }
 
-        .reservation-details-header,
-        .reservation-details-body {
-        padding: 1.5rem;
-        }
+            .reservation-details-header,
+            .reservation-details-body {
+                padding: 1.5rem;
+            }
+
+            .file-info-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 }
@@ -181,79 +253,169 @@
             </div>
 
             <div class="reservation-details-body">
-                @* <div class="details-list">
+                <div class="details-list">
                     <div class="details-item">
-                        <span class="details-label">@Html.DisplayNameFor(model => model.Id)</span>
-                        <div class="details-value">@Html.DisplayFor(model => model.Id)</div>
-                    </div> *@
-
-                <div class="details-item">
-                    <span class="details-label">Статус</span>
-                    <div class="details-value">
-                        <span class="status-badge @(Model.ReservationDate >= DateTime.Now ? "status-active" : "status-expired")">
-                            @(Model.ReservationDate >= DateTime.Now ? "Активна" : "Изтекла")
-                        </span>
-                    </div>
-                </div>
-
-                <div class="details-item">
-                    <span class="details-label">Услуга</span>
-                    <div class="details-value">@Html.DisplayFor(model => model.Service.NameService)</div>
-                </div>
-
-                <div class="details-item">
-                    <span class="details-label">Категория</span>
-                    <div class="details-value">@Html.DisplayFor(model => model.Service.CategoryOfService)</div>
-                </div>
-                @if (Model.Service.CategoryOfService.ToLower() == "психология") { 
-                <div class="details-item">
-                    <span class="details-label">Дата на резервация</span>
-                    <div class="details-value">@Model.ReservationDate.ToString("dd.MM.yyyy")</div>
-                </div>
-
-                <div class="details-item">
-                    <span class="details-label">Час на резервация</span>
-                    <div class="details-value">@($"{Model.ReservationTime:hh\\:mm}")</div>
-                </div>
-                }
-                else{
-                    <div class="details-item">
-                        <span class="details-label">Рожденна дата за астрология</span>
+                        <span class="details-label">Статус</span>
                         <div class="details-value">
-                            @(Model.AstrologicalDate.HasValue ? Model.AstrologicalDate.Value.ToString("dd.MM.yyyy") : "—")</div>
+                            @if (isAdmin)
+                            {
+                                <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <select name="newStatus" class="form-select d-inline-block" style="width: auto;"
+                                            onchange="this.form.submit()">
+                                        <option value="Pending" selected="@(Model.Status == "Pending")">Чакаща</option>
+                                        <option value="Confirmed" selected="@(Model.Status == "Confirmed")">Потвърдена</option>
+                                        <option value="Completed" selected="@(Model.Status == "Completed")">Завършена</option>
+                                        <option value="Cancelled" selected="@(Model.Status == "Cancelled")">Отказана</option>
+                                    </select>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="status-badge
+                                @(Model.Status == "Confirmed" ? "status-active" :
+                                Model.Status == "Completed" ? "status-completed" :
+                                Model.Status == "Cancelled" ? "status-expired" : "status-pending")">
+                                        @(Model.Status == "Pending" ? "Чакаща" :
+                                        Model.Status == "Confirmed" ? "Потвърдена" :
+                                        Model.Status == "Completed" ? "Завършена" : "Отказана")
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="details-item">
+                        <span class="details-label">Услуга</span>
+                        <div class="details-value">@Html.DisplayFor(model => model.Service.NameService)</div>
+                    </div>
+
+                    <div class="details-item">
+                        <span class="details-label">Категория</span>
+                        <div class="details-value">@Html.DisplayFor(model => model.Service.CategoryOfService)</div>
+                    </div>
+
+                    @if (Model.Service.CategoryOfService.ToLower() == "психология")
+                    {
+                        <div class="details-item">
+                            <span class="details-label">Дата на резервация</span>
+                            <div class="details-value">@Model.ReservationDate.ToString("dd.MM.yyyy")</div>
+                        </div>
+
+                        <div class="details-item">
+                            <span class="details-label">Час на резервация</span>
+                            <div class="details-value">@($"{Model.ReservationTime:hh\\:mm}")</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="details-item">
+                            <span class="details-label">Рожденна дата за астрология</span>
+                            <div class="details-value">
+                                @(Model.AstrologicalDate.HasValue ? Model.AstrologicalDate.Value.ToString("dd.MM.yyyy") : "—")
+                            </div>
+                        </div>
+                    }
+
+                    <div class="details-item">
+                        <span class="details-label">Потребител</span>
+                        <div class="details-value">@Html.DisplayFor(model => model.User.Email)</div>
+                    </div>
+
+                    <div class="details-item">
+                        <span class="details-label">Описание на услугата</span>
+                        <div class="details-value">@Html.DisplayFor(model => model.Service.Description)</div>
+                    </div>
+                </div>
+
+                @if (Model.Service.CategoryOfService.ToLower() == "астрология")
+                {
+                    <div class="astro-card-section">
+                        <h3 class="astro-card-header">Астрологична карта</h3>
+
+                        @if (!string.IsNullOrEmpty(Model.AstroCardFilePath))
+                        {
+                            <div class="file-info-card">
+                                <div class="file-info-grid">
+                                    <span class="file-info-label">Име на файл:</span>
+                                    <span>@Model.AstroCardFileName</span>
+
+                                    <span class="file-info-label">Качена на:</span>
+                                    <span>@Model.AstroCardUploadDate?.ToString("dd.MM.yyyy HH:mm")</span>
+
+                                    <span class="file-info-label">Размер:</span>
+                                    <span>@((Model.AstroCardFileSize / 1024)?.ToString("N0")) KB</span>
+                                </div>
+
+                                <div class="text-center">
+                                    <a href="@Url.Action("DownloadAstroCard", "UserServices", new { id = Model.Id })"
+                                       class="btn btn-user">
+                                        <i class="fas fa-download me-1"></i> Изтегли карта
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info text-center">
+                                Все още няма качена астрологична карта.
+                            </div>
+                        }
+
+                        @if (isAdmin)
+                        {
+                            <div class="upload-form">
+                                <h4 class="text-center mb-3">@(string.IsNullOrEmpty(Model.AstroCardFilePath) ? "Качи астрологична карта" : "Обнови карта")</h4>
+                                <form asp-action="UploadAstroCard" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <div class="form-group">
+                                        <input type="file" class="form-control-file" name="astroCardFile" accept=".jpg,.jpeg,.png,.pdf" required>
+                                        <small class="form-text text-muted">(JPG, PNG или PDF, DOCX, до 6MB)</small>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-user">
+                                            <i class="fas fa-upload me-1"></i> @(string.IsNullOrEmpty(Model.AstroCardFilePath) ? "Качи" : "Обнови")
+                                        </button>
+
+                                        @if (!string.IsNullOrEmpty(Model.AstroCardFilePath))
+                                        {
+                                            <button type="button" class="btn btn-outline-user ml-2"
+                                                    onclick="if(confirm('Сигурни ли сте, че искате да изтриете астрологичната карта?')) { document.getElementById('deleteForm').submit(); }">
+                                                <i class="fas fa-trash me-1"></i> Изтрий
+                                            </button>
+                                        }
+                                    </div>
+                                </form>
+
+                                @if (!string.IsNullOrEmpty(Model.AstroCardFilePath))
+                                {
+                                    <form id="deleteForm" asp-action="DeleteAstroCard" method="post" style="display: none;">
+                                        <input type="hidden" name="id" value="@Model.Id" />
+                                    </form>
+                                }
+                            </div>
+                        }
                     </div>
                 }
-                <div class="details-item">
-                    <span class="details-label">Потребител</span>
-                    <div class="details-value">@Html.DisplayFor(model => model.User.Email)</div>
-                </div>
 
-                <div class="details-item">
-                    <span class="details-label">Описание на услугата</span>
-                    <div class="details-value">@Html.DisplayFor(model => model.Service.Description)</div>
-                </div>
-            </div>
-
-            @if (isAdmin)
-            {
                 <div class="action-buttons">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-user">
-                        <i class="fas fa-edit me-1"></i> Редактирай
-                    </a>
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-user">
+                            <i class="fas fa-edit me-1"></i> Редактирай
+                        </a>
 
-                    <a asp-action="IndexAdmin" class="btn btn-outline-user">
-                        <i class="fas fa-arrow-left me-1"></i> Назад към списъка
-                    </a>
+                        <a asp-action="IndexAdmin" class="btn btn-outline-user">
+                            <i class="fas fa-arrow-left me-1"></i> Назад към списъка
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" class="btn btn-outline-user">
+                            <i class="fas fa-arrow-left me-1"></i> Назад към списъка
+                        </a>
+                    }
                 </div>
-            }
-            else{
-            <div class="action-buttons">
-                <a asp-action="Index" class="btn btn-outline-user">
-                    <i class="fas fa-arrow-left me-1"></i> Назад към списъка
-                </a>
             </div>
-            }
-        </div>
         </div>
     </div>
 </div>

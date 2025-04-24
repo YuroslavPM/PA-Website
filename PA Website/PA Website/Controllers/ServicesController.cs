@@ -101,7 +101,7 @@ namespace PA_Website.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateReservation(int ServiceId, string reservationDate, string reservationTime, string astrologicalDate)
+        public async Task<IActionResult> CreateReservation(int ServiceId, string reservationDate, string reservationTime, string astrologicalDate, string birthCity)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
             if (user == null)
@@ -116,7 +116,7 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
 
-            if (string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime) && string.IsNullOrEmpty(astrologicalDate))
+            if ((string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime)) && string.IsNullOrEmpty(astrologicalDate))
             {
                 TempData["ErrorMessage"] = "Трябва да изберете дата и час за консултация.";
                 return RedirectToAction("Details", new { id = ServiceId });
@@ -127,7 +127,7 @@ namespace PA_Website.Controllers
             {
                 if (service.CategoryOfService.ToLower() == "астрология")
                 {
-                    reservationDateTime = DateTime.ParseExact(astrologicalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    reservationDateTime = DateTime.ParseExact(astrologicalDate, "yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture);
                 }
                 else
                 {
@@ -148,35 +148,51 @@ namespace PA_Website.Controllers
                     UserId = user.Id,
                     ServiceId = ServiceId,
                     AstrologicalDate = reservationDateTime,
-                    ReservationTime = null
+                    ReservationTime = null,
+                    AstrologicalPlaceOfBirth = birthCity,
+                    Status = "Pending"
                 };
                 _context.userServices.Add(astroReservation);
             }
             else
             {
-                if (reservationDateTime.DayOfWeek == DayOfWeek.Saturday || reservationDateTime.DayOfWeek == DayOfWeek.Sunday)
+                var lastReservationUser = await _context.userServices.
+                    Where(u => u.UserId == user.Id).OrderByDescending(u=> u.ReservationDate)
+                    .FirstOrDefaultAsync();
+                //The client cant reserve more than one consultation in a week
+                if (lastReservationUser != null)
                 {
-                    TempData["ErrorMessage"] = "Не може да резервирате в събота и неделя.";
-                    return RedirectToAction("Details", new { id = ServiceId });
+                    DateTime lastReservationDate = lastReservationUser.ReservationDate;
+
+                    if (reservationDateTime <= lastReservationDate)
+                    {
+                        TempData["ErrorMessage"] = "Не можете да резервирате за дата преди последната ви резервация.";
+                        return RedirectToAction("Details", new { id = ServiceId });
+                    }
+
+                    var currentCulture = CultureInfo.CurrentCulture;
+                    var lastWeekReservation = currentCulture.Calendar.GetWeekOfYear(lastReservationDate, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+                    var newReservationWeek = currentCulture.Calendar.GetWeekOfYear(reservationDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+
+                    if (lastReservationDate.Year == reservationDateTime.Year && lastWeekReservation == newReservationWeek)
+                    {
+                        TempData["ErrorMessage"] = "Не можете да резервирате две консултации в една и съща седмица. Моля, изберете дата за следващата седмица.";
+                        return RedirectToAction("Details", new { id = ServiceId });
+                    }
+
                 }
 
                 TimeSpan selectedTime = TimeSpan.Parse(reservationTime);
 
-                bool existingReservation = await _context.userServices
-                    .AnyAsync(r => r.ServiceId == ServiceId && r.ReservationDate.Date == reservationDateTime.Date && r.ReservationTime == selectedTime);
-
-                if (existingReservation)
-                {
-                    TempData["ErrorMessage"] = "Този час вече е зает. Моля, изберете друг.";
-                    return RedirectToAction("Details", new { id = ServiceId });
-                }
+               
 
                 var reservation = new UserService
                 {
                     UserId = user.Id,
                     ServiceId = ServiceId,
                     ReservationDate = reservationDateTime,
-                    ReservationTime = selectedTime
+                    ReservationTime = selectedTime,
+                    Status = "Pending"
                 };
 
                 _context.userServices.Add(reservation);
@@ -191,28 +207,51 @@ namespace PA_Website.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailableTimes(DateTime date, int serviceId)
         {
-            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            // Определяме допустимите часове според деня
+            List<TimeSpan> allowedTimes = new List<TimeSpan>();
+
+            switch (date.DayOfWeek)
             {
-                return Json(new { success = false, message = "Изберете делничен ден." });
+                case DayOfWeek.Monday:
+                case DayOfWeek.Tuesday:
+                case DayOfWeek.Wednesday:
+                case DayOfWeek.Thursday:
+                case DayOfWeek.Friday:
+                    allowedTimes.Add(new TimeSpan(18, 30, 0));
+                    allowedTimes.Add(new TimeSpan(19, 30, 0));
+                    break;
+                case DayOfWeek.Saturday:
+                    for (int hour = 9; hour <= 16; hour++)
+                    {
+                        allowedTimes.Add(new TimeSpan(hour, 0, 0));
+                    }
+                    break;
+                case DayOfWeek.Sunday:
+                    for (int hour = 9; hour <= 13; hour++)
+                    {
+                        allowedTimes.Add(new TimeSpan(hour, 0, 0));
+                    }
+                    break;
+                default:
+                    return Json(new { success = false, message = "Невалиден ден." });
             }
 
+            // Взимаме вече резервираните часове
             var reservedTimes = await _context.userServices
                 .Where(r => r.ServiceId == serviceId && r.ReservationTime.HasValue && r.ReservationDate.Date == date.Date)
-                .Select(r => r.ReservationTime.Value) // Взимаме стойността на TimeSpan?
+                .Select(r => r.ReservationTime.Value)
                 .ToListAsync();
 
-            var availableTimes = new List<string>();
-            for (int hour = 9; hour <= 17; hour++)
-            {
-                var time = new TimeSpan(hour, 0, 0);
-                if (!reservedTimes.Contains(time))
-                {
-                    availableTimes.Add($"{hour:00}:00");
-                }
-            }
+            // Филтрираме само свободните часове
+            var availableTimes = allowedTimes
+                .Where(time => !reservedTimes.Contains(time))
+                .Select(time => time.ToString(@"hh\:mm"))
+                .ToList();
 
             return Json(new { success = true, availableTimes });
         }
+
+
 
 
 

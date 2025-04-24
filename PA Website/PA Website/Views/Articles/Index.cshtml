@@ -9,6 +9,8 @@
     ViewData["Title"] = "Articles";
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
+    var currentPage = (int)ViewData["CurrentPage"];
+    var totalPages = (int)ViewData["TotalPages"];
     Layout = "_Layout";
 }
 
@@ -53,6 +55,25 @@
             background: white;
             position: relative;
             margin-bottom: 1.5rem;
+        }
+
+        .article-image {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(106, 48, 147, 0.1);
+        }
+
+            .article-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+
+        .article-card:hover .article-image img {
+            transform: scale(1.05);
         }
 
             .article-card:before {
@@ -145,6 +166,71 @@
                 color: white;
             }
 
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 2.5rem 0;
+        }
+
+        .page-info {
+            font-family: 'Playfair Display', serif;
+            color: #4a0e78;
+            font-size: 0.95rem;
+            font-weight: 500;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #4a0e78;
+            color: #4a0e78;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+            .btn-outline:hover {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.15);
+            }
+
+            .btn-outline:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                background: white;
+                color: #4a0e78;
+                transform: none;
+                box-shadow: none;
+            }
+
+            .btn-outline i {
+                font-size: 0.8rem;
+            }
+
+        @@media (max-width: 576px) {
+            .pagination-container {
+                gap: 1rem;
+            }
+
+            .btn-outline {
+                padding: 6px 14px;
+                font-size: 0.85rem;
+            }
+
+            .page-info {
+                min-width: 100px;
+            }
+        }
+
         .category-badge {
             position: absolute;
             top: 12px;
@@ -226,6 +312,12 @@
                 {
                     <div class="col-lg-4 col-md-6">
                         <div class="article-card">
+                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                            {
+                                <div class="article-image" style="height: 200px; overflow: hidden;">
+                                    <img src="@item.ImagePath" alt="@item.Title" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                            }
                             <div class="category-badge">@item.Category</div>
                             <div class="card-body">
                                 <h5 class="card-title">@item.Title</h5>
@@ -258,6 +350,15 @@
                         </div>
                     </div>
                 }
+            </div>
+            <div class="pagination-container">
+                <button id="prevPage" class="btn btn-outline" @(currentPage <= 1 ? "disabled" : "")>
+                    <i class="fas fa-chevron-left me-1"></i> Предишна
+                </button>
+                <span class="page-info">Страница @currentPage от @totalPages</span>
+                <button id="nextPage" class="btn btn-outline" @(currentPage >= totalPages ? "disabled" : "")>
+                    Следваща <i class="fas fa-chevron-right ms-1"></i>
+                </button>
             </div>
         }
         else

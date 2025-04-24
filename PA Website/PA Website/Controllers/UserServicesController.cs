@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace PA_Website.Controllers
         public UserServicesController(ApplicationDbContext context, UserManager<User> userService)
         {
             _context = context;
-            _userManager=userService;
+            _userManager = userService;
         }
 
         // GET: UserServices
@@ -64,13 +65,17 @@ namespace PA_Website.Controllers
             return View(pagedReservations);
         }
 
-        [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> IndexAdmin(string sortOrder, int pageNumber = 1, int pageSize = 12)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> IndexAdmin(string sortOrder, string statusFilter, int pageNumber = 1, int pageSize = 12)
         {
             var reservations = _context.userServices
                 .Include(u => u.Service)
                 .Include(u => u.User)
                 .AsQueryable();
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                reservations = reservations.Where(r => r.Status == statusFilter);
+            }
 
             // Сортиране според избора на потребителя
             reservations = sortOrder switch
@@ -89,6 +94,7 @@ namespace PA_Website.Controllers
             var pagedReservations = await reservations.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
             ViewData["CurrentPage"] = pageNumber;
+            ViewData["StatusFilter"] = statusFilter;
             ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
             ViewData["SortOrder"] = sortOrder;
 
@@ -282,11 +288,11 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
 
-            // Проверка дали текущият потребител е собственик на резервацията
+            // Check if current user is owner or admin
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userService.User.Id != currentUserId && !User.IsInRole("Admin"))
             {
-                return Forbid(); 
+                return Forbid();
             }
 
             return View(userService);
@@ -335,5 +341,165 @@ namespace PA_Website.Controllers
         {
             return _context.userServices.Any(e => e.Id == id);
         }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int id, string newStatus)
+        {
+            var reservation = await _context.userServices.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            // Validate status
+            var validStatuses = new[] { "Pending", "Confirmed", "Completed", "Cancelled" };
+            if (!validStatuses.Contains(newStatus))
+            {
+                TempData["ErrorMessage"] = "Невалиден статус.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            reservation.Status = newStatus;
+            _context.Update(reservation);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Статусът е променен на {newStatus}.";
+            return RedirectToAction("Details", new { id });
+
+        }
+
+
+        //Logic for files
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> UploadAstroCard(int id, IFormFile astroCardFile)
+        {
+            var reservation = await _context.userServices
+                .Include(u => u.Service)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            // Check if the service is astrology
+            if (reservation.Service.CategoryOfService.ToLower() != "астрология")
+            {
+                TempData["ErrorMessage"] = "Може да качвате файлове само за астрологични услуги.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            // Validate file
+            if (astroCardFile == null || astroCardFile.Length == 0)
+            {
+                TempData["ErrorMessage"] = "Моля, изберете файл.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf", ".docx" };
+            var fileExtension = Path.GetExtension(astroCardFile.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                TempData["ErrorMessage"] = "Невалиден файлов формат. Разрешени са само JPG, PNG и PDF.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            if (astroCardFile.Length > 6 * 1024 * 1024) // 6MB limit
+            {
+                TempData["ErrorMessage"] = "Файлът трябва да бъде по-малък от 6MB.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            // Create unique filename
+            var uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "astro-cards");
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            // Ensure directory exists
+            Directory.CreateDirectory(uploadsFolder);
+
+            // Save file
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await astroCardFile.CopyToAsync(fileStream);
+            }
+
+            // Update reservation with file info
+            reservation.AstroCardFileName = astroCardFile.FileName;
+            reservation.AstroCardFilePath = $"/astro-cards/{uniqueFileName}";
+            reservation.AstroCardFileSize = astroCardFile.Length;
+            reservation.AstroCardContentType = astroCardFile.ContentType;
+            reservation.AstroCardUploadDate = DateTime.Now;
+
+            _context.Update(reservation);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Астрологичната карта е качена успешно!";
+            return RedirectToAction("Details", new { id });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> DeleteAstroCard(int id)
+        {
+            var reservation = await _context.userServices.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            if (!string.IsNullOrEmpty(reservation.AstroCardFilePath))
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", reservation.AstroCardFilePath.TrimStart('/'));
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                reservation.AstroCardFileName = null;
+                reservation.AstroCardFilePath = null;
+                reservation.AstroCardFileSize = null;
+                reservation.AstroCardContentType = null;
+                reservation.AstroCardUploadDate = null;
+
+                _context.Update(reservation);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Астрологичната карта е изтрита успешно!";
+            }
+
+            return RedirectToAction("Details", new { id });
+        }
+
+        public async Task<IActionResult> DownloadAstroCard(int id)
+        {
+            var reservation = await _context.userServices.FindAsync(id);
+            if (reservation == null || string.IsNullOrEmpty(reservation.AstroCardFilePath))
+            {
+                return NotFound();
+            }
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", reservation.AstroCardFilePath.TrimStart('/'));
+            if (!System.IO.File.Exists(path))
+            {
+                return NotFound();
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            return File(memory, reservation.AstroCardContentType, reservation.AstroCardFileName);
+        }
+
+
+
     }
-}
+    }

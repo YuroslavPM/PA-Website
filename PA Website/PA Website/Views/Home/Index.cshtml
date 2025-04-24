@@ -1,7 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<PA_Website.Models.Article>
 @{
     ViewData["Title"] = "Начало";
     Layout = "_Layout";
+      
 }
 
 @section Styles {
@@ -21,7 +23,7 @@
 
         /* Hero секция */
         .hero {
-            background: linear-gradient(rgba(74, 14, 120, 0.7), rgba(106, 48, 147, 0.7)), url('/Images/psy.png') no-repeat center center;
+            background: linear-gradient(rgba(74, 14, 120, 0.7), rgba(106, 48, 147, 0.7)), url('../Images/psy.png') no-repeat center center;
             background-size: cover;
             background-attachment: fixed;
             height: 90vh;
@@ -383,6 +385,129 @@
                 height: 200px;
             }
         }
+
+        .articles-section {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .article-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.4s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            height: 100%;
+            margin-bottom: 2rem;
+        }
+
+            .article-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            }
+
+            .article-card img {
+                height: 200px;
+                object-fit: cover;
+                width: 100%;
+            }
+
+            .article-card .card-body {
+                padding: 1.5rem;
+            }
+
+            .article-card .card-title {
+                font-family: 'Playfair Display', serif;
+                color: #4a0e78;
+                margin-bottom: 0.75rem;
+            }
+
+            .article-card .card-text {
+                color: #666;
+                margin-bottom: 1.5rem;
+            }
+
+            .article-card .btn {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                border: none;
+                border-radius: 50px;
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
+
+        /* Стилове за карусела с отзиви */
+        .testimonials-section {
+            padding: 5rem 0;
+            background: rgba(106, 48, 147, 0.05);
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin: 1rem;
+            height: 100%;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: #555;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+            .testimonial-text:before,
+            .testimonial-text:after {
+                content: '"';
+                font-size: 3rem;
+                color: rgba(106, 48, 147, 0.2);
+                position: absolute;
+            }
+
+            .testimonial-text:before {
+                top: -20px;
+                left: -10px;
+            }
+
+            .testimonial-text:after {
+                bottom: -40px;
+                right: -10px;
+            }
+
+        .testimonial-author {
+            margin-top: 2rem;
+            font-weight: 600;
+            color: #4a0e78;
+        }
+
+        .testimonial-role {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            color: #4a0e78;
+        }
+
+        .carousel-indicators button {
+            background-color: #6a3093;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+
+        .testimonial-rating {
+            font-size: 1.2rem;
+            color: #ffc107;
+        }
+
+            .testimonial-rating .text-muted {
+                opacity: 0.5;
+            }
     </style>
 }
 
@@ -435,6 +560,54 @@
                     </p>
                 </div>
             </div>
+        </div>
+    </section>
+    <!-- Секция с последни статии -->
+    <section class="articles-section">
+        <div class="container">
+            <h2 class="section-title playfair text-center">Последни статии</h2>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="row">
+                    @foreach (var article in Model)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="article-card h-100">
+                                <img src="@article.ImagePath"
+                                     class="card-img-top"
+                                     alt="@article.Title">
+                                <div class="card-body">
+                                    <h5 class="card-title">@article.Title</h5>
+                                    @* <p class="card-text">@GetShortDescription(article.Description, 100)</p> *@
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            @article.PublicationDate.ToString("dd.MM.yyyy")
+                                        </small>
+                                        <a href="@Url.Action("Details", "Articles", new { id = article.Id })"
+                                           class="btn btn-sm btn-primary">
+                                            Прочети
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="@Url.Action("Index", "Articles")" class="btn btn-outline-primary">
+                        Виж всички статии <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    Все още няма публикувани статии.
+                </div>
+            }
         </div>
     </section>
 
@@ -507,13 +680,102 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Секция с отзиви -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title playfair text-center">Какво казват нашите клиенти</h2>
+            <div id="testimonialsCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <!-- Отзив 1 -->
+                    <div class="carousel-item active">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-rating mb-3">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            <i class="fas fa-star @(i < 5 ? "text-warning" : "text-muted")"></i>
+                                        }
+                                    </div>
+                                    <p class="testimonial-text">
+                                        Благодаря на Душевна Музайка за невероятната психологическа подкрепа.
+                                    </p>
+                                    <div class="testimonial-author">Мария Иванова</div>
+                                    <div class="testimonial-role">Учител</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Отзив 2 -->
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-rating mb-3">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            <i class="fas fa-star @(i < 4 ? "text-warning" : "text-muted")"></i>
+                                        }
+                                    </div>
+                                    <p class="testimonial-text">
+                                        Хороскопът ми беше изключително точен и полезен.
+                                    </p>
+                                    <div class="testimonial-author">Георги Петров</div>
+                                    <div class="testimonial-role">IT Специалист</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Отзив 3 -->
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-rating mb-3">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            <i class="fas fa-star @(i < 5 ? "text-warning" : "text-muted")"></i>
+                                        }
+                                    </div>
+                                    <p class="testimonial-text">
+                                        Комбинацията от астрология и психология е нещо уникално.
+                                    </p>
+                                    <div class="testimonial-author">Анна Димитрова</div>
+                                    <div class="testimonial-role">Архитект</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Контроли за карусела -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Предишен</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Следващ</span>
+                </button>
+            </div>
+        </div>
+    </section>
 </main>
 
 @section Scripts {
     <script>
-        // Анимация при скрол
         $(document).ready(function() {
-            // Активиране на анимациите при скрол
+            // Initialize carousel
+            var testimonialsCarousel = new bootstrap.Carousel(document.getElementById('testimonialsCarousel'), {
+                interval: 5000, // Change every 5 seconds
+                pause: 'hover' // Pause on hover
+            });
+
+            // Scroll animations
             $(window).scroll(function() {
                 $('.animate').each(function() {
                     var position = $(this).offset().top;
@@ -526,7 +788,7 @@
                 });
             });
 
-            // Гладко скролиране към секциите
+            // Smooth scrolling
             $('a[href^="#"]').on('click', function(event) {
                 var target = $($(this).attr('href'));
                 if (target.length) {
@@ -537,7 +799,7 @@
                 }
             });
 
-            // Генериране на случайни звезди
+            // Generate random stars
             function createStars() {
                 var starsContainer = $('.floating-elements');
                 for (var i = 0; i < 20; i++) {

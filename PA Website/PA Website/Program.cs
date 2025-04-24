@@ -6,6 +6,7 @@ using PA_Website.Data;
 using PA_Website.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using PA_Website.Services;
+using Microsoft.Extensions.FileProviders;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,12 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "astro-cards")),
+    RequestPath = "/astro-cards"
+});
 app.UseRouting();
 
 app.UseAuthentication();

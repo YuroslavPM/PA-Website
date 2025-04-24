@@ -21,9 +21,18 @@ namespace PA_Website.Controllers
         }
 
         
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber=1, int pageSize=12)
         {
-            return View(await _context.Articles.ToListAsync());
+            var articles = _context.Articles
+                .AsQueryable();
+
+
+            int totalRecords = await _context.Articles.CountAsync();
+            var pagedArticles = await articles.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            ViewData["CurrentPage"] = pageNumber;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            return View(pagedArticles);
         }
 
         
@@ -56,12 +65,39 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,Title,CreatorId,PublicationDate,Category,Description")] Article article)
+        public async Task<IActionResult> Create([Bind("Id,Title,CreatorId,PublicationDate,Category,Description,ImageFile")] Article article)
         {
             if (ModelState.IsValid)
             {
+                // Handle image upload first
+                if (article.ImageFile != null && article.ImageFile.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(article.ImageFile.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", fileName);
+
+                    // Ensure directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    // Save file
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await article.ImageFile.CopyToAsync(stream);
+                    }
+
+                    // Store path in database
+                    article.ImagePath = $"/Images/articles/{fileName}";
+                }
+
+                // Set publication date to current time if not set
+                if (article.PublicationDate == default)
+                {
+                    article.PublicationDate = DateTime.Now;
+                }
+
+                // Now save the article with the image path
                 _context.Add(article);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(article);
@@ -89,7 +125,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CreatorId,PublicationDate,Category,Description")] Article article)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CreatorId,PublicationDate,Category,Description,ImageFile")] Article article)
         {
             if (id != article.Id)
             {
@@ -101,7 +137,37 @@ namespace PA_Website.Controllers
                 try
                 {
                     _context.Update(article);
-                    await _context.SaveChangesAsync();
+                    var existingArticle = await _context.Articles.FindAsync(id);
+
+                    if (article.ImageFile != null && article.ImageFile.Length > 0)
+                    {
+                        // Delete old image if exists
+                        if (!string.IsNullOrEmpty(existingArticle.ImagePath))
+                        {
+                            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingArticle.ImagePath.TrimStart('/'));
+                            if (System.IO.File.Exists(oldFilePath))
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                            }
+                        }
+
+                        // Upload new image
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(article.ImageFile.FileName);
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await article.ImageFile.CopyToAsync(stream);
+                        }
+
+                        existingArticle.ImagePath = $"/Images/articles/{fileName}";
+                        existingArticle.Title = article.Title;
+                        existingArticle.Description = article.Description;
+                        existingArticle.Category = article.Category;
+
+                        _context.Update(existingArticle);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -132,6 +198,14 @@ namespace PA_Website.Controllers
             if (article == null)
             {
                 return NotFound();
+            }
+            if (!string.IsNullOrEmpty(article.ImagePath))
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", article.ImagePath.TrimStart('/'));
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
             }
 
             return View(article);

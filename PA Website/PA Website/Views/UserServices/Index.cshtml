@@ -254,10 +254,20 @@
                                         <div class="reservation-meta-label">Категория</div>
                                         <div class="reservation-meta-value">@item.Service.CategoryOfService</div>
                                     </div>
-                                    <div class="reservation-meta-item">
-                                        <div class="reservation-meta-label">Дата на резервация</div>
-                                        <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
-                                    </div>
+                                    @if (item.Service.CategoryOfService.ToLower() == "психология")
+                                    {
+                                        <div class="reservation-meta-item">
+                                            <div class="reservation-meta-label">Дата на резервация</div>
+                                            <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="reservation-meta-item">
+                                            <div class="reservation-meta-label">Дата на раждане за Астрологична услуга</div>
+                                            <div class="reservation-meta-value">@item.AstrologicalDate</div>
+                                        </div>
+                                    }
                                     <div class="reservation-meta-item">
                                         <div class="reservation-meta-label">Статус</div>
                                         <div class="reservation-meta-value">

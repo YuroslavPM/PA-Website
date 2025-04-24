@@ -88,6 +88,10 @@ namespace PA_Website.Areas.Identity.Pages.Account
             [Display(Name = "Birth Date")]
             public string Birth_Date { get; set; }
 
+            [Required]
+            [Display(Name = "Phone Number")]
+            public string Phone_Number { get; set; }
+
             [Display(Name = "Zodiacal Sign")]
             public string Zodiacal_Sign { get; set; }
 

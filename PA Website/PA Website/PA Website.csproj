@@ -33,4 +33,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="8.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Author\" />
+  </ItemGroup>
+
 </Project>

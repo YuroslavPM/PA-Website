@@ -225,6 +225,16 @@
                         <option value="status_asc" selected="@((sortOrder == "status_asc") ? "selected" : null)">Актуални първи</option>
                         <option value="status_desc" selected="@((sortOrder == "status_desc") ? "selected" : null)">Изтекли първи</option>
                     </select>
+                    <div>
+                        <label for="statusFilter" class="form-label">Филтър по статус:</label>
+                        <select id="statusFilter" class="form-select d-inline-block" style="width: auto;">
+                            <option value="">Всички</option>
+                            <option value="Pending" selected="@(ViewData["StatusFilter"]?.ToString() == "Pending")">Чакащи</option>
+                            <option value="Confirmed" selected="@(ViewData["StatusFilter"]?.ToString() == "Confirmed")">Потвърдени</option>
+                            <option value="Completed" selected="@(ViewData["StatusFilter"]?.ToString() == "Completed")">Завършени</option>
+                            <option value="Cancelled" selected="@(ViewData["StatusFilter"]?.ToString() == "Cancelled")">Отказани</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div id="reservationsTable">
@@ -234,8 +244,13 @@
                             <div class="reservation-card-header d-flex justify-content-between align-items-center">
                                 <div>
                                     Резервация #@item.Id
-                                    <span class="status-badge @(item.ReservationDate >= DateTime.Now ? "status-active" : "status-expired") ms-2">
-                                        @(item.ReservationDate >= DateTime.Now ? "Активна" : "Изтекла")
+                                    <span class="status-badge
+                                        @(item.Status == "Confirmed" ? "status-active" :
+                                        item.Status == "Completed" ? "status-completed" :
+                                        item.Status == "Cancelled" ? "status-expired" : "status-pending")">
+                                        @(item.Status == "Pending" ? "Чакаща" :
+                                            item.Status == "Confirmed" ? "Потвърдена" :
+                                            item.Status == "Completed" ? "Завършена" : "Отказана")
                                     </span>
                                 </div>
                                 <div>
@@ -258,10 +273,18 @@
                                         <div class="reservation-meta-label">Категория</div>
                                         <div class="reservation-meta-value">@item.Service.CategoryOfService</div>
                                     </div>
+                                    @if(item.Service.CategoryOfService.ToLower() == "психология"){
                                     <div class="reservation-meta-item">
                                         <div class="reservation-meta-label">Дата на резервация</div>
                                         <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
                                     </div>
+                                    }
+                                    else{
+                                        <div class="reservation-meta-item">
+                                            <div class="reservation-meta-label">Дата на раждане за Астрологична услуга</div>
+                                            <div class="reservation-meta-value">@item.AstrologicalDate</div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -326,6 +349,13 @@
                     loadReservations(currentPage + 1, $('#sortDropdown').val());
                 }
             });
+            
+            $('#statusFilter').change(function() {
+            var status = $(this).val();
+            window.location.href = '@Url.Action("IndexAdmin")' +
+                '?statusFilter=' + status +
+                '&sortOrder=@ViewData["SortOrder"]';
+        });
         });
     </script>
 }
