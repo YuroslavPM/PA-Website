@@ -287,6 +287,9 @@ namespace PA_Website.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
 

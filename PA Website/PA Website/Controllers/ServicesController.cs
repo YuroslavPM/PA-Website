@@ -71,7 +71,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,NameService,CategoryOfService,ReservationDate,Description")] Service service)
+        public async Task<IActionResult> Create([Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price")] Service service)
         {
             if (ModelState.IsValid)
             {
@@ -261,7 +261,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,NameService,CategoryOfService,ReservationDate,Description")] Service service)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,NameService,CategoryOfService,ReservationDate,Description, Price")] Service service)
         {
             if (id != service.Id)
             {

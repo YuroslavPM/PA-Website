@@ -21,7 +21,7 @@ namespace PA_Website.Controllers
         }
 
         
-        public async Task<IActionResult> Index(int pageNumber=1, int pageSize=12)
+        public async Task<IActionResult> Index(int pageNumber=1, int pageSize=9)
         {
             var articles = _context.Articles
                 .AsQueryable();

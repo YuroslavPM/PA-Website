@@ -166,7 +166,20 @@
                     </div>
                     <span asp-validation-for="CategoryOfService" class="text-danger"></span>
                 </div>
-
+                <div class="mb-4">
+                    <label asp-for="Price" class="form-label">Цена (лв.)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="fas fa-money-bill-alt text-warning me-1"></i>
+                        </span>
+                        <input asp-for="Price"
+                               class="form-control"
+                               type="number"
+                               step="0.01"
+                               min="0" />
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger small"></span>
+                </div>
                 <div class="mb-4">
                     <label asp-for="ReservationDate" class="form-label">Дата за резервация</label>
                     <div class="input-group">

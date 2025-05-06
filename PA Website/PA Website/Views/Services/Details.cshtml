@@ -70,15 +70,59 @@
             padding: 0 2rem 2rem;
         }
 
-        .service-detail-dl dt {
-            font-weight: 600;
-            color: #4a0e78;
-            width: 200px;
+        .service-detail-dl {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1rem;
+            align-items: center;
         }
 
-        .service-detail-dl dd {
-            margin-left: 220px;
-            color: #333;
+            .service-detail-dl dt {
+                font-weight: 600;
+                color: #4a0e78;
+                margin: 0;
+                padding: 0.5rem 0;
+            }
+
+            .service-detail-dl dd {
+                margin: 0;
+                padding: 0.5rem 0;
+                color: #333;
+            }
+
+        /* Стилове за ценовия блок */
+        .service-meta {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .price-badge, .date-badge {
+            background: rgba(106, 48, 147, 0.1);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid rgba(106, 48, 147, 0.2);
+        }
+
+        .price-badge {
+            color: #4a0e78;
+        }
+
+        .date-badge {
+            color: #6a3093;
+        }
+
+        .text-purple {
+            color: #4a0e78 !important;
+        }
+
+        /* Адаптивни корекции */
+        @@media (max-width: 576px) {
+            .service-meta {
+                flex-direction: column;
+                gap: 8px !important;
+            }
         }
 
         .reservation-section {
@@ -155,15 +199,14 @@
         }
 
         @@media (max-width: 768px) {
-            .service-detail-dl dt {
-                width: 100%;
-                margin-bottom: 0.5rem;
+            .service-detail-dl {
+                grid-template-columns: 1fr;
             }
 
-            .service-detail-dl dd {
-                margin-left: 0;
-                margin-bottom: 1rem;
-            }
+                .service-detail-dl dt,
+                .service-detail-dl dd {
+                    padding: 0.3rem 0;
+                }
 
             .service-detail-title {
                 font-size: 1.8rem;
@@ -213,6 +256,9 @@
 
                     <dt>Категория:</dt>
                     <dd>@Html.DisplayFor(model => model.CategoryOfService)</dd>
+
+                    <dt>Цена:</dt>
+                    <dd>@Html.DisplayFor(model => model.Price) лв.</dd>
 
                     <dt>Описание:</dt>
                     <dd>@Html.DisplayFor(model => model.Description)</dd>

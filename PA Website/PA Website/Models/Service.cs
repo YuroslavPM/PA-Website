@@ -11,6 +11,8 @@ namespace PA_Website.Models
         [Required]
         public string CategoryOfService { get; set; }
 
+        public decimal Price { get; set; }
+
         
         public DateTime ReservationDate { get; set; }
 

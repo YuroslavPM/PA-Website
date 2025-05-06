@@ -171,6 +171,63 @@
             font-family: 'Playfair Display', serif;
         }
 
+        /* Price and date styles */
+        .service-meta {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+        }
+
+        .price-badge, .date-badge {
+            background: rgba(106, 48, 147, 0.1);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid rgba(106, 48, 147, 0.2);
+        }
+
+        .price-badge {
+            color: #4a0e78;
+        }
+
+        .date-badge {
+            color: #6a3093;
+            margin-left: 8px;
+        }
+
+        .text-purple {
+            color: #4a0e78 !important;
+        }
+
+        /* Promo badge */
+        .promo-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 2;
+            animation: pulse 2s infinite;
+            background: #ff4757;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
         @@media (max-width: 768px) {
             .page-title {
                 font-size: 2rem;
@@ -182,6 +239,22 @@
 
             .action-buttons {
                 justify-content: center;
+            }
+
+            .price-badge, .date-badge {
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .service-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .date-badge {
+                margin-left: 0;
             }
         }
     </style>
@@ -208,11 +281,35 @@
                     {
                         <div class="col-lg-4 col-md-6">
                             <div class="service-card">
+                                @if (item.Price < 50) // Example promo logic
+                                {
+                                    <div class="promo-badge">
+                                        <i class="fas fa-bolt me-1"></i> Промоция
+                                    </div>
+                                }
+
                                 <div class="service-card-body">
                                     <h5 class="service-card-title">@item.NameService</h5>
                                     <h6 class="service-card-category">@item.CategoryOfService</h6>
+
+                                    <div class="service-meta d-flex flex-wrap align-items-center">
+                                        <div class="price-badge">
+                                            <i class="fas fa-money-bill-alt text-warning me-1"></i>
+                                            <span class="fw-bold">@item.Price.ToString("0.00") лв.</span>
+                                        </div>
+
+                                        @if (item.ReservationDate > DateTime.Now)
+                                        {
+                                            <div class="date-badge">
+                                                <i class="far fa-calendar-alt text-purple me-1"></i>
+                                                <span>@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</span>
+                                            </div>
+                                        }
+                                    </div>
+
                                     <p class="service-card-text">@item.Description</p>
                                 </div>
+
                                 <div class="service-card-footer">
                                     <div class="action-buttons">
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-service-outline btn-sm">
