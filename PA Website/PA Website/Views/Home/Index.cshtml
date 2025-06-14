@@ -23,11 +23,11 @@
 
         /* Hero секция */
         .hero {
-            background: linear-gradient(rgba(74, 14, 120, 0.7), rgba(106, 48, 147, 0.7)), url('../Images/psy.png') no-repeat center center;
+            background: linear-gradient(rgba(74, 14, 120, 0.85), rgba(106, 48, 147, 0.85)), url('../Images/psy.png') no-repeat center center;
             background-size: cover;
             background-attachment: fixed;
-            height: 90vh;
-            min-height: 650px;
+            height: 100vh;
+            min-height: 700px;
             position: relative;
             color: white;
             display: flex;
@@ -35,39 +35,45 @@
             text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
             margin-top: -80px;
             padding-top: 80px;
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-            animation: fadeInUp 1s ease-out;
+            animation: fadeInUp 1.2s ease-out;
         }
 
         .hero-title {
-            font-size: 3.8rem;
+            font-size: 4.2rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             line-height: 1.2;
             animation: textFadeIn 1.5s ease-out;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
         }
 
         .hero-subtitle {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             margin-bottom: 2.5rem;
-            opacity: 0.9;
+            opacity: 0.95;
             animation: textFadeIn 1.8s ease-out;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
 
         /* Бутон с ефекти */
         .hero-btn {
             background: linear-gradient(135deg, #6a3093 0%, #4a0e78 100%);
             border: none;
-            padding: 15px 35px;
-            font-size: 1.2rem;
+            padding: 18px 40px;
+            font-size: 1.3rem;
             border-radius: 50px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
             color: white;
             position: relative;
             overflow: hidden;
@@ -75,7 +81,7 @@
             display: inline-flex;
             align-items: center;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             font-weight: 500;
         }
 
@@ -93,8 +99,8 @@
             }
 
             .hero-btn:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             }
 
                 .hero-btn:hover:before {
@@ -103,16 +109,17 @@
 
             .hero-btn:active {
                 transform: translateY(-2px);
-                box-shadow: 0 7px 25px rgba(0,0,0,0.4);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             }
 
             .hero-btn i {
-                margin-right: 10px;
+                margin-right: 12px;
                 transition: transform 0.3s ease;
+                font-size: 1.2rem;
             }
 
             .hero-btn:hover i {
-                transform: translateY(-3px);
+                transform: translateY(-3px) rotate(360deg);
             }
 
         /* Floating елементи */
@@ -128,131 +135,157 @@
 
         .star {
             position: absolute;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.9);
             border-radius: 50%;
             animation: float 7s infinite linear;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
         /* Секции */
         .section {
-            padding: 7rem 0;
+            padding: 8rem 0;
             position: relative;
         }
 
         .section-title {
-            font-size: 2.8rem;
-            margin-bottom: 3.5rem;
+            font-size: 3.2rem;
+            margin-bottom: 4rem;
             position: relative;
             display: inline-block;
+            color: #4a0e78;
         }
 
             .section-title:after {
                 content: '';
                 position: absolute;
-                bottom: -15px;
+                bottom: -20px;
                 left: 50%;
                 transform: translateX(-50%);
-                width: 100px;
-                height: 5px;
+                width: 120px;
+                height: 6px;
                 background: linear-gradient(90deg, #4a0e78, #6a3093);
                 border-radius: 3px;
             }
 
         .bg-purple-light {
-            background-color: rgba(106, 48, 147, 0.05);
+            background: linear-gradient(135deg, rgba(106, 48, 147, 0.08) 0%, rgba(74, 14, 120, 0.08) 100%);
         }
 
         /* Картички */
         .service-card {
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
             overflow: hidden;
-            transition: all 0.4s;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            transition: all 0.5s;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
             height: 100%;
             background: white;
+            position: relative;
         }
 
             .service-card:hover {
-                transform: translateY(-12px);
-                box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+                transform: translateY(-15px) scale(1.02);
+                box-shadow: 0 25px 60px rgba(0,0,0,0.25);
             }
 
             .service-card img {
-                height: 280px;
+                height: 320px;
                 object-fit: cover;
-                transition: transform 0.7s;
+                transition: transform 0.8s;
             }
 
             .service-card:hover img {
-                transform: scale(1.08);
+                transform: scale(1.1);
             }
 
             .service-card .card-body {
-                padding: 2.5rem;
+                padding: 3rem;
             }
 
             .service-card .card-title {
-                font-size: 1.7rem;
-                margin-bottom: 1.2rem;
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
                 color: #4a0e78;
+                font-weight: 600;
+            }
+
+            .service-card .card-text {
+                font-size: 1.1rem;
+                line-height: 1.8;
+                color: #666;
             }
 
             .service-card .btn {
                 background: linear-gradient(135deg, #4a0e78, #6a3093);
                 border: none;
                 border-radius: 50px;
-                padding: 10px 30px;
+                padding: 12px 35px;
                 font-weight: 500;
-                letter-spacing: 0.5px;
-                transition: all 0.3s;
+                letter-spacing: 1px;
+                transition: all 0.4s;
+                font-size: 1.1rem;
             }
 
                 .service-card .btn:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 25px rgba(74, 14, 120, 0.4);
                 }
 
         /* Автор секция */
         .author-section {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 6rem 0;
+            padding: 8rem 0;
             position: relative;
+            overflow: hidden;
+        }
+
+        .author-section:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236a3093' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
         }
 
         .author-image {
-            width: 320px;
-            height: 320px;
+            width: 380px;
+            height: 380px;
             border-radius: 50%;
             object-fit: cover;
-            border: 10px solid white;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            transition: all 0.5s;
+            border: 15px solid white;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            transition: all 0.6s;
+            position: relative;
+            z-index: 2;
         }
 
             .author-image:hover {
-                transform: scale(1.08);
-                box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+                transform: scale(1.08) rotate(5deg);
+                box-shadow: 0 30px 70px rgba(0,0,0,0.3);
             }
 
         .author-quote {
             font-style: italic;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             color: #4a0e78;
             position: relative;
-            padding: 2rem;
+            padding: 2.5rem;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            line-height: 1.6;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            line-height: 1.8;
+            margin-top: 2rem;
         }
 
             .author-quote:before {
                 content: '"';
-                font-size: 5rem;
+                font-size: 6rem;
                 position: absolute;
-                top: -20px;
-                left: 15px;
+                top: -30px;
+                left: 20px;
                 color: rgba(106, 48, 147, 0.1);
                 font-family: serif;
                 line-height: 1;
@@ -262,7 +295,7 @@
         @@keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(40px);
+                transform: translateY(60px);
             }
 
             to {
@@ -274,7 +307,7 @@
         @@keyframes textFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
 
             to {
@@ -305,37 +338,217 @@
 
         .animate {
             opacity: 0;
-            animation: fadeInUp 1s ease-out forwards;
+            animation: fadeInUp 1.2s ease-out forwards;
         }
 
         .delay-1 {
-            animation-delay: 0.3s;
+            animation-delay: 0.4s;
         }
 
         .delay-2 {
-            animation-delay: 0.6s;
+            animation-delay: 0.8s;
         }
 
+        /* Статии секция */
+        .articles-section {
+            padding: 8rem 0;
+            background: white;
+            position: relative;
+        }
+
+        .article-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.5s;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            height: 100%;
+            margin-bottom: 2rem;
+            background: white;
+        }
+
+            .article-card:hover {
+                transform: translateY(-12px);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            }
+
+            .article-card img {
+                height: 250px;
+                object-fit: cover;
+                width: 100%;
+                transition: transform 0.7s;
+            }
+
+            .article-card:hover img {
+                transform: scale(1.1);
+            }
+
+            .article-card .card-body {
+                padding: 2rem;
+            }
+
+            .article-card .card-title {
+                font-family: 'Playfair Display', serif;
+                color: #4a0e78;
+                margin-bottom: 1rem;
+                font-size: 1.5rem;
+                font-weight: 600;
+            }
+
+            .article-card .card-text {
+                color: #666;
+                margin-bottom: 1.5rem;
+                line-height: 1.7;
+            }
+
+            .article-card .btn {
+                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                border: none;
+                border-radius: 50px;
+                padding: 10px 25px;
+                font-size: 1rem;
+                transition: all 0.3s;
+            }
+
+                .article-card .btn:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                }
+
+        /* Отзиви секция */
+        .testimonials-section {
+            padding: 8rem 0;
+            background: linear-gradient(135deg, rgba(106, 48, 147, 0.08) 0%, rgba(74, 14, 120, 0.08) 100%);
+            position: relative;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            margin: 1rem;
+            height: 100%;
+            transition: all 0.4s;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: #555;
+            position: relative;
+            padding: 0 1.5rem;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+            .testimonial-text:before,
+            .testimonial-text:after {
+                content: '"';
+                font-size: 4rem;
+                color: rgba(106, 48, 147, 0.2);
+                position: absolute;
+            }
+
+            .testimonial-text:before {
+                top: -30px;
+                left: -15px;
+            }
+
+            .testimonial-text:after {
+                bottom: -50px;
+                right: -15px;
+            }
+
+        .testimonial-author {
+            margin-top: 2.5rem;
+            font-weight: 600;
+            color: #4a0e78;
+            font-size: 1.2rem;
+        }
+
+        .testimonial-role {
+            color: #777;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            color: #4a0e78;
+            opacity: 0.8;
+            transition: all 0.3s;
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .carousel-indicators button {
+            background-color: #6a3093;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 8px;
+            transition: all 0.3s;
+        }
+
+        .carousel-indicators button.active {
+            transform: scale(1.3);
+        }
+
+        .testimonial-rating {
+            font-size: 1.4rem;
+            color: #ffc107;
+            margin-bottom: 1.5rem;
+        }
+
+            .testimonial-rating .text-muted {
+                opacity: 0.5;
+            }
+
         /* Responsive */
+        @@media (max-width: 1200px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            
+            .section-title {
+                font-size: 2.8rem;
+            }
+        }
+
         @@media (max-width: 992px) {
             .hero-title {
                 font-size: 3rem;
             }
 
             .hero-subtitle {
-                font-size: 1.4rem;
+                font-size: 1.5rem;
             }
 
             .section {
-                padding: 5rem 0;
+                padding: 6rem 0;
+            }
+
+            .author-image {
+                width: 300px;
+                height: 300px;
             }
         }
 
         @@media (max-width: 768px) {
             .hero {
-                height: 80vh;
+                height: 85vh;
                 min-height: 600px;
-                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+                clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
             }
 
             .hero-title {
@@ -343,7 +556,7 @@
             }
 
             .hero-subtitle {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
 
             .section-title {
@@ -351,19 +564,23 @@
             }
 
             .author-image {
-                width: 240px;
-                height: 240px;
+                width: 250px;
+                height: 250px;
                 margin-bottom: 2rem;
             }
 
             .service-card .card-body {
                 padding: 2rem;
             }
+
+            .testimonial-card {
+                padding: 2rem;
+            }
         }
 
         @@media (max-width: 576px) {
             .hero {
-                height: 70vh;
+                height: 75vh;
                 min-height: 500px;
             }
 
@@ -372,8 +589,8 @@
             }
 
             .hero-btn {
-                padding: 12px 25px;
-                font-size: 1rem;
+                padding: 15px 30px;
+                font-size: 1.1rem;
             }
 
             .section-title {
@@ -384,130 +601,11 @@
                 width: 200px;
                 height: 200px;
             }
-        }
 
-        .articles-section {
-            padding: 5rem 0;
-            background: white;
-        }
-
-        .article-card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.4s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            height: 100%;
-            margin-bottom: 2rem;
-        }
-
-            .article-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            .testimonial-text {
+                font-size: 1.1rem;
             }
-
-            .article-card img {
-                height: 200px;
-                object-fit: cover;
-                width: 100%;
-            }
-
-            .article-card .card-body {
-                padding: 1.5rem;
-            }
-
-            .article-card .card-title {
-                font-family: 'Playfair Display', serif;
-                color: #4a0e78;
-                margin-bottom: 0.75rem;
-            }
-
-            .article-card .card-text {
-                color: #666;
-                margin-bottom: 1.5rem;
-            }
-
-            .article-card .btn {
-                background: linear-gradient(135deg, #4a0e78, #6a3093);
-                border: none;
-                border-radius: 50px;
-                padding: 8px 20px;
-                font-size: 0.9rem;
-            }
-
-        /* Стилове за карусела с отзиви */
-        .testimonials-section {
-            padding: 5rem 0;
-            background: rgba(106, 48, 147, 0.05);
         }
-
-        .testimonial-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            margin: 1rem;
-            height: 100%;
-        }
-
-        .testimonial-text {
-            font-style: italic;
-            color: #555;
-            position: relative;
-            padding: 0 1rem;
-        }
-
-            .testimonial-text:before,
-            .testimonial-text:after {
-                content: '"';
-                font-size: 3rem;
-                color: rgba(106, 48, 147, 0.2);
-                position: absolute;
-            }
-
-            .testimonial-text:before {
-                top: -20px;
-                left: -10px;
-            }
-
-            .testimonial-text:after {
-                bottom: -40px;
-                right: -10px;
-            }
-
-        .testimonial-author {
-            margin-top: 2rem;
-            font-weight: 600;
-            color: #4a0e78;
-        }
-
-        .testimonial-role {
-            color: #777;
-            font-size: 0.9rem;
-        }
-
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 5%;
-            color: #4a0e78;
-        }
-
-        .carousel-indicators button {
-            background-color: #6a3093;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin: 0 5px;
-        }
-
-        .testimonial-rating {
-            font-size: 1.2rem;
-            color: #ffc107;
-        }
-
-            .testimonial-rating .text-muted {
-                opacity: 0.5;
-            }
     </style>
 }
 
@@ -527,8 +625,8 @@
         }
     </div>
     <div class="container text-center hero-content">
-        <h1 class="hero-title playfair"><strong>„Онзи, който гледа навън, сънува; онзи, който гледа навътре, се пробужда.“</strong></h1>
-        <p class="hero-subtitle">Карл Густав Юнг</p>
+        <h1 class="hero-title playfair">Добре дошли в Душевна Музайка</h1>
+        <p class="hero-subtitle">Вашето място за хороскопи и психология</p>
         <a href="#services" class="btn hero-btn animate delay-1">
             <i class="fas fa-chevron-down"></i> Разгледайте услугите ни
         </a>
@@ -752,7 +850,7 @@
                             <div class="col-md-8">
                                 <div class="testimonial-card">
                                     <div class="testimonial-rating mb-3">
-                                        @for (int i = 0; i < 5; i++)
+                                        @for (int i = 0; i < 4; i++)
                                         {
                                             <i class="fas fa-star @(i < 4 ? "text-warning" : "text-muted")"></i>
                                         }

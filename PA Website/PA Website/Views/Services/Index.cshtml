@@ -13,205 +13,198 @@
 
 @section Styles {
     <style>
+        :root {
+            --primary-color: #4a0e78;
+            --secondary-color: #6a3093;
+            --accent-color: #ffd700;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            --hover-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
         .services-page {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 3rem 0;
+            background: var(--light-bg);
+            padding: 2rem 0;
             min-height: calc(100vh - 80px);
         }
 
         .services-container {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
             position: relative;
             overflow: hidden;
+            margin-bottom: 2rem;
         }
 
-            .services-container:before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 5px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-            }
+        .services-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
 
         .page-title {
-            font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 2.5rem;
+            color: var(--primary-color);
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 2rem;
-            text-align: center;
+            margin: 0;
             position: relative;
+            padding-bottom: 0.5rem;
         }
 
             .page-title:after {
                 content: '';
                 position: absolute;
-                bottom: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 80px;
-                height: 4px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-                border-radius: 2px;
+                bottom: 0;
+                left: 0;
+                width: 60px;
+                height: 3px;
+                background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             }
 
         .service-card {
             border: none;
             border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
             height: 100%;
             display: flex;
             flex-direction: column;
             background: white;
             position: relative;
+            margin-bottom: 1.5rem;
         }
 
             .service-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+                transform: translateY(-5px);
+                box-shadow: var(--hover-shadow);
             }
 
         .service-card-body {
-            padding: 1.5rem;
+            padding: 1.25rem;
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .service-card-title {
-            font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 1.4rem;
-            margin-bottom: 0.75rem;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
         .service-card-category {
-            font-size: 0.9rem;
-            color: #6a3093 !important;
-            margin-bottom: 1rem;
-            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--secondary-color) !important;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .service-card-text {
             font-size: 0.9rem;
             color: #555;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
         }
 
         .service-card-footer {
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             background: rgba(106, 48, 147, 0.05);
             border-top: 1px solid rgba(106, 48, 147, 0.1);
         }
 
-        .btn-service {
+        .service-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .price-badge {
             background: linear-gradient(135deg, #4a0e78, #6a3093);
             color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 8px 20px;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
             font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(74, 14, 120, 0.2);
+            transition: all 0.3s ease;
+        }
+
+            .price-badge:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(74, 14, 120, 0.3);
+            }
+
+            .price-badge i {
+                color: white;
+                margin-right: 0.5rem;
+                font-size: 0.95rem;
+            }
+
+        .btn-service {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
             .btn-service:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+                background: var(--secondary-color);
                 color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.3);
             }
 
         .btn-service-outline {
-            border: 1px solid #4a0e78;
-            color: #4a0e78;
-            border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 20px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
             transition: all 0.3s;
         }
 
             .btn-service-outline:hover {
-                background: linear-gradient(135deg, #4a0e78, #6a3093);
+                background: var(--primary-color);
                 color: white;
             }
 
         .action-buttons {
             display: flex;
-            gap: 8px;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
 
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.8rem;
-        }
-
-        .no-services {
-            text-align: center;
-            padding: 3rem 0;
-            color: #6a3093;
-        }
-
-            .no-services i {
-                font-size: 3rem;
-                margin-bottom: 1rem;
-                color: #c3cfe2;
-            }
-
-        .modal-header {
-            background: linear-gradient(135deg, #4a0e78, #6a3093);
-            color: white;
-        }
-
-        .modal-title {
-            font-family: 'Playfair Display', serif;
-        }
-
-        /* Price and date styles */
-        .service-meta {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 1rem;
-        }
-
-        .price-badge, .date-badge {
-            background: rgba(106, 48, 147, 0.1);
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            border: 1px solid rgba(106, 48, 147, 0.2);
-        }
-
-        .price-badge {
-            color: #4a0e78;
-        }
-
-        .date-badge {
-            color: #6a3093;
-            margin-left: 8px;
-        }
-
-        .text-purple {
-            color: #4a0e78 !important;
-        }
-
-        /* Promo badge */
         .promo-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 2;
-            animation: pulse 2s infinite;
+            top: 10px;
+            right: 10px;
             background: #ff4757;
             color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            z-index: 1;
+            animation: pulse 1.5s infinite;
         }
 
         @@keyframes pulse {
@@ -228,33 +221,50 @@
             }
         }
 
+        .no-services {
+            text-align: center;
+            padding: 2rem;
+            color: var(--secondary-color);
+        }
+
+            .no-services i {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+                color: #d3d9e8;
+            }
+
+        /* Responsive adjustments */
         @@media (max-width: 768px) {
+            .services-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
             .page-title {
-                font-size: 2rem;
+                font-size: 1.75rem;
             }
 
             .service-card {
-                margin-bottom: 1.5rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .services-container {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
             }
 
             .action-buttons {
                 justify-content: center;
             }
 
-            .price-badge, .date-badge {
-                font-size: 0.8rem;
-                padding: 4px 8px;
-            }
-        }
-
-        @@media (max-width: 576px) {
             .service-meta {
                 flex-direction: column;
-                gap: 8px;
-            }
-
-            .date-badge {
-                margin-left: 0;
+                align-items: flex-start;
             }
         }
     </style>
@@ -263,25 +273,24 @@
 <div class="services-page">
     <div class="container">
         <div class="services-container">
-            <h1 class="page-title">Нашите Услуги</h1>
-
-            @if (isAdmin)
-            {
-                <div class="text-center mb-4">
+            <div class="services-header">
+                <h1 class="page-title">Нашите Услуги</h1>
+                @if (isAdmin)
+                {
                     <a asp-action="Create" class="btn btn-service">
-                        <i class="fas fa-plus me-2"></i>Добави нова услуга
+                        <i class="fas fa-plus me-2"></i>Добави услуга
                     </a>
-                </div>
-            }
+                }
+            </div>
 
             @if (Model.Any())
             {
-                <div class="row g-4">
+                <div class="row">
                     @foreach (var item in Model)
                     {
                         <div class="col-lg-4 col-md-6">
                             <div class="service-card">
-                                @if (item.Price < 50) // Example promo logic
+                                @if (item.Price < 50)
                                 {
                                     <div class="promo-badge">
                                         <i class="fas fa-bolt me-1"></i> Промоция
@@ -292,19 +301,11 @@
                                     <h5 class="service-card-title">@item.NameService</h5>
                                     <h6 class="service-card-category">@item.CategoryOfService</h6>
 
-                                    <div class="service-meta d-flex flex-wrap align-items-center">
+                                    <div class="service-meta">
                                         <div class="price-badge">
-                                            <i class="fas fa-money-bill-alt text-warning me-1"></i>
-                                            <span class="fw-bold">@item.Price.ToString("0.00") лв.</span>
+                                            <i class="fas fa-money-bill-alt me-1"></i>
+                                            <span>@item.Price.ToString("0.00") лв.</span>
                                         </div>
-
-                                        @if (item.ReservationDate > DateTime.Now)
-                                        {
-                                            <div class="date-badge">
-                                                <i class="far fa-calendar-alt text-purple me-1"></i>
-                                                <span>@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</span>
-                                            </div>
-                                        }
                                     </div>
 
                                     <p class="service-card-text">@item.Description</p>
@@ -320,7 +321,9 @@
                                         {
                                             @if (item.CategoryOfService.ToLower() == "психология" || item.CategoryOfService.ToLower() == "астрология")
                                             {
-                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-service btn-sm">Резервирай</a>
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-service btn-sm">
+                                                    <i class="fas fa-calendar-check me-1"></i> Резервирай
+                                                </a>
                                             }
                                         }
                                         else
@@ -368,43 +371,19 @@
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Потвърждение на резервация</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 Сигурни ли сте, че искате да резервирате тази услуга?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-article" data-bs-dismiss="modal">Отказ</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отказ</button>
                 <form id="reservationForm" asp-action="Reserve" method="post" style="display: none;">
                     <input type="hidden" id="serviceId" name="serviceId" />
                 </form>
-                <button type="button" class="btn btn-service" onclick="submitReservation()">
-                    <i class="fas fa-check me-1"></i> Потвърди
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Модал за потвърждение (астрология) -->
-<div class="modal fade" id="confirmModalAstro" tabindex="-1" aria-labelledby="confirmModalLabelAstro" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Потвърждение на резервация</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Сигурни ли сте, че искате да резервирате тази астрологична услуга?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-article" data-bs-dismiss="modal">Отказ</button>
-                <form id="reservationFormAstro" asp-action="ReserveAstro" method="post" style="display: none;">
-                    <input type="hidden" id="serviceIdAstro" name="serviceId" />
-                </form>
-                <button type="button" class="btn btn-service" onclick="submitReservationAstro()">
+                <button type="button" class="btn btn-primary" onclick="submitReservation()">
                     <i class="fas fa-check me-1"></i> Потвърди
                 </button>
             </div>
@@ -421,16 +400,8 @@
             document.getElementById("serviceId").value = serviceId;
         }
 
-        function prepareReservationAstro(serviceId) {
-            document.getElementById("serviceIdAstro").value = serviceId;
-        }
-
         function submitReservation() {
             document.getElementById("reservationForm").submit();
-        }
-
-        function submitReservationAstro() {
-            document.getElementById("reservationFormAstro").submit();
         }
     </script>
 }

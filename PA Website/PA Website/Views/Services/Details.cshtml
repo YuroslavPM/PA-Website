@@ -90,6 +90,35 @@
                 color: #333;
             }
 
+        .price-display {
+            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            color: white;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(74, 14, 120, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .price-display:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(74, 14, 120, 0.3);
+        }
+
+        .price-display i {
+                color: white;
+                margin-right: 0.5rem;
+                font-size: 0.95rem;
+        }
+
+        .price-display span {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
         /* Стилове за ценовия блок */
         .service-meta {
             font-family: 'Playfair Display', serif;
@@ -258,7 +287,12 @@
                     <dd>@Html.DisplayFor(model => model.CategoryOfService)</dd>
 
                     <dt>Цена:</dt>
-                    <dd>@Html.DisplayFor(model => model.Price) лв.</dd>
+                    <dd>
+                        <div class="price-display">
+                            <i class="fas fa-money-bill-alt me-1"></i>
+                            <span>@Model.Price.ToString("0.00") лв.</span>
+                        </div>
+                    </dd>
 
                     <dt>Описание:</dt>
                     <dd>@Html.DisplayFor(model => model.Description)</dd>
