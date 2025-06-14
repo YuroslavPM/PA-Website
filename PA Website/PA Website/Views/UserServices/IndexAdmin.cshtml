@@ -216,24 +216,25 @@
 
             <div class="admin-panel-body">
                 <div class="mb-4">
-                    <label for="sortDropdown" class="form-label">Сортиране по:</label>
-                    <select id="sortDropdown" class="form-select">
-                        <option value="date_desc" selected="@((sortOrder == "date_desc") ? "selected" : null)">Последни резервации</option>
-                        <option value="date_asc" selected="@((sortOrder == "date_asc") ? "selected" : null)">Най-стари резервации</option>
-                        <option value="category_asc" selected="@((sortOrder == "category_asc") ? "selected" : null)">Категория (А-Я)</option>
-                        <option value="category_desc" selected="@((sortOrder == "category_desc") ? "selected" : null)">Категория (Я-А)</option>
-                        <option value="status_asc" selected="@((sortOrder == "status_asc") ? "selected" : null)">Актуални първи</option>
-                        <option value="status_desc" selected="@((sortOrder == "status_desc") ? "selected" : null)">Изтекли първи</option>
-                    </select>
-                    <div>
-                        <label for="statusFilter" class="form-label">Филтър по статус:</label>
-                        <select id="statusFilter" class="form-select d-inline-block" style="width: auto;">
-                            <option value="">Всички</option>
-                            <option value="Pending" selected="@(ViewData["StatusFilter"]?.ToString() == "Pending")">Чакащи</option>
-                            <option value="Confirmed" selected="@(ViewData["StatusFilter"]?.ToString() == "Confirmed")">Потвърдени</option>
-                            <option value="Completed" selected="@(ViewData["StatusFilter"]?.ToString() == "Completed")">Завършени</option>
-                            <option value="Cancelled" selected="@(ViewData["StatusFilter"]?.ToString() == "Cancelled")">Отказани</option>
-                        </select>
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label for="sortDropdown" class="form-label">Сортиране по:</label>
+                            <select id="sortDropdown" class="form-select">
+                                <option value="date_desc" selected="@((sortOrder == "date_desc") ? "selected" : null)">Последни резервации</option>
+                                <option value="date_asc" selected="@((sortOrder == "date_asc") ? "selected" : null)">Най-стари резервации</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="statusFilter" class="form-label">Филтър по статус:</label>
+                            <select id="statusFilter" class="form-select">
+                                <option value="">Всички статуси</option>
+                                <option value="Pending" selected="@(ViewData["StatusFilter"]?.ToString() == "Pending")">Чакащи</option>
+                                <option value="Confirmed" selected="@(ViewData["StatusFilter"]?.ToString() == "Confirmed")">Потвърдени</option>
+                                <option value="Completed" selected="@(ViewData["StatusFilter"]?.ToString() == "Completed")">Завършени</option>
+                                <option value="Cancelled" selected="@(ViewData["StatusFilter"]?.ToString() == "Cancelled")">Отказани</option>
+                                <option value="Expired" selected="@(ViewData["StatusFilter"]?.ToString() == "Expired")">Изтекли</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -244,13 +245,16 @@
                             <div class="reservation-card-header d-flex justify-content-between align-items-center">
                                 <div>
                                     Резервация #@item.Id
-                                    <span class="status-badge
-                                        @(item.Status == "Confirmed" ? "status-active" :
-                                        item.Status == "Completed" ? "status-completed" :
-                                        item.Status == "Cancelled" ? "status-expired" : "status-pending")">
-                                        @(item.Status == "Pending" ? "Чакаща" :
-                                            item.Status == "Confirmed" ? "Потвърдена" :
-                                            item.Status == "Completed" ? "Завършена" : "Отказана")
+                                    <span class="status-badge @(item.Status == "Pending" ? "status-pending" : 
+                                                              item.Status == "Confirmed" ? "status-confirmed" : 
+                                                              item.Status == "Completed" ? "status-completed" : 
+                                                              item.Status == "Cancelled" ? "status-cancelled" :
+                                                              item.Status == "Expired" ? "status-expired" : "")">
+                                        @(item.Status == "Pending" ? "Чакаща" : 
+                                          item.Status == "Confirmed" ? "Потвърдена" : 
+                                          item.Status == "Completed" ? "Завършена" : 
+                                          item.Status == "Cancelled" ? "Отказана" :
+                                          item.Status == "Expired" ? "Изтекла" : "")
                                     </span>
                                 </div>
                                 <div>
@@ -279,12 +283,6 @@
                                         <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
                                     </div>
                                     }
-                                    else{
-                                        <div class="reservation-meta-item">
-                                            <div class="reservation-meta-label">Дата на раждане за Астрологична услуга</div>
-                                            <div class="reservation-meta-value">@item.AstrologicalDate</div>
-                                        </div>
-                                    }
                                 </div>
                             </div>
                         </div>
@@ -299,13 +297,19 @@
                 </div>
 
                 <div class="pagination-container">
-                    <button id="prevPage" class="btn btn-outline-admin" @(currentPage <= 1 ? "disabled" : "")>
-                        <i class="fas fa-chevron-left me-1"></i> Предишна
-                    </button>
+                    @if (currentPage > 1)
+                    {
+                        <button id="prevPage" class="btn btn-outline-admin">
+                            <i class="fas fa-chevron-left me-1"></i> Предишна
+                        </button>
+                    }
                     <span class="page-info">Страница @currentPage от @totalPages</span>
-                    <button id="nextPage" class="btn btn-outline-admin" @(currentPage >= totalPages ? "disabled" : "")>
-                        Следваща <i class="fas fa-chevron-right ms-1"></i>
-                    </button>
+                    @if (currentPage < totalPages)
+                    {
+                        <button id="nextPage" class="btn btn-outline-admin">
+                            Следваща <i class="fas fa-chevron-right ms-1"></i>
+                        </button>
+                    }
                 </div>
             </div>
         </div>

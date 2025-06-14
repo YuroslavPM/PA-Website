@@ -192,6 +192,7 @@ namespace PA_Website.Controllers
                     ServiceId = ServiceId,
                     ReservationDate = reservationDateTime,
                     ReservationTime = selectedTime,
+                    AstrologicalPlaceOfBirth = "", 
                     Status = "Pending"
                 };
 

@@ -28,7 +28,7 @@ namespace PA_Website.Controllers
         }
 
         // GET: UserServices
-        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 12)
+        public async Task<IActionResult> Index(string sortOrder, string categoryFilter, string statusFilter, int pageNumber = 1, int pageSize = 12)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -36,31 +36,65 @@ namespace PA_Website.Controllers
                 return Challenge();
             }
 
+            // Първо заредете всички резервации без филтри за статус
             var reservations = _context.userServices
                 .Where(u => u.UserId == user.Id)
                 .Include(u => u.Service)
                 .AsQueryable();
 
+            // Приложете филтър за категория
+            if (!string.IsNullOrEmpty(categoryFilter))
+            {
+                reservations = reservations.Where(r => r.Service.CategoryOfService.ToLower() == categoryFilter.ToLower());
+            }
+
+            // Приложете сортиране
             reservations = sortOrder switch
             {
                 "date_desc" => reservations.OrderByDescending(r => r.ReservationDate),
                 "date_asc" => reservations.OrderBy(r => r.ReservationDate),
-                "category_asc" => reservations.OrderBy(r => r.Service.CategoryOfService),
-                "category_desc" => reservations.OrderByDescending(r => r.Service.CategoryOfService),
-                "status_asc" => reservations.OrderBy(r => r.ReservationDate < DateTime.Now),
-                "status_desc" => reservations.OrderByDescending(r => r.ReservationDate < DateTime.Now),
                 _ => reservations.OrderByDescending(r => r.ReservationDate)
             };
 
-            int totalRecords = await reservations.CountAsync();
-            var pagedReservations = await reservations
+            // Заредете всички записи и обработете изтеклите статуси
+            var result = await reservations.ToListAsync();
+
+            // Маркирайте изтеклите резервации
+            foreach (var reservation in result)
+            {
+                if (reservation.Service.CategoryOfService.ToLower() == "психология" &&
+                    reservation.Status != "Completed" &&
+                    reservation.Status != "Cancelled" &&
+                    reservation.ReservationDate.Add(reservation.ReservationTime ?? TimeSpan.Zero).AddHours(1) < DateTime.Now)
+                {
+                    reservation.Status = "Expired";
+                }
+            }
+
+            // Сега приложете филтъра за статус след като всички статуси са актуални
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                if (statusFilter == "Expired")
+                {
+                    result = result.Where(r => r.Status == "Expired").ToList();
+                }
+                else
+                {
+                    result = result.Where(r => r.Status == statusFilter).ToList();
+                }
+            }
+
+            int totalRecords = result.Count;
+            var pagedReservations = result
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
             ViewData["CurrentPage"] = pageNumber;
             ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
             ViewData["SortOrder"] = sortOrder;
+            ViewData["CategoryFilter"] = categoryFilter;
+            ViewData["StatusFilter"] = statusFilter;
 
             return View(pagedReservations);
         }
@@ -68,39 +102,63 @@ namespace PA_Website.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> IndexAdmin(string sortOrder, string statusFilter, int pageNumber = 1, int pageSize = 12)
         {
-            var reservations = _context.userServices
+            // Първо заредете всички резервации с необходимите включвания
+            var query = _context.userServices
                 .Include(u => u.Service)
                 .Include(u => u.User)
                 .AsQueryable();
-            if (!string.IsNullOrEmpty(statusFilter))
-            {
-                reservations = reservations.Where(r => r.Status == statusFilter);
-            }
 
-            // Сортиране според избора на потребителя
-            reservations = sortOrder switch
+            // Приложете сортиране
+            query = sortOrder switch
             {
-                "date_desc" => reservations.OrderByDescending(r => r.ReservationDate),
-                "date_asc" => reservations.OrderBy(r => r.ReservationDate),
-                "category_asc" => reservations.OrderBy(r => r.Service.CategoryOfService),
-                "category_desc" => reservations.OrderByDescending(r => r.Service.CategoryOfService),
-                "status_asc" => reservations.OrderBy(r => DateTime.Now > r.ReservationDate),
-                "status_desc" => reservations.OrderByDescending(r => DateTime.Now > r.ReservationDate),
-                _ => reservations.OrderByDescending(r => r.ReservationDate)
+                "date_desc" => query.OrderByDescending(r => r.ReservationDate),
+                "date_asc" => query.OrderBy(r => r.ReservationDate),
+                _ => query.OrderByDescending(r => r.ReservationDate)
             };
 
-            // Броим общия брой записи за пагинация
-            int totalRecords = await reservations.CountAsync();
-            var pagedReservations = await reservations.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            // Заредете всички записи в паметта
+            var allReservations = await query.ToListAsync();
+
+            // Маркирайте изтеклите резервации
+            foreach (var reservation in allReservations)
+            {
+                if (reservation.Service.CategoryOfService.ToLower() == "психология" &&
+                    reservation.Status != "Completed" &&
+                    reservation.Status != "Cancelled" &&
+                    reservation.ReservationDate.Add(reservation.ReservationTime ?? TimeSpan.Zero).AddHours(1) < DateTime.Now)
+                {
+                    reservation.Status = "Expired";
+                }
+            }
+
+            // Сега приложете филтъра за статус
+            IEnumerable<UserService> filteredReservations = allReservations;
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                if (statusFilter == "Expired")
+                {
+                    filteredReservations = filteredReservations.Where(r => r.Status == "Expired");
+                }
+                else
+                {
+                    filteredReservations = filteredReservations.Where(r => r.Status == statusFilter);
+                }
+            }
+
+            // Пагинация
+            int totalRecords = filteredReservations.Count();
+            var pagedReservations = filteredReservations
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
             ViewData["CurrentPage"] = pageNumber;
-            ViewData["StatusFilter"] = statusFilter;
             ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
             ViewData["SortOrder"] = sortOrder;
+            ViewData["StatusFilter"] = statusFilter;
 
             return View(pagedReservations);
         }
-
 
 
         public async Task<IActionResult> SortReservations(string sortOrder)
@@ -434,6 +492,7 @@ namespace PA_Website.Controllers
             reservation.AstroCardFileSize = astroCardFile.Length;
             reservation.AstroCardContentType = astroCardFile.ContentType;
             reservation.AstroCardUploadDate = DateTime.Now;
+            reservation.Status = "Completed";
 
             _context.Update(reservation);
             await _context.SaveChangesAsync();
