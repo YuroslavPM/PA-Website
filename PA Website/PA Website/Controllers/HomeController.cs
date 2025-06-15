@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
 using PA_Website.ViewModels;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace PA_Website.Controllers
 {
@@ -11,12 +12,14 @@ namespace PA_Website.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
+        private readonly IEmailSender _emailSender;
 
-        public HomeController(ApplicationDbContext context,ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context, ILogger<HomeController> logger)
         {
             _context = context;
             _logger = logger;
         }
+
 
         public IActionResult Index()
         {

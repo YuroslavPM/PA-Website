@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -8,27 +8,47 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using PA_Website.Services;
 using Microsoft.Extensions.FileProviders;
 
-
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole(options =>
+{
+    options.IncludeScopes = true;
+});
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
+// Add environment-specific configuration
+var environment = builder.Environment.EnvironmentName;
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-//{
-//    options.SignIn.RequireConfirmedAccount = true;
-//})
-//    .AddEntityFrameworkStores<ApplicationDbContext>()
-//    .AddDefaultTokenProviders();
-
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(options => {
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+    .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+    options.LogoutPath = "/Identity/Account/Logout";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+});
 
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -59,4 +79,6 @@ using (var scope = app.Services.CreateScope())
 
     await SeedRoles.SeedAsync(roleManager);
 }
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
 app.Run();
