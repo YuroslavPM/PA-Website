@@ -1,10 +1,17 @@
-﻿@model IEnumerable<PA_Website.Models.UserService>
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
+@inject RoleManager<IdentityRole> RoleManager
+
+@model IEnumerable<PA_Website.Models.UserService>
 
 @{
     ViewData["Title"] = "Моите Резервации";
     var currentPage = (int)ViewData["CurrentPage"];
     var totalPages = (int)ViewData["TotalPages"];
     var sortOrder = ViewData["SortOrder"] as string;
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     Layout = "_Layout";
 
     var statuses = new[] {
@@ -22,6 +29,12 @@
         new { Value = "status", Text = "Статус" }
     };
     var selectedSort = sortOrder;
+
+    // Helper method to convert BGN to EUR (approximate rate: 1 EUR = 1.95583 BGN)
+    decimal ConvertToEur(decimal bgnPrice)
+    {
+        return Math.Round(bgnPrice / 1.95583m, 2);
+    }
 }
 
 @section Styles {
@@ -41,14 +54,14 @@
             overflow: hidden;
         }
         .user-services-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
             height: 6px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-        }
+            }
         .user-services-title {
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
@@ -61,20 +74,20 @@
             position: relative;
         }
         .user-services-title::after {
-            content: '';
-            position: absolute;
+                content: '';
+                position: absolute;
             bottom: -12px;
             left: 0;
             width: 100px;
-            height: 4px;
+                height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-            border-radius: 2px;
-        }
+                border-radius: 2px;
+            }
         .user-services-subtitle {
             color: #64748b;
             font-size: 1.1rem;
             margin-bottom: 1.5rem;
-        }
+            }
         .reservation-card {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -82,8 +95,8 @@
             border-radius: 24px;
             overflow: hidden;
         }
-        
-        .reservation-card:hover {
+
+            .reservation-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
             border-color: rgba(124, 58, 237, 0.2);
@@ -144,10 +157,10 @@
 
         .btn-secondary:hover {
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
+                transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
-            color: white;
-        }
+                color: white;
+            }
 
         .btn-outline {
             border: 2px solid #4c1d95;
@@ -158,7 +171,7 @@
 
         .btn-outline:hover {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
-            color: white;
+                color: white;
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
         }
@@ -238,11 +251,11 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
+            }
 
         .animate-fade-in-up {
             animation: fadeInUp 0.6s ease-out forwards;
-        }
+            }
 
         .animate-delay-100 { animation-delay: 0.1s; }
         .animate-delay-200 { animation-delay: 0.2s; }
@@ -264,7 +277,7 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Филтри и Сортиране</h2>
                 <p class="text-gray-600">Персонализирайте изгледа на вашите резервации</p>
             </div>
-            
+
             <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700">Статус</label>
@@ -280,8 +293,8 @@
                                 @:<option value="@status.Value">@status.Text</option>
                             }
                         }
-                    </select>
-                </div>
+                        </select>
+                    </div>
 
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700">Сортиране</label>
@@ -297,14 +310,14 @@
                                 @:<option value="@so.Value">@so.Text</option>
                             }
                         }
-                    </select>
-                </div>
+                        </select>
+                    </div>
 
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700">От дата</label>
                     <input type="date" name="startDate" value="@ViewData["StartDate"]" 
                            class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                </div>
+                    </div>
 
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700">До дата</label>
@@ -341,8 +354,8 @@
                                         <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center">
                                             <i class="fas fa-calendar-check text-white text-2xl"></i>
                                         </div>
-                                    </div>
-                                    <div>
+                                </div>
+                                <div>
                                         <h3 class="text-2xl font-bold text-gray-800 mb-2">@reservation.Service.NameService</h3>
                                         <div class="flex items-center gap-4">
                                             <span class="status-badge
@@ -379,7 +392,7 @@
                                         <i class="fas fa-coins text-purple-500 text-lg"></i>
                                         <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Цена</label>
                                     </div>
-                                    <p class="text-gray-800 font-medium text-lg">@reservation.Service.Price.ToString("C")</p>
+                                    <p class="text-gray-800 font-medium text-lg">@reservation.Service.Price.ToString("0.00") лв. / @ConvertToEur(reservation.Service.Price).ToString("0.00") €</p>
                                 </div>
                                 
                                 <div class="info-item">
@@ -398,19 +411,19 @@
                                             <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Астрологическа дата</label>
                                         </div>
                                         <p class="text-gray-800 font-medium text-lg">@reservation.AstrologicalDate.Value.ToString("dd.MM.yyyy")</p>
-                                    </div>
-                                }
+                                        </div>
+                                    }
                                 
                                 @if (!string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth))
-                                {
+                                    {
                                     <div class="info-item">
                                         <div class="flex items-center gap-3 mb-2">
                                             <i class="fas fa-map-marker-alt text-purple-500 text-lg"></i>
                                             <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Място на раждане</label>
                                         </div>
                                         <p class="text-gray-800 font-medium text-lg">@reservation.AstrologicalPlaceOfBirth</p>
-                                    </div>
-                                }
+                                        </div>
+                                    }
                                 
                                 @if (!string.IsNullOrEmpty(reservation.AstroCardFileName))
                                 {
@@ -474,7 +487,7 @@
 
             <!-- Pagination -->
             @if (totalPages > 1)
-            {
+                    {
                 <div class="flex justify-center items-center gap-8 mt-16 animate-fade-in-up animate-delay-300">
                     <div class="font-playfair text-purple-600 font-semibold text-lg">
                         Страница @currentPage от @totalPages
@@ -499,8 +512,8 @@
                             </a>
                         }
                     </div>
-                </div>
-            }
+                        </div>
+                    }
         }
         else
         {

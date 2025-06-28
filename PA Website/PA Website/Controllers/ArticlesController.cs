@@ -24,8 +24,9 @@ namespace PA_Website.Controllers
         public async Task<IActionResult> Index(int pageNumber=1, int pageSize=9)
         {
             var articles = _context.Articles
+                .Include(a => a.Creator)
+                .OrderByDescending(a => a.PublicationDate)
                 .AsQueryable();
-
 
             int totalRecords = await _context.Articles.CountAsync();
             var pagedArticles = await articles.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();

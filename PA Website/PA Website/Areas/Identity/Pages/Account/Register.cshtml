@@ -21,7 +21,7 @@
             position: relative;
             max-width: 900px;
             margin: 0 auto;
-        }
+}
 
         .auth-card::before {
             content: '';
@@ -195,85 +195,85 @@
             </div>
 
             <div class="auth-body">
-                <div class="row">
+<div class="row">
                     <div class="col-md-6">
-                        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                             <div asp-validation-summary="ModelOnly" class="alert-danger" role="alert"></div>
                             
                             <div class="form-group">
                                 <label asp-for="Input.FName" class="form-label">Име</label>
-                                <input asp-for="Input.FName" class="form-control" aria-required="true" placeholder="Име" />
-                                <span asp-validation-for="Input.FName" class="text-danger"></span>
-                            </div>
+                <input asp-for="Input.FName" class="form-control" aria-required="true" placeholder="Име" />
+                <span asp-validation-for="Input.FName" class="text-danger"></span>
+            </div>
                             
                             <div class="form-group">
                                 <label asp-for="Input.LName" class="form-label">Фамилия</label>
-                                <input asp-for="Input.LName" class="form-control" aria-required="true" placeholder="Фамилия" />
-                                <span asp-validation-for="Input.LName" class="text-danger"></span>
-                            </div>
+                <input asp-for="Input.LName" class="form-control" aria-required="true" placeholder="Фамилия" />
+                <span asp-validation-for="Input.LName" class="text-danger"></span>
+            </div>
                             
                             <div class="form-group">
                                 <label asp-for="Input.Birth_Date" class="form-label">Дата на раждане</label>
                                 <input asp-for="Input.Birth_Date" class="form-control" type="date" aria-required="true" />
-                                <span asp-validation-for="Input.Birth_Date" class="text-danger"></span>
-                            </div>
+                <span asp-validation-for="Input.Birth_Date" class="text-danger"></span>
+            </div>
                             
                             <div class="form-group">
                                 <label asp-for="Input.Phone_Number" class="form-label">Телефонен номер</label>
                                 <input asp-for="Input.Phone_Number" class="form-control" aria-required="true" placeholder="Телефонен номер" />
-                                <span asp-validation-for="Input.Phone_Number" class="text-danger"></span>
-                            </div>
+                <span asp-validation-for="Input.Phone_Number" class="text-danger"></span>
+            </div>
                             
                             <div class="form-group">
                                 <label asp-for="Input.Email" class="form-label">Имейл адрес</label>
-                                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                                <span asp-validation-for="Input.Email" class="text-danger"></span>
-                            </div>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
                             
                             <div class="form-group">
                                 <label asp-for="Input.Password" class="form-label">Парола</label>
                                 <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Парола" />
-                                <span asp-validation-for="Input.Password" class="text-danger"></span>
-                            </div>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
                             
                             <div class="form-group">
                                 <label asp-for="Input.ConfirmPassword" class="form-label">Потвърди парола</label>
                                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Потвърди парола" />
-                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                            </div>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
                             
                             <button id="registerSubmit" type="submit" class="btn-primary">Регистрация</button>
-                        </form>
-                    </div>
+        </form>
+    </div>
                     
                     <div class="col-md-6">
                         <div class="external-section">
                             <h3 class="external-title">Регистрация чрез външни услуги</h3>
-                            @{
-                                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                                {
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
                                     <div class="text-center">
                                         <p style="color: #64748b;">
                                             В момента няма конфигурирани външни услуги за автентикация.
-                                        </p>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                                         <div class="external-login text-center">
                                             <p class="mb-3" style="color: #64748b;">
-                                                @foreach (var provider in Model.ExternalLogins!)
-                                                {
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
                                                     <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Регистрация чрез вашия @provider.DisplayName акаунт">
                                                         @provider.DisplayName
                                                     </button>
-                                                }
-                                            </p>
-                                        </div>
-                                    </form>
                                 }
-                            }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
                         </div>
                     </div>
                 </div>

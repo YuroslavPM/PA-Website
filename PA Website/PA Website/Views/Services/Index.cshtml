@@ -9,6 +9,12 @@
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     Layout = "_Layout";
+
+    // Helper method to convert BGN to EUR (approximate rate: 1 EUR = 1.95583 BGN)
+    decimal ConvertToEur(decimal bgnPrice)
+    {
+        return Math.Round(bgnPrice / 1.95583m, 2);
+    }
 }
 
 @section Styles {
@@ -422,7 +428,7 @@
                                 {
                                     <span class="price-badge">
                                         <i class="fas fa-coins"></i>
-                                        @service.Price.ToString("C")
+                                        @service.Price.ToString("0.00") лв. / @ConvertToEur(service.Price).ToString("0.00") €
                                     </span>
                                 }
                             </div>
@@ -460,7 +466,7 @@
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("Create", "UserServices", new { serviceId = service.Id })" class="btn-primary">
+                                    <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-primary">
                                         <i class="fas fa-calendar-plus"></i>
                                         Запази час
                                     </a>

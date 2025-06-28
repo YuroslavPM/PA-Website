@@ -30,12 +30,15 @@
                 transform: translateY(0) rotate(0deg);
                 opacity: 0;
             }
+
             10% {
                 opacity: 1;
             }
+
             90% {
                 opacity: 1;
             }
+
             100% {
                 transform: translateY(-100vh) rotate(360deg);
                 opacity: 0;
@@ -48,9 +51,15 @@
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 600px;
+            max-width: 520px;
             margin: 0 auto;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
+            .testimonial-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            }
 
         .testimonial-rating {
             margin-bottom: 1rem;
@@ -62,7 +71,7 @@
             color: #4a5568;
             margin-bottom: 1.5rem;
             line-height: 1.6;
-            }
+        }
 
         .testimonial-author {
             font-weight: 600;
@@ -74,6 +83,91 @@
             color: #6a3093;
             font-size: 0.9rem;
         }
+
+        /* Purple text for buttons */
+        .btn-purple-text {
+            color: #6a3093 !important;
+        }
+
+        /* Enhanced button hover effects */
+        .btn-hover-effect {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-hover-effect:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(106, 48, 147, 0.2);
+            }
+
+            .btn-hover-effect:after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.1);
+                z-index: 1;
+                transform: scale(0, 1);
+                transform-origin: right center;
+                transition: transform 0.4s ease;
+            }
+
+            .btn-hover-effect:hover:after {
+                transform: scale(1, 1);
+                transform-origin: left center;
+            }
+
+        /* Improved card shadows */
+        .enhanced-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            .enhanced-card:hover {
+                box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12), 0 10px 10px rgba(0, 0, 0, 0.08);
+            }
+
+        /* Gradient text for headings */
+        .gradient-text {
+            background: linear-gradient(45deg, #4a0e78, #6a3093);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Reduced width containers */
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .articles-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .author-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .testimonials-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-description {
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+        }
     </style>
 }
 
@@ -82,17 +176,17 @@
     <section class="hero-bg min-h-screen flex items-center justify-center relative clip-path-hero">
         <!-- Floating elements -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none" id="floating-elements"></div>
-        
+
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center text-white">
+            <div class="text-center text-white hero-content">
                 <h1 class="font-playfair text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-text-fade-in">
                     Душевна Мозайка
                 </h1>
                 <p class="text-xl md:text-2xl mb-10 opacity-95 animate-text-fade-in" style="animation-delay: 0.3s;">
                     Вашето място за хороскопи и психологически консултации
-                        </p>
-                <a href="#services" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-xl transform hover:scale-105 uppercase tracking-wider">
-                    <i class="fas fa-star mr-3 text-accent"></i>
+                </p>
+                <a href="#services" class="inline-flex items-center bg-white text-purple-700 px-8 py-4 rounded-full text-lg font-medium btn-hover-effect uppercase tracking-wider">
+                    <i class="fas fa-star mr-3 text-purple-500"></i>
                     Запази час
                 </a>
             </div>
@@ -103,18 +197,18 @@
     <section id="services" class="py-16 md:py-24 bg-gradient-to-br from-purple-50 to-indigo-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block">
+                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block gradient-text">
                     Нашите Услуги
                     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
                 </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p class="text-xl text-gray-600 section-description">
                     Комбинация от астрология и психология за пълно разбиране на вашата личност
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 services-grid">
                 <!-- Psychology Service -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                <div class="bg-white rounded-2xl overflow-hidden enhanced-card group">
                     <div class="h-80 bg-gradient-to-br from-blue-400 to-purple-600 relative overflow-hidden">
                         <div class="absolute inset-0 bg-black/20"></div>
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -126,7 +220,7 @@
                         <p class="text-gray-600 leading-relaxed mb-6">
                             Професионална психологическа подкрепа за преодоляване на житейски предизвикателства и постигане на вътрешна хармония.
                         </p>
-                        <a href="/Services/Index" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <a href="/Services/Index" class="inline-flex items-center bg-white border border-purple-500 btn-purple-text px-6 py-3 rounded-full font-medium btn-hover-effect">
                             Научи повече
                             <i class="fas fa-arrow-right ml-2"></i>
                         </a>
@@ -134,7 +228,7 @@
                 </div>
 
                 <!-- Astrology Service -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                <div class="bg-white rounded-2xl overflow-hidden enhanced-card group">
                     <div class="h-80 bg-gradient-to-br from-purple-500 to-pink-600 relative overflow-hidden">
                         <div class="absolute inset-0 bg-black/20"></div>
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -145,8 +239,8 @@
                         <h3 class="text-2xl font-bold text-primary mb-4">Астрологически Хороскопи</h3>
                         <p class="text-gray-600 leading-relaxed mb-6">
                             Персонализирани астрологически анализи за разбиране на вашия характер и житейски път.
-                            </p>
-                        <a href="/Services/Index" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        </p>
+                        <a href="/Services/Index" class="inline-flex items-center bg-white border border-purple-500 btn-purple-text px-6 py-3 rounded-full font-medium btn-hover-effect">
                             Научи повече
                             <i class="fas fa-arrow-right ml-2"></i>
                         </a>
@@ -154,7 +248,7 @@
                 </div>
 
                 <!-- Combined Service -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                <div class="bg-white rounded-2xl overflow-hidden enhanced-card group">
                     <div class="h-80 bg-gradient-to-br from-indigo-500 to-purple-600 relative overflow-hidden">
                         <div class="absolute inset-0 bg-black/20"></div>
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -166,7 +260,7 @@
                         <p class="text-gray-600 leading-relaxed mb-6">
                             Уникална комбинация от астрология и психология за пълно разбиране на вашата личност.
                         </p>
-                        <a href="/Services/Index" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <a href="/Services/Index" class="inline-flex items-center bg-white border border-purple-500 btn-purple-text px-6 py-3 rounded-full font-medium btn-hover-effect">
                             Научи повече
                             <i class="fas fa-arrow-right ml-2"></i>
                         </a>
@@ -180,25 +274,25 @@
     <section class="py-16 md:py-24 bg-white">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block">
+                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block gradient-text">
                     Последни Статии
                     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
                 </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p class="text-xl text-gray-600 section-description">
                     Полезни статии за психология, астрология и личностно развитие
                 </p>
             </div>
 
             @if (Model.Any())
             {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 articles-grid">
                     @foreach (var article in Model)
                     {
-                        <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                        <div class="bg-white rounded-2xl overflow-hidden enhanced-card">
                             @if (!string.IsNullOrEmpty(article.ImagePath))
                             {
                                 <div class="h-64 overflow-hidden">
-                                    <img src="@article.ImagePath" alt="@article.Title" 
+                                    <img src="@article.ImagePath" alt="@article.Title"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 </div>
                             }
@@ -211,14 +305,14 @@
                             <div class="p-6">
                                 <div class="flex items-center text-sm text-secondary mb-3">
                                     <i class="fas fa-calendar mr-2"></i>
-                                            @article.PublicationDate.ToString("dd.MM.yyyy")
+                                    @article.PublicationDate.ToString("dd.MM.yyyy")
                                     <span class="mx-2">•</span>
                                     <i class="fas fa-tag mr-2"></i>
                                     @article.Category
                                 </div>
                                 <h3 class="text-xl font-bold text-primary mb-3 line-clamp-2">@article.Title</h3>
                                 <p class="text-gray-600 mb-4 line-clamp-3">@article.Description</p>
-                                <a href="@Url.Action("Details", "Articles", new { id = article.Id })" 
+                                <a href="@Url.Action("Details", "Articles", new { id = article.Id })"
                                    class="inline-flex items-center text-primary hover:text-secondary font-medium transition-colors duration-300">
                                     Прочети повече
                                     <i class="fas fa-arrow-right ml-2"></i>
@@ -228,7 +322,7 @@
                     }
                 </div>
                 <div class="text-center">
-                    <a href="@Url.Action("Index", "Articles")" class="inline-flex items-center border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-medium transition-all duration-300">
+                    <a href="@Url.Action("Index", "Articles")" class="inline-flex items-center border-2 border-primary btn-purple-text hover:bg-primary hover:text-white px-8 py-3 rounded-full font-medium btn-hover-effect">
                         Виж всички статии
                         <i class="fas fa-arrow-right ml-2"></i>
                     </a>
@@ -236,7 +330,7 @@
             }
             else
             {
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center max-w-2xl mx-auto">
                     <i class="fas fa-info-circle text-3xl text-blue-500 mb-4"></i>
                     <p class="text-blue-700 text-lg">Все още няма публикувани статии.</p>
                 </div>
@@ -247,18 +341,18 @@
     <!-- Author Section -->
     <section class="py-16 md:py-24 bg-white relative overflow-hidden">
         <div class="absolute inset-0 opacity-5">
-            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236a3093\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\" 60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236a3093\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
         </div>
-        
+
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center author-content">
                 <div class="text-center lg:text-left">
                     <img src="https://scontent.fsof5-1.fna.fbcdn.net/v/t39.30808-6/492612847_24008185045446073_5271774732973390534_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=2qjZ8vG_NhIQ7kNvwFkVTgu&_nc_oc=Adk8wN6OtvsycYfJmiPQvO6z-PPIxKHSBhzSxV8gKMUvcFShbnfuU_OSKYcJL64fsKk&_nc_zt=23&_nc_ht=scontent.fsof5-1.fna&_nc_gid=kFVujh4rWh_RTzRaPjlfPA&oh=00_AfN2NZwmvob7UI-E1IOMQDowbwIY4S-ypqLJ3wcnvirHdQ&oe=685F662A"
                          alt="Авторът"
-                         class="w-96 h-96 rounded-full object-cover border-8 border-white shadow-2xl mx-auto lg:mx-0 hover:scale-105 transition-transform duration-600">
+                         class="w-80 h-80 lg:w-96 lg:h-96 rounded-full object-cover border-8 border-white shadow-2xl mx-auto lg:mx-0 hover:scale-105 transition-transform duration-600">
                 </div>
                 <div class="text-center lg:text-left">
-                    <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-8 relative inline-block">
+                    <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-8 relative inline-block gradient-text">
                         За автора
                         <div class="absolute bottom-0 left-0 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
                     </h2>
@@ -269,7 +363,7 @@
                         <p>
                             Завърших магистратура по Приложна психология и базов курс по Позитивна психотерапия, а днес съм тук – за да бъда с теб в процеса на осъзнаване, промяна и вътрешна хармония.
                         </p>
-                        </div>
+                    </div>
                     <div class="mt-8 p-8 bg-white rounded-2xl shadow-lg relative">
                         <div class="absolute -top-4 left-8 text-6xl text-primary/20 font-serif">"</div>
                         <p class="text-xl italic text-primary font-medium leading-relaxed relative z-10">
@@ -285,103 +379,103 @@
     <section class="py-16 md:py-24 bg-gradient-to-br from-purple-50 to-indigo-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block">
+                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block gradient-text">
                     Какво казват нашите клиенти
                     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
                 </h2>
             </div>
 
-            <div class="max-w-4xl mx-auto">
+            <div class="testimonials-container">
                 <div id="testimonialsCarousel" class="relative">
                     <!-- Testimonial 1 -->
                     <div class="testimonial-slide active">
-                                <div class="testimonial-card">
-                                    <div class="testimonial-rating">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
-                                    </div>
-                                    <p class="testimonial-text">
-                                        Благодаря на Душевна Музайка за невероятната психологическа подкрепа.
-                                    </p>
-                                    <div class="testimonial-author">Мария Иванова</div>
-                                    <div class="testimonial-role">Учител</div>
+                            </div>
+                            <p class="testimonial-text">
+                                Благодаря на Душевна Музайка за невероятната психологическа подкрепа.
+                            </p>
+                            <div class="testimonial-author">Мария Иванова</div>
+                            <div class="testimonial-role">Учител</div>
                         </div>
                     </div>
 
                     <!-- Testimonial 2 -->
                     <div class="testimonial-slide hidden">
-                                <div class="testimonial-card">
-                                    <div class="testimonial-rating">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-gray-300"></i>
-                                    </div>
-                                    <p class="testimonial-text">
-                                        Хороскопът ми беше изключително точен и полезен.
-                                    </p>
-                                    <div class="testimonial-author">Георги Петров</div>
-                                    <div class="testimonial-role">IT Специалист</div>
+                            </div>
+                            <p class="testimonial-text">
+                                Хороскопът ми беше изключително точен и полезен.
+                            </p>
+                            <div class="testimonial-author">Георги Петров</div>
+                            <div class="testimonial-role">IT Специалист</div>
                         </div>
                     </div>
 
                     <!-- Testimonial 3 -->
                     <div class="testimonial-slide hidden">
-                                <div class="testimonial-card">
-                                    <div class="testimonial-rating">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
-                                    </div>
-                                    <p class="testimonial-text">
-                                        Комбинацията от астрология и психология е нещо уникално.
-                                    </p>
-                                    <div class="testimonial-author">Анна Димитрова</div>
-                                    <div class="testimonial-role">Архитект</div>
+                            </div>
+                            <p class="testimonial-text">
+                                Комбинацията от астрология и психология е нещо уникално.
+                            </p>
+                            <div class="testimonial-author">Анна Димитрова</div>
+                            <div class="testimonial-role">Архитект</div>
                         </div>
                     </div>
 
                     <!-- Testimonial 4 -->
                     <div class="testimonial-slide hidden">
-                                <div class="testimonial-card">
-                                    <div class="testimonial-rating">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-gray-300"></i>
-                                    </div>
-                                    <p class="testimonial-text">
-                                        Психологическите сесии бяха много полезни, но бих искал още малко практически съвети. Като цяло – добро преживяване!
-                                    </p>
-                                    <div class="testimonial-author">Калин Георгиев</div>
-                                    <div class="testimonial-role">Предприемач</div>
-                                </div>
                             </div>
+                            <p class="testimonial-text">
+                                Психологическите сесии бяха много полезни, но бих искал още малко практически съвети. Като цяло – добро преживяване!
+                            </p>
+                            <div class="testimonial-author">Калин Георгиев</div>
+                            <div class="testimonial-role">Предприемач</div>
+                        </div>
+                    </div>
 
                     <!-- Testimonial 5 -->
                     <div class="testimonial-slide hidden">
-                                <div class="testimonial-card">
-                                    <div class="testimonial-rating">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-yellow-400"></i>
                                 <i class="fas fa-star text-gray-300"></i>
-                                    </div>
-                                    <p class="testimonial-text">
-                                        Професионален и човешки подход! Сеансът ми помогна да разбера себе си по-добре. Единствено малко по-дългите сесии биха били перфектни.
-                                    </p>
-                                    <div class="testimonial-author">Иван Стоянов</div>
-                                    <div class="testimonial-role">Мениджър</div>
-                                </div>
                             </div>
+                            <p class="testimonial-text">
+                                Професионален и човешки подход! Сеансът ми помогна да разбера себе си по-добре. Единствено малко по-дългите сесии биха били перфектни.
+                            </p>
+                            <div class="testimonial-author">Иван Стоянов</div>
+                            <div class="testimonial-role">Мениджър</div>
+                        </div>
+                    </div>
 
                     <!-- Navigation buttons -->
                     <button class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110" id="prevBtn">
@@ -390,7 +484,7 @@
                     <button class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110" id="nextBtn">
                         <i class="fas fa-chevron-right"></i>
                     </button>
-                    </div>
+                </div>
 
                 <!-- Dots indicator -->
                 <div class="flex justify-center mt-8 space-x-2">
@@ -417,7 +511,7 @@
             function showSlide(index) {
                 slides.removeClass('active').addClass('hidden');
                 dots.removeClass('active bg-primary').addClass('bg-gray-300');
-                
+
                 slides.eq(index).removeClass('hidden').addClass('active');
                 dots.eq(index).removeClass('bg-gray-300').addClass('active bg-primary');
             }

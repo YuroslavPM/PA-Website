@@ -27,14 +27,14 @@
         }
 
         .create-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
             height: 6px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-        }
+            }
 
         .create-header {
             padding: 2.5rem 2.5rem 1.5rem;
@@ -56,16 +56,16 @@
         }
 
         .create-title::after {
-            content: '';
-            position: absolute;
+                content: '';
+                position: absolute;
             bottom: -12px;
-            left: 50%;
-            transform: translateX(-50%);
+                left: 50%;
+                transform: translateX(-50%);
             width: 100px;
-            height: 4px;
+                height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-            border-radius: 2px;
-        }
+                border-radius: 2px;
+            }
 
         .create-subtitle {
             color: #64748b;
@@ -109,7 +109,7 @@
 
         .input-group {
             position: relative;
-        }
+            }
 
         .input-group-text {
             position: absolute;
@@ -159,10 +159,10 @@
 
         .btn-primary:hover {
             background: linear-gradient(135deg, #7c3aed, #4c1d95);
-            color: white;
+                color: white;
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-        }
+            }
 
         .btn-outline {
             border: 2px solid #4c1d95;
@@ -180,10 +180,10 @@
 
         .btn-outline:hover {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
-            color: white;
+                color: white;
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-        }
+            }
 
         .action-buttons {
             display: flex;
@@ -228,7 +228,7 @@
             .create-header,
             .create-body {
                 padding: 1.5rem;
-            }
+        }
 
             .action-buttons {
                 flex-direction: column;
@@ -244,35 +244,35 @@
             <div class="create-header">
                 <h1 class="create-title">Създай Нова Статия</h1>
                 <p class="create-subtitle">Добавете нова статия към вашия блог</p>
-            </div>
+                    </div>
 
             <div class="create-body">
                 <form asp-action="Create" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="alert-danger"></div>
 
                     <div class="form-group">
-                        <label asp-for="Title" class="form-label">Заглавие</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-heading"></i></span>
-                            <input asp-for="Title" class="form-control" placeholder="Въведете заглавие на статията" />
+                            <label asp-for="Title" class="form-label">Заглавие</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                                <input asp-for="Title" class="form-control" placeholder="Въведете заглавие на статията" />
+                            </div>
+                            <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
-                        <span asp-validation-for="Title" class="text-danger"></span>
-                    </div>
 
                     <div class="form-group">
-                        <label asp-for="Description" class="form-label">Съдържание</label>
+                            <label asp-for="Description" class="form-label">Съдържание</label>
                         <textarea asp-for="Description" id="editor" class="form-control"></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
 
                     <div class="form-group">
                         <label asp-for="ImageFile" class="form-label">Снимка</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-image"></i></span>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-image"></i></span>
                             <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                            </div>
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
                         </div>
-                        <span asp-validation-for="ImageFile" class="text-danger"></span>
-                    </div>
 
                     <div class="action-buttons">
                         <button type="submit" class="btn-primary">
@@ -281,8 +281,8 @@
                         <a asp-action="Index" class="btn-outline">
                             <i class="fas fa-arrow-left"></i>Назад към списъка
                         </a>
-                    </div>
-                </form>
+                        </div>
+                    </form>
             </div>
         </div>
     </div>
@@ -299,7 +299,7 @@
             })
             .catch(error => {
                 console.error(error);
-            });
+        });
     </script>
 }
 

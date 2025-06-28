@@ -12,6 +12,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace PA_Website.Controllers
 {
@@ -19,12 +20,13 @@ namespace PA_Website.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _emailSender;
 
-
-        public UserServicesController(ApplicationDbContext context, UserManager<User> userService)
+        public UserServicesController(ApplicationDbContext context, UserManager<User> userService, IEmailSender emailSender)
         {
             _context = context;
             _userManager = userService;
+            _emailSender = emailSender;
         }
 
         // GET: UserServices
@@ -197,6 +199,7 @@ namespace PA_Website.Controllers
         }
 
         // GET: UserServices/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["ServiceId"] = new SelectList(_context.Service, "Id", "CategoryOfService");
@@ -405,7 +408,11 @@ namespace PA_Website.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int id, string newStatus)
         {
-            var reservation = await _context.userServices.FindAsync(id);
+            var reservation = await _context.userServices
+                .Include(r => r.User)
+                .Include(r => r.Service)
+                .FirstOrDefaultAsync(r => r.Id == id);
+                
             if (reservation == null)
             {
                 return NotFound();
@@ -419,13 +426,100 @@ namespace PA_Website.Controllers
                 return RedirectToAction("Details", new { id });
             }
 
+            var oldStatus = reservation.Status;
             reservation.Status = newStatus;
             _context.Update(reservation);
             await _context.SaveChangesAsync();
 
+            // Send confirmation email when status is changed to "Confirmed"
+            if (newStatus == "Confirmed" && oldStatus != "Confirmed" && !string.IsNullOrEmpty(reservation.User?.Email))
+            {
+                var subject = "Потвърждение на плащането - Резервацията е активирана";
+                
+                string dateInfo = reservation.Service.CategoryOfService.ToLower() == "астрология"
+                    ? $"<li>Дата за астрологичен анализ: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>"
+                    : $"<li>Дата на консултация: {reservation.ReservationDate:dd.MM.yyyy HH:mm}</li>";
+                    
+                string birthCityInfo = reservation.Service.CategoryOfService.ToLower() == "астрология" && !string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth)
+                    ? $"<li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>"
+                    : string.Empty;
+
+                var htmlMessage = $@"
+<h3>Уважаеми/а {reservation.User.FName},</h3>
+<p>Благодарим Ви за плащането!</p>
+<div style='background-color: #d1fae5; padding: 15px; border-left: 5px solid #10b981; margin: 15px 0;'>
+    <h4 style='color: #065f46; margin-top: 0;'>Статус на резервацията: <strong>ПОТВЪРДЕНА</strong></h4>
+    <p>Вашата резервация е успешно активирана и потвърдена.</p>
+</div>
+<p><strong>Данни за резервация:</strong></p>
+<ul>
+    <li>Услуга: {reservation.Service.NameService}</li>
+    <li>Категория: {reservation.Service.CategoryOfService}</li>
+    {dateInfo}
+    {birthCityInfo}
+    <li>Цена: {reservation.Service.Price} лв.</li>
+</ul>
+<p><strong>Следващи стъпки:</strong></p>
+<ul>
+    <li>За психологически консултации: Ще се свържем с Вас за потвърждение на часа</li>
+    <li>За астрологични услуги: Ще получите вашата астрологична карта в срок</li>
+</ul>
+<p>Ако имате въпроси, не се колебайте да се свържете с нас.</p>
+<p>С уважение,<br>Екипът на Душевна Мозайка</p>
+";
+                await _emailSender.SendEmailAsync(reservation.User.Email, subject, htmlMessage);
+            }
+
+            // Send completion email when status is changed to "Completed" for astrology services
+            if (newStatus == "Completed" && oldStatus != "Completed" && 
+                reservation.Service.CategoryOfService.ToLower() == "астрология" && 
+                !string.IsNullOrEmpty(reservation.User?.Email))
+            {
+                var subject = "Вашата астрологична услуга е завършена";
+                
+                // Generate the URL for the user service details
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var userServiceUrl = $"{baseUrl}/UserServices/Details/{reservation.Id}";
+
+                var htmlMessage = $@"
+<h3>Уважаеми/а {reservation.User.FName},</h3>
+<p>Радваме се да Ви информираме, че вашата астрологична услуга е успешно завършена!</p>
+<div style='background-color: #dbeafe; padding: 15px; border-left: 5px solid #3b82f6; margin: 15px 0;'>
+    <h4 style='color: #1e40af; margin-top: 0;'>Статус на услугата: <strong>ЗАВЪРШЕНА</strong></h4>
+    <p>Вашата астрологична карта е готова и качена в системата.</p>
+</div>
+<p><strong>Детайли за услугата:</strong></p>
+<ul>
+    <li>Услуга: {reservation.Service.NameService}</li>
+    <li>Категория: {reservation.Service.CategoryOfService}</li>
+    <li>Дата за астрологичен анализ: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>
+    <li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>
+    <li>Цена: {reservation.Service.Price} лв.</li>
+</ul>
+<p><strong>Какво следва:</strong></p>
+<ul>
+    <li>Вашата астрологична карта е качена и достъпна</li>
+    <li>Можете да я изтеглите от вашия профил</li>
+    <li>Ще получите подробен анализ на вашата астрологична карта</li>
+</ul>
+<div style='text-align: center; margin: 30px 0;'>
+    <a href='{userServiceUrl}' style='background-color: #7c3aed; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>
+        <i class='fas fa-download' style='margin-right: 8px;'></i>
+        Преглед на резервацията
+    </a>
+</div>
+<p style='font-size: 14px; color: #6b7280;'>
+    <strong>Забележка:</strong> Бутонът по-горе ще Ви отведе директно към страницата с детайлите на вашата резервация, 
+    където можете да изтеглите астрологичната карта.
+</p>
+<p>Благодарим Ви, че избрахте нашите услуги!</p>
+<p>С уважение,<br>Екипът на Душевна Мозайка</p>
+";
+                await _emailSender.SendEmailAsync(reservation.User.Email, subject, htmlMessage);
+            }
+
             TempData["SuccessMessage"] = $"Статусът е променен на {newStatus}.";
             return RedirectToAction("Details", new { id });
-
         }
 
 
@@ -436,6 +530,7 @@ namespace PA_Website.Controllers
         {
             var reservation = await _context.userServices
                 .Include(u => u.Service)
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (reservation == null)
@@ -486,6 +581,9 @@ namespace PA_Website.Controllers
                 await astroCardFile.CopyToAsync(fileStream);
             }
 
+            // Store old status to check if we need to send email
+            var oldStatus = reservation.Status;
+
             // Update reservation with file info
             reservation.AstroCardFileName = astroCardFile.FileName;
             reservation.AstroCardFilePath = $"/astro-cards/{uniqueFileName}";
@@ -496,6 +594,54 @@ namespace PA_Website.Controllers
 
             _context.Update(reservation);
             await _context.SaveChangesAsync();
+
+            // Send completion email when status is changed to "Completed" for astrology services
+            if (reservation.Status == "Completed" && oldStatus != "Completed" && 
+                reservation.Service.CategoryOfService.ToLower() == "астрология" && 
+                !string.IsNullOrEmpty(reservation.User?.Email))
+            {
+                var subject = "Вашата астрологична услуга е завършена";
+                
+                // Generate the URL for the user service details
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var userServiceUrl = $"{baseUrl}/UserServices/Details/{reservation.Id}";
+
+                var htmlMessage = $@"
+<h3>Уважаеми/а {reservation.User.FName},</h3>
+<p>Радваме се да Ви информираме, че вашата астрологична услуга е успешно завършена!</p>
+<div style='background-color: #dbeafe; padding: 15px; border-left: 5px solid #3b82f6; margin: 15px 0;'>
+    <h4 style='color: #1e40af; margin-top: 0;'>Статус на услугата: <strong>ЗАВЪРШЕНА</strong></h4>
+    <p>Вашата астрологична карта е готова и качена в системата.</p>
+</div>
+<p><strong>Детайли за услугата:</strong></p>
+<ul>
+    <li>Услуга: {reservation.Service.NameService}</li>
+    <li>Категория: {reservation.Service.CategoryOfService}</li>
+    <li>Дата за астрологичен анализ: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>
+    <li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>
+    <li>Цена: {reservation.Service.Price} лв.</li>
+</ul>
+<p><strong>Какво следва:</strong></p>
+<ul>
+    <li>Вашата астрологична карта е качена и достъпна</li>
+    <li>Можете да я изтеглите от вашия профил</li>
+    <li>Ще получите подробен анализ на вашата астрологична карта</li>
+</ul>
+<div style='text-align: center; margin: 30px 0;'>
+    <a href='{userServiceUrl}' style='background-color: #7c3aed; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>
+        <i class='fas fa-download' style='margin-right: 8px;'></i>
+        Преглед на резервацията
+    </a>
+</div>
+<p style='font-size: 14px; color: #6b7280;'>
+    <strong>Забележка:</strong> Бутонът по-горе ще Ви отведе директно към страницата с детайлите на вашата резервация, 
+    където можете да изтеглите астрологичната карта.
+</p>
+<p>Благодарим Ви, че избрахте нашите услуги!</p>
+<p>С уважение,<br>Екипът на Душевна Мозайка</p>
+";
+                await _emailSender.SendEmailAsync(reservation.User.Email, subject, htmlMessage);
+            }
 
             TempData["SuccessMessage"] = "Астрологичната карта е качена успешно!";
             return RedirectToAction("Details", new { id });

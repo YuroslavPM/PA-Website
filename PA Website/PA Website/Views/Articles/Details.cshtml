@@ -29,14 +29,14 @@
         }
 
         .details-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
             height: 6px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-        }
+            }
 
         .details-header {
             padding: 2.5rem 2.5rem 1.5rem;
@@ -114,7 +114,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
-        }
+            }
 
         .article-content {
             line-height: 1.8;
@@ -179,7 +179,7 @@
             gap: 1rem;
             margin-top: 2rem;
             flex-wrap: wrap;
-        }
+            }
 
         .btn-primary {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
@@ -200,9 +200,9 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #7c3aed, #4c1d95);
             color: white;
-            transform: translateY(-2px);
+                transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-        }
+            }
 
         .btn-outline {
             border: 2px solid #4c1d95;
@@ -220,10 +220,10 @@
 
         .btn-outline:hover {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
-            color: white;
+                color: white;
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-        }
+            }
 
         .btn-danger {
             background: linear-gradient(135deg, #dc2626, #ef4444);
@@ -239,7 +239,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-        }
+            }
 
         .btn-danger:hover {
             background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -277,12 +277,7 @@
         <div class="details-card">
             <div class="details-header">
                 <h1 class="details-title">@Model.Title</h1>
-                @if (!string.IsNullOrEmpty(Model.Description))
-                {
-                    <p class="details-subtitle">@Model.Description</p>
-                }
-                
-                <div class="article-meta">
+                        <div class="article-meta">
                     <div class="meta-item">
                         <span class="meta-icon">
                             <i class="fas fa-calendar"></i>
@@ -295,8 +290,8 @@
                             <span class="meta-icon">
                                 <i class="fas fa-tag"></i>
                             </span>
-                            <span>@Model.Category</span>
-                        </div>
+                                <span>@Model.Category</span>
+                            </div>
                     }
                     @if (!string.IsNullOrEmpty(Model.Creator?.UserName))
                     {
@@ -305,10 +300,10 @@
                                 <i class="fas fa-user"></i>
                             </span>
                             <span>@Model.Creator.UserName</span>
-                        </div>
+                            </div>
                     }
-                </div>
-            </div>
+                        </div>
+                    </div>
 
             <div class="details-body">
                 @if (!string.IsNullOrEmpty(Model.ImagePath))
@@ -320,19 +315,19 @@
                     </div>
                 }
 
-                <div class="article-content">
-                    @Html.Raw(Model.Description)
-                </div>
+                    <div class="article-content">
+                        @Html.Raw(Model.Description)
+                    </div>
 
                 <div class="action-buttons">
-                    @if (isAdmin)
-                    {
+                        @if (isAdmin)
+                        {
                         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-primary">
                             <i class="fas fa-edit"></i>Редактирай
-                        </a>
+                                </a>
                         <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-danger">
                             <i class="fas fa-trash"></i>Изтрий
-                        </a>
+                                </a>
                     }
                     <a asp-action="Index" class="btn-outline">
                         <i class="fas fa-arrow-left"></i>Назад към списъка

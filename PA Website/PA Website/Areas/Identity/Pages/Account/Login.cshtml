@@ -25,14 +25,14 @@
         }
 
         .auth-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
             height: 6px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-        }
+            }
 
         .auth-header {
             padding: 2.5rem 2.5rem 1.5rem;
@@ -54,16 +54,16 @@
         }
 
         .auth-title::after {
-            content: '';
-            position: absolute;
+                content: '';
+                position: absolute;
             bottom: -12px;
-            left: 50%;
-            transform: translateX(-50%);
+                left: 50%;
+                transform: translateX(-50%);
             width: 100px;
-            height: 4px;
+                height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-            border-radius: 2px;
-        }
+                border-radius: 2px;
+            }
 
         .auth-subtitle {
             color: #64748b;
@@ -124,7 +124,7 @@
             color: #4c1d95;
             font-weight: 500;
             margin-left: 0.5rem;
-        }
+            }
 
         .btn-primary {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
@@ -142,9 +142,9 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #7c3aed, #4c1d95);
             color: white;
-            transform: translateY(-2px);
+                transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-        }
+            }
 
         .auth-links {
             margin-top: 2rem;
@@ -153,17 +153,17 @@
 
         .auth-links a {
             color: #7c3aed;
-            text-decoration: none;
+                text-decoration: none;
             transition: all 0.3s;
-            display: inline-block;
+                display: inline-block;
             margin: 0 1rem;
             font-weight: 500;
-        }
+            }
 
         .auth-links a:hover {
             color: #4c1d95;
-            transform: translateY(-1px);
-        }
+                    transform: translateY(-1px);
+                }
 
         .divider {
             display: flex;
@@ -172,10 +172,10 @@
         }
 
         .divider::before, .divider::after {
-            content: '';
-            flex: 1;
+                content: '';
+                flex: 1;
             border-bottom: 1px solid #e2e8f0;
-        }
+            }
 
         .divider-text {
             padding: 0 1rem;
@@ -287,31 +287,31 @@
 
                         <section>
                             <h3 class="text-center mb-3" style="color: #4c1d95; font-weight: 600;">Вход чрез външни услуги</h3>
-                            @{
-                                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                                {
+                        @{
+                            if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                            {
                                     <div class="text-center">
                                         <p style="color: #64748b;">
                                             В момента няма конфигурирани външни услуги за автентикация.
                                         </p>
-                                    </div>
-                                }
-                                else
-                                {
+                                </div>
+                            }
+                            else
+                            {
                                     <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                                         <div class="external-login">
                                             <p class="mb-3" style="color: #64748b;">
-                                                @foreach (var provider in Model.ExternalLogins!)
-                                                {
+                                        @foreach (var provider in Model.ExternalLogins!)
+                                        {
                                                     <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Вход чрез вашия @provider.DisplayName акаунт">
                                                         @provider.DisplayName
-                                                    </button>
-                                                }
+                                            </button>
+                                        }
                                             </p>
-                                        </div>
-                                    </form>
-                                }
+                                    </div>
+                                </form>
                             }
+                        }
                         </section>
                     </div>
                 </div>

@@ -53,15 +53,15 @@
         }
 
         .articles-title::after {
-            content: '';
-            position: absolute;
+                content: '';
+                position: absolute;
             bottom: -12px;
             left: 0;
             width: 100px;
             height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-            border-radius: 2px;
-        }
+                border-radius: 2px;
+            }
 
         .articles-subtitle {
             color: #64748b;
@@ -94,7 +94,7 @@
 
         .articles-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
             margin-bottom: 2rem;
         }
@@ -120,37 +120,37 @@
             overflow: hidden;
         }
 
-        .article-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
+            .article-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
 
         .article-card:hover .article-image img {
             transform: scale(1.05);
         }
 
         .article-image::before {
-            content: '';
-            position: absolute;
+                content: '';
+                position: absolute;
             inset: 0;
             background: linear-gradient(135deg, rgba(76, 29, 149, 0.3), rgba(124, 58, 237, 0.3));
             z-index: 1;
-        }
+            }
 
         .article-content {
             padding: 1.5rem;
         }
 
         .article-meta {
-            display: flex;
+                display: flex;
             justify-content: space-between;
-            align-items: center;
+                align-items: center;
             margin-bottom: 1rem;
             flex-wrap: wrap;
             gap: 0.5rem;
-        }
+            }
 
         .category-badge {
             background: linear-gradient(135deg, #f59e0b, #f97316);
@@ -166,7 +166,7 @@
 
         .date-badge {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
-            color: white;
+                color: white;
             border-radius: 12px;
             padding: 0.5rem 1rem;
             font-weight: 600;
@@ -194,7 +194,7 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-        }
+            }
 
         .article-author {
             color: #9ca3af;
@@ -247,11 +247,11 @@
             gap: 0.5rem;
         }
 
-        .btn-outline:hover {
+            .btn-outline:hover {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
-            color: white;
+                color: white;
             transform: translateY(-1px);
-        }
+            }
 
         .btn-danger {
             border: 1px solid #dc2626;
@@ -261,12 +261,12 @@
             font-weight: 500;
             font-size: 0.875rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: white;
+                background: white;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-        }
+            }
 
         .btn-danger:hover {
             background: linear-gradient(135deg, #dc2626, #ef4444);
@@ -296,13 +296,13 @@
             font-size: 1.5rem;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 1rem;
-        }
+                margin-bottom: 1rem;
+            }
 
         .empty-description {
             color: #6b7280;
             margin-bottom: 2rem;
-        }
+            }
 
         @@media (max-width: 768px) {
             .articles-title {
@@ -314,12 +314,19 @@
             }
 
             .articles-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
                 gap: 1.5rem;
             }
 
             .article-actions {
                 flex-direction: column;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .articles-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
         }
     </style>
@@ -334,13 +341,13 @@
                     <h1 class="articles-title">Статии</h1>
                     <p class="articles-subtitle">Разгледайте нашите статии за психология и астрология</p>
                 </div>
-                
-                @if (isAdmin)
-                {
+
+        @if (isAdmin)
+        {
                     <a href="@Url.Action("Create", "Articles")" class="btn-create">
                         <i class="fas fa-plus"></i>
                         Добави статия
-                    </a>
+                </a>
                 }
             </div>
         </div>
@@ -351,7 +358,7 @@
             <div class="articles-grid">
                 @foreach (var article in Model)
                 {
-                    <div class="article-card">
+                        <div class="article-card">
                         <!-- Article Image -->
                         <div class="article-image">
                             @if (!string.IsNullOrEmpty(article.ImagePath))
@@ -364,7 +371,7 @@
                                     <i class="fas fa-newspaper text-6xl text-white opacity-50"></i>
                                 </div>
                             }
-                        </div>
+                                </div>
 
                         <!-- Article Content -->
                         <div class="article-content">
@@ -402,14 +409,14 @@
                                 <a href="@Url.Action("Details", "Articles", new { id = article.Id })" class="btn-primary">
                                     <i class="fas fa-eye"></i>
                                     Прочети
-                                </a>
-
-                                @if (isAdmin)
-                                {
-                                    <a href="@Url.Action("Edit", "Articles", new { id = article.Id })" class="btn-outline">
-                                        <i class="fas fa-edit"></i>
-                                        Редактирай
                                     </a>
+
+                                    @if (isAdmin)
+                                    {
+                                    <a href="@Url.Action("Edit", "Articles", new { id = article.Id })" class="btn-outline">
+                                                <i class="fas fa-edit"></i>
+                                        Редактирай
+                                            </a>
 
                                     <a href="@Url.Action("Delete", "Articles", new { id = article.Id })" class="btn-danger">
                                         <i class="fas fa-trash"></i>
@@ -443,4 +450,5 @@
             </div>
         }
     </div>
+</div>
 </div>

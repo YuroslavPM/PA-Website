@@ -20,7 +20,7 @@ namespace PA_Website.Controllers
             _context = context;
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Users.ToListAsync());
@@ -45,6 +45,7 @@ namespace PA_Website.Controllers
         }
 
         // GET: Users/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();

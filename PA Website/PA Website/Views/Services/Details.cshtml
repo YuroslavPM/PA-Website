@@ -7,9 +7,15 @@
     var reservedTimes = ViewData["ReservedTimes"] as List<DateTime> ?? new List<DateTime>();
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
-    ViewData["Title"] = "Детайли";
+    ViewData["Title"] = "Детайли за услугата";
     var serviceId = Model.Id;
     Layout = "_Layout";
+
+    // Helper method to convert BGN to EUR (approximate rate: 1 EUR = 1.95583 BGN)
+    decimal ConvertToEur(decimal bgnPrice)
+    {
+        return Math.Round(bgnPrice / 1.95583m, 2);
+    }
 }
 
 @section Styles {
@@ -335,7 +341,7 @@
                     <dd>
                         <div class="price-display">
                             <i class="fas fa-money-bill-alt me-1"></i>
-                            <span>@Model.Price.ToString("0.00") лв.</span>
+                            <span>@Model.Price.ToString("0.00") лв. / @ConvertToEur(Model.Price).ToString("0.00") €</span>
                         </div>
                     </dd>
 

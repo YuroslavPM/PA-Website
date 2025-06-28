@@ -40,14 +40,14 @@
         }
 
         .admin-panel-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
             height: 6px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-        }
+            }
 
         .admin-panel-header {
             background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
@@ -82,15 +82,15 @@
         }
 
         .admin-panel-title::after {
-            content: '';
-            position: absolute;
+                content: '';
+                position: absolute;
             bottom: -12px;
             left: 0;
             width: 100px;
-            height: 4px;
+                height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-            border-radius: 2px;
-        }
+                border-radius: 2px;
+            }
 
         .admin-panel-subtitle {
             color: #64748b;
@@ -121,11 +121,11 @@
             background: white;
         }
 
-        .form-select:focus {
+            .form-select:focus {
             border-color: #7c3aed;
             box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
             outline: none;
-        }
+            }
 
         .reservation-card {
             border-left: 6px solid #7c3aed;
@@ -137,11 +137,11 @@
             overflow: hidden;
         }
 
-        .reservation-card:hover {
+            .reservation-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
             border-left-color: #4c1d95;
-        }
+            }
 
         .reservation-card-header {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
@@ -203,12 +203,12 @@
             box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
         }
 
-        .btn-admin:hover {
-            transform: translateY(-2px);
+            .btn-admin:hover {
+                transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-            color: white;
+                color: white;
             background: linear-gradient(135deg, #7c3aed, #4c1d95);
-        }
+            }
 
         .btn-outline-admin {
             border: 2px solid #4c1d95;
@@ -221,12 +221,12 @@
             background: white;
         }
 
-        .btn-outline-admin:hover {
+            .btn-outline-admin:hover {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
-            color: white;
+                color: white;
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-        }
+            }
 
         .pagination-container {
             display: flex;
@@ -317,17 +317,17 @@
 
 <div class="admin-panel-container">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="admin-panel-header">
+            <div class="admin-panel-header">
             <h1 class="admin-panel-title">Административен Панел - Резервации</h1>
             <p class="admin-panel-subtitle">Всички резервации на потребителите</p>
-        </div>
+            </div>
 
-        <div class="admin-panel-body">
+            <div class="admin-panel-body">
             <div class="mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="sortDropdown" class="form-label">Сортиране по:</label>
-                        <select id="sortDropdown" class="form-select">
+                            <label for="sortDropdown" class="form-label">Сортиране по:</label>
+                            <select id="sortDropdown" class="form-select">
                             @foreach (var so in sortOrders)
                             {
                                 if (so.Value == selectedSort)
@@ -339,11 +339,11 @@
                                     @:<option value="@so.Value">@so.Text</option>
                                 }
                             }
-                        </select>
-                    </div>
+                            </select>
+                        </div>
                     <div>
-                        <label for="statusFilter" class="form-label">Филтър по статус:</label>
-                        <select id="statusFilter" class="form-select">
+                            <label for="statusFilter" class="form-label">Филтър по статус:</label>
+                            <select id="statusFilter" class="form-select">
                             @foreach (var status in statuses)
                             {
                                 if (status.Value == selectedStatus)
@@ -355,34 +355,34 @@
                                     @:<option value="@status.Value">@status.Text</option>
                                 }
                             }
-                        </select>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="reservationsTable">
-                @foreach (var item in Model)
-                {
-                    <div class="reservation-card">
+                <div id="reservationsTable">
+                    @foreach (var item in Model)
+                    {
+                        <div class="reservation-card">
                         <div class="reservation-card-header">
                             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
                                         <i class="fas fa-calendar-check text-white text-lg"></i>
                                     </div>
-                                    <div>
+                                <div>
                                         <h3 class="text-xl font-bold text-gray-800">Резервация #@item.Id</h3>
-                                        <span class="status-badge @(item.Status == "Pending" ? "status-pending" : 
-                                                                  item.Status == "Confirmed" ? "status-confirmed" : 
-                                                                  item.Status == "Completed" ? "status-completed" : 
-                                                                  item.Status == "Cancelled" ? "status-cancelled" :
-                                                                  item.Status == "Expired" ? "status-expired" : "")">
-                                            @(item.Status == "Pending" ? "Чакаща" : 
-                                              item.Status == "Confirmed" ? "Потвърдена" : 
-                                              item.Status == "Completed" ? "Завършена" : 
-                                              item.Status == "Cancelled" ? "Отказана" :
-                                              item.Status == "Expired" ? "Изтекла" : "")
-                                        </span>
+                                    <span class="status-badge @(item.Status == "Pending" ? "status-pending" : 
+                                                              item.Status == "Confirmed" ? "status-confirmed" : 
+                                                              item.Status == "Completed" ? "status-completed" : 
+                                                              item.Status == "Cancelled" ? "status-cancelled" :
+                                                              item.Status == "Expired" ? "status-expired" : "")">
+                                        @(item.Status == "Pending" ? "Чакаща" : 
+                                          item.Status == "Confirmed" ? "Потвърдена" : 
+                                          item.Status == "Completed" ? "Завършена" : 
+                                          item.Status == "Cancelled" ? "Отказана" :
+                                          item.Status == "Expired" ? "Изтекла" : "")
+                                    </span>
                                     </div>
                                 </div>
                                 <div>
@@ -390,59 +390,59 @@
                                         <i class="fas fa-info-circle mr-2"></i> Детайли
                                     </a>
                                 </div>
+                                </div>
+                            </div>
+                            <div class="reservation-card-body">
+                                <div class="reservation-meta">
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Потребител</div>
+                                        <div class="reservation-meta-value">@item.User.Email</div>
+                                    </div>
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Услуга</div>
+                                        <div class="reservation-meta-value">@item.Service.NameService</div>
+                                    </div>
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Категория</div>
+                                        <div class="reservation-meta-value">@item.Service.CategoryOfService</div>
+                                    </div>
+                                    @if(item.Service.CategoryOfService.ToLower() == "психология"){
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Дата на резервация</div>
+                                        <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
+                                    </div>
+                                    }
+                                </div>
                             </div>
                         </div>
-                        <div class="reservation-card-body">
-                            <div class="reservation-meta">
-                                <div class="reservation-meta-item">
-                                    <div class="reservation-meta-label">Потребител</div>
-                                    <div class="reservation-meta-value">@item.User.Email</div>
-                                </div>
-                                <div class="reservation-meta-item">
-                                    <div class="reservation-meta-label">Услуга</div>
-                                    <div class="reservation-meta-value">@item.Service.NameService</div>
-                                </div>
-                                <div class="reservation-meta-item">
-                                    <div class="reservation-meta-label">Категория</div>
-                                    <div class="reservation-meta-value">@item.Service.CategoryOfService</div>
-                                </div>
-                                @if(item.Service.CategoryOfService.ToLower() == "психология"){
-                                <div class="reservation-meta-item">
-                                    <div class="reservation-meta-label">Дата на резервация</div>
-                                    <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
+                    }
 
-                @if (!Model.Any())
-                {
+                    @if (!Model.Any())
+                    {
                     <div class="text-center py-16">
                         <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
                             <i class="fas fa-calendar-times text-4xl text-purple-500"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Няма намерени резервации</h3>
                         <p class="text-gray-600">В момента няма резервации, които отговарят на зададените критерии.</p>
-                    </div>
-                }
-            </div>
+                        </div>
+                    }
+                </div>
 
-            <div class="pagination-container">
-                @if (currentPage > 1)
-                {
+                <div class="pagination-container">
+                    @if (currentPage > 1)
+                    {
                     <button id="prevPage" class="btn-outline-admin">
                         <i class="fas fa-chevron-left mr-2"></i> Предишна
-                    </button>
-                }
-                <span class="page-info">Страница @currentPage от @totalPages</span>
-                @if (currentPage < totalPages)
-                {
+                        </button>
+                    }
+                    <span class="page-info">Страница @currentPage от @totalPages</span>
+                    @if (currentPage < totalPages)
+                    {
                     <button id="nextPage" class="btn-outline-admin">
                         Следваща <i class="fas fa-chevron-right ml-2"></i>
-                    </button>
-                }
+                        </button>
+                    }
             </div>
         </div>
     </div>
@@ -487,11 +487,11 @@
             });
             
             $('#statusFilter').change(function() {
-                var status = $(this).val();
-                window.location.href = '@Url.Action("IndexAdmin")' +
-                    '?statusFilter=' + status +
-                    '&sortOrder=@ViewData["SortOrder"]';
-            });
+            var status = $(this).val();
+            window.location.href = '@Url.Action("IndexAdmin")' +
+                '?statusFilter=' + status +
+                '&sortOrder=@ViewData["SortOrder"]';
+        });
         });
     </script>
 }
