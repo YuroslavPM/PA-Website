@@ -19,6 +19,8 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             overflow: hidden;
             position: relative;
+            max-width: none !important;
+            width: 100% !important;
         }
 
             .edit-article-card:before {
@@ -46,7 +48,7 @@
         }
 
         .edit-article-body {
-            padding: 1rem 2rem 2rem;
+            padding: 0 1rem 2rem !important;
             background: white;
         }
 
@@ -61,6 +63,7 @@
             border-radius: 8px;
             padding: 10px 15px;
             transition: all 0.3s;
+            width: 100% !important;
         }
 
             .form-control:focus {
@@ -130,13 +133,37 @@
                 gap: 1rem;
             }
         }
+
+        /* Make the description field wider */
+        #editor {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+
+        .ck-editor__editable {
+            min-height: 500px !important;
+            width: 100% !important;
+        }
+
+        .ck-editor {
+            width: 100% !important;
+        }
+
+        /* Make the form wider */
+        .edit-article-body {
+            padding: 0 1rem 2rem !important;
+        }
+
+        .input-group {
+            width: 100% !important;
+        }
     </style>
 }
 
 <div class="edit-article-container">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-12 col-xl-11">
                 <div class="edit-article-card">
                     <div class="edit-article-header">
                         <h1 class="edit-article-title">Редактирай Статия</h1>
@@ -182,7 +209,7 @@
 
                         <div class="mb-4">
                             <label asp-for="Description" class="form-label">Съдържание</label>
-                            <textarea asp-for="Description" class="form-control" id="editor" rows="10" placeholder="Въведете пълното съдържание"></textarea>
+                            <textarea asp-for="Description" class="form-control" id="editor" rows="15" placeholder="Въведете пълното съдържание"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                     </form>
@@ -202,23 +229,17 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                toolbar: [
-                    'undo', 'redo', '|',
-                    'bold', 'italic', 'underline', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'alignment', 'blockQuote', '|',
-                    'link', 'insertTable', '|',
-                    'removeFormat'
-                ],
-                language: 'bg'
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        CKEDITOR.replace('editor', {
+            language: 'bg',
+            height: 500,
+            filebrowserUploadUrl: '/Articles/UploadImage',
+            filebrowserUploadMethod: 'form',
+            removePlugins: 'elementspath,resize',
+            extraPlugins: 'uploadimage',
+            uploadUrl: '/Articles/UploadImage'
+        });
     </script>
 
     @await Html.PartialAsync("_ValidationScriptsPartial")

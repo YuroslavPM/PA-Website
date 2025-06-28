@@ -55,37 +55,37 @@ namespace PA_Website.Areas.Identity.Pages.Account
                 var htmlMessage = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
                     <div style='text-align: center; margin-bottom: 30px;'>
-                        <h1 style='color: #333; margin-bottom: 10px;'>Password Reset Request</h1>
+                        <h1 style='color: #333; margin-bottom: 10px;'>Промяна на парола/h1>
                         <p style='color: #666; margin: 0;'>PA Website</p>
                     </div>
                     
                     <div style='background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;'>
-                        <h2 style='color: #495057; margin-top: 0;'>Hello!</h2>
-                        <p>We received a request to reset your password for your PA Website account.</p>
-                        <p>To reset your password, please click the button below:</p>
+                        <h2 style='color: #495057; margin-top: 0;'>Здравейте!</h2>
+                        <p>Получихме заявка за промяна на паролата за вашия акаунт в PA Website.</p>
+                        <p>За да промените паролата си, моля кликнете бутона по-долу:</p>
                     </div>
                     
                     <div style='text-align: center; margin: 30px 0;'>
                         <a href='{HtmlEncoder.Default.Encode(callbackUrl)}' 
                            style='background-color: #007bff; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>
-                            Reset Your Password
+                            Променете паролата си
                         </a>
                     </div>
                     
                     <div style='background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0;'>
                         <p style='margin: 0; color: #856404;'>
-                            <strong>Important:</strong> This password reset link will expire in 24 hours.
+                            <strong>Важно:</strong> Тази връзка за промяна на парола ще изтече след 24 часа.
                         </p>
                     </div>
                     
                     <p style='color: #666; font-size: 14px; margin-top: 30px;'>
-                        <strong>Security Note:</strong> If you didn't request this password reset, please ignore this email. Your password will remain unchanged.
+                        <strong>Бележка за сигурност:</strong> Ако не сте поискали тази промяна на парола, моля игнорирайте този имейл. Паролата ви ще остане непроменена.
                     </p>
                     
                     <hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'>
                     <p style='color: #999; font-size: 12px; text-align: center;'>
-                        This email was sent on {DateTime.Now:yyyy-MM-dd HH:mm:ss}<br>
-                        From PA Website Security System
+                        Този имейл е изпратен на {DateTime.Now:dd.MM.yyyy HH:mm}<br>
+                        От системата за сигурност на PA Website
                     </p>
                 </div>";
 
@@ -93,7 +93,7 @@ namespace PA_Website.Areas.Identity.Pages.Account
                 {
                     await _emailSender.SendEmailAsync(
                         Input.Email,
-                        "Reset Your PA Website Password",
+                        "Нулиране на парола - PA Website",
                         htmlMessage);
 
                     _logger.LogInformation($"Password reset email sent successfully to: {Input.Email}");
@@ -102,7 +102,7 @@ namespace PA_Website.Areas.Identity.Pages.Account
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Error sending password reset email to: {Input.Email}");
-                    ModelState.AddModelError(string.Empty, "There was an error sending the password reset email. Please try again later.");
+                    ModelState.AddModelError(string.Empty, "Възникна грешка при изпращането на имейла за нулиране на парола. Моля, опитайте отново по-късно.");
                     return Page();
                 }
             }

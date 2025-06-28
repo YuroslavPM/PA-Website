@@ -231,5 +231,55 @@ namespace PA_Website.Controllers
         {
             return _context.Articles.Any(e => e.Id == id);
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UploadImage(IFormFile upload)
+        {
+            try
+            {
+                if (upload == null || upload.Length == 0)
+                {
+                    return Json(new { uploaded = 0, error = new { message = "No image file provided." } });
+                }
+
+                // Validate file type
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var fileExtension = Path.GetExtension(upload.FileName).ToLowerInvariant();
+                
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    return Json(new { uploaded = 0, error = new { message = "Invalid file type. Only JPG, PNG, GIF, and WebP are allowed." } });
+                }
+
+                // Validate file size (max 5MB)
+                if (upload.Length > 5 * 1024 * 1024)
+                {
+                    return Json(new { uploaded = 0, error = new { message = "File size too large. Maximum size is 5MB." } });
+                }
+
+                // Generate unique filename
+                var fileName = Guid.NewGuid().ToString() + fileExtension;
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", "content", fileName);
+
+                // Ensure directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                // Save file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await upload.CopyToAsync(stream);
+                }
+
+                // Return the URL for the uploaded image (CKEditor 4 format)
+                var imageUrl = $"/Images/articles/content/{fileName}";
+
+                return Json(new { uploaded = 1, fileName = fileName, url = imageUrl });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { uploaded = 0, error = new { message = "An error occurred while uploading the image." } });
+            }
+        }
     }
 }

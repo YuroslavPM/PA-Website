@@ -23,6 +23,8 @@
             overflow: hidden;
             position: relative;
             background: white;
+            max-width: none !important;
+            width: 100% !important;
         }
 
             .create-article-card:before {
@@ -63,7 +65,7 @@
             }
 
         .create-article-body {
-            padding: 0 2rem 2rem;
+            padding: 0 1rem 2rem !important;
         }
 
         .form-label {
@@ -77,6 +79,7 @@
             padding: 12px 15px;
             border: 1px solid #ddd;
             transition: all 0.3s;
+            width: 100% !important;
         }
 
             .form-control:focus {
@@ -134,105 +137,132 @@
                 padding: 1.5rem;
             }
         }
+
+        /* Make the description field wider */
+        #editor {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+
+        .ck-editor__editable {
+            min-height: 500px !important;
+            width: 100% !important;
+        }
+
+        .ck-editor {
+            width: 100% !important;
+        }
+
+        /* Make the form wider */
+        .create-article-card {
+            max-width: none !important;
+            width: 100% !important;
+        }
+
+        .create-article-body {
+            padding: 0 1rem 2rem !important;
+        }
+
+        .input-group {
+            width: 100% !important;
+        }
     </style>
 }
 
 <div class="create-article-container">
-    <div class="container">
-        <div class="create-article-card">
-            <div class="create-article-header">
-                <h1 class="create-article-title">Създай Нова Статия</h1>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-xl-11">
+                <div class="create-article-card">
+                    <div class="create-article-header">
+                        <h1 class="create-article-title">Създай Нова Статия</h1>
+                    </div>
+
+                    <form asp-action="Create" class="create-article-body" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label">Заглавие</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                                <input asp-for="Title" class="form-control" placeholder="Въведете заглавие на статията" />
+                            </div>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        @* <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Кратко описание</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Въведете кратко описание"></textarea>
+                            </div>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div> *@
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Съдържание</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
+                                <textarea asp-for="Description" class="form-control" id="editor" rows="15" placeholder="Въведете пълното съдържание"></textarea>
+
+                            </div>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Category" class="form-label">Категория</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <select asp-for="Category" class="form-control">
+                                    <option value="">Изберете категория</option>
+                                    <option value="Психология">Психология</option>
+                                    <option value="Астрология">Астрология</option>
+                                    <option value="Личностно развитие">Личностно развитие</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ImageFile" class="form-label">Снимка на статията</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-image"></i></span>
+                                <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
+                            </div>
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                            <small class="text-muted">Препоръчителен размер: 1200x630 пиксела</small>
+                        </div>
+
+                        <input type="hidden" asp-for="CreatorId" value="@currentUser?.Id" />
+                        <input type="hidden" asp-for="PublicationDate" value="@DateTime.Now" />
+
+                        <div class="d-flex justify-content-between mt-5">
+                            <a asp-action="Index" class="btn btn-outline-article">
+                                <i class="fas fa-arrow-left me-2"></i> Отказ
+                            </a>
+                            <button type="submit" class="btn btn-article">
+                                <i class="fas fa-plus me-2"></i> Създай статия
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <form asp-action="Create" class="create-article-body" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
-
-                <div class="mb-4">
-                    <label asp-for="Title" class="form-label">Заглавие</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-heading"></i></span>
-                        <input asp-for="Title" class="form-control" placeholder="Въведете заглавие на статията" />
-                    </div>
-                    <span asp-validation-for="Title" class="text-danger"></span>
-                </div>
-
-                @* <div class="mb-4">
-                    <label asp-for="Description" class="form-label">Кратко описание</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Въведете кратко описание"></textarea>
-                    </div>
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div> *@
-
-                <div class="mb-4">
-                    <label asp-for="Description" class="form-label">Съдържание</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
-                        <textarea asp-for="Description" class="form-control" id="editor" rows="8" placeholder="Въведете пълното съдържание"></textarea>
-
-                    </div>
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="Category" class="form-label">Категория</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                        <select asp-for="Category" class="form-control">
-                            <option value="">Изберете категория</option>
-                            <option value="Психология">Психология</option>
-                            <option value="Астрология">Астрология</option>
-                            <option value="Личностно развитие">Личностно развитие</option>
-                        </select>
-                    </div>
-                    <span asp-validation-for="Category" class="text-danger"></span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="ImageFile" class="form-label">Снимка на статията</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-image"></i></span>
-                        <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
-                    </div>
-                    <span asp-validation-for="ImageFile" class="text-danger"></span>
-                    <small class="text-muted">Препоръчителен размер: 1200x630 пиксела</small>
-                </div>
-
-                <input type="hidden" asp-for="CreatorId" value="@currentUser?.Id" />
-                <input type="hidden" asp-for="PublicationDate" value="@DateTime.Now" />
-
-                <div class="d-flex justify-content-between mt-5">
-                    <a asp-action="Index" class="btn btn-outline-article">
-                        <i class="fas fa-arrow-left me-2"></i> Отказ
-                    </a>
-                    <button type="submit" class="btn btn-article">
-                        <i class="fas fa-plus me-2"></i> Създай статия
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                toolbar: [
-                    'undo', 'redo', '|',
-                    'bold', 'italic', 'underline', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'alignment', 'blockQuote', '|',
-                    'link', 'insertTable', '|',
-                    'removeFormat'
-                ],
-                language: 'bg'
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        CKEDITOR.replace('editor', {
+            language: 'bg',
+            height: 500,
+            filebrowserUploadUrl: '/Articles/UploadImage',
+            filebrowserUploadMethod: 'form',
+            removePlugins: 'elementspath,resize',
+            extraPlugins: 'uploadimage',
+            uploadUrl: '/Articles/UploadImage'
+        });
     </script>
 
     @await Html.PartialAsync("_ValidationScriptsPartial")

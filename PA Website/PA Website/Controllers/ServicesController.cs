@@ -10,16 +10,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace PA_Website.Controllers
 {
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailSender;
 
-        public ServicesController(ApplicationDbContext context)
+        public ServicesController(ApplicationDbContext context, IEmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
         // GET: Services
@@ -47,7 +50,7 @@ namespace PA_Website.Controllers
             .Where(r => r.ServiceId == id)
             .Select(r => r.ReservationTime)
             .Where(rt => rt.HasValue)
-            .Select(rt => rt.Value.ToString(@"hh\:mm"))
+            .Select(rt => rt!.Value.ToString(@"hh\:mm"))
             .ToListAsync();
 
             ViewData["ReservedTimes"] = reservedTimes;
@@ -103,6 +106,12 @@ namespace PA_Website.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateReservation(int ServiceId, string reservationDate, string reservationTime, string astrologicalDate, string birthCity)
         {
+            if (User.Identity?.Name == null)
+            {
+                TempData["ErrorMessage"] = "Трябва да влезете в профила си, за да направите резервация.";
+                return RedirectToAction("Details", new { id = ServiceId });
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
             if (user == null)
             {
@@ -184,8 +193,6 @@ namespace PA_Website.Controllers
 
                 TimeSpan selectedTime = TimeSpan.Parse(reservationTime);
 
-               
-
                 var reservation = new UserService
                 {
                     UserId = user.Id,
@@ -200,8 +207,48 @@ namespace PA_Website.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Резервацията е успешна!";
-            return RedirectToAction("Details", new { id = ServiceId });
+
+            // Send confirmation email
+            if (!string.IsNullOrEmpty(user.Email))
+            {
+                var subject = "Потвърждение на резервация";
+                var iban = "BG00XXXX00000000000000"; // Replace with your real IBAN
+                string dateInfo = service.CategoryOfService.ToLower() == "астрология"
+                    ? $"<li>Дата за астрологичен анализ: {reservationDateTime:dd.MM.yyyy HH:mm}</li>"
+                    : $"<li>Дата на консултация: {reservationDateTime:dd.MM.yyyy HH:mm}</li>";
+                string birthCityInfo = service.CategoryOfService.ToLower() == "астрология" && !string.IsNullOrEmpty(birthCity)
+                    ? $"<li>Място на раждане: {birthCity}</li>"
+                    : string.Empty;
+                var htmlMessage = $@"
+<h3>Уважаеми/а {user.FName},</h3>
+<p>Благодарим Ви, че избрахте нашите услуги!</p>
+<p>Вашата заявка за <b>{service.NameService}</b> е получена успешно.</p>
+<div style='background-color: #fff3cd; padding: 15px; border-left: 5px solid #ffeeba; margin: 15px 0;'>
+    <h4 style='color: #856404; margin-top: 0;'>Статус на резервацията: <strong>ИЗЧАКВАНЕ</strong></h4>
+    <p>Вашата резервация е в процес на обработка. За да бъде активирана, е необходимо да извършите плащане.</p>
+</div>
+<p><strong>Данни за резервация:</strong></p>
+<ul>
+    <li>Услуга: {service.NameService}</li>
+    {dateInfo}
+    {birthCityInfo}
+</ul>
+<p><strong>Инструкции за плащане:</strong></p>
+<ol>
+    <li>Сума за плащане: {service.Price} лв.</li>
+    <li>Банкова сметка (IBAN): <strong>{iban}</strong></li>
+    <li>Титуляр на сметката: PA Website</li>
+    <li>В основание на плащането моля посочете: Резервация {service.NameService}</li>
+</ol>
+<p>След получаване на плащането, ще получите потвърждение за активиране на резервацията.</p>
+<p>Ако имате въпроси, не се колебайте да се свържете с нас.</p>
+<p>С уважение,<br>Екипът на PA Website</p>
+";
+                await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
+            }
+
+            // Show pop-up and redirect to user panel
+            return View("ReservationSuccess");
         }
 
 
@@ -240,7 +287,7 @@ namespace PA_Website.Controllers
             // Взимаме вече резервираните часове
             var reservedTimes = await _context.userServices
                 .Where(r => r.ServiceId == serviceId && r.ReservationTime.HasValue && r.ReservationDate.Date == date.Date)
-                .Select(r => r.ReservationTime.Value)
+                .Select(r => r.ReservationTime!.Value)
                 .ToListAsync();
 
             // Филтрираме само свободните часове

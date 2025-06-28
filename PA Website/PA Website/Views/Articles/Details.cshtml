@@ -74,6 +74,81 @@
             color: #333;
         }
 
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1rem auto;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .article-content img.image-style-align-left {
+            float: left;
+            margin: 0 1rem 1rem 0;
+            max-width: 50%;
+        }
+
+        .article-content img.image-style-align-right {
+            float: right;
+            margin: 0 0 1rem 1rem;
+            max-width: 50%;
+        }
+
+        .article-content img.image-style-align-center {
+            display: block;
+            margin: 1rem auto;
+            text-align: center;
+        }
+
+        .article-content img.image-style-side {
+            float: right;
+            margin: 0 0 1rem 1rem;
+            max-width: 40%;
+        }
+
+        .article-content img.image-style-full {
+            width: 100%;
+            height: auto;
+            margin: 1rem 0;
+        }
+
+        .article-content h1, .article-content h2, .article-content h3, 
+        .article-content h4, .article-content h5, .article-content h6 {
+            color: #4a0e78;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-content p {
+            margin-bottom: 1rem;
+        }
+
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .article-content table td, .article-content table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .article-content table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .article-content blockquote {
+            border-left: 4px solid #6a3093;
+            margin: 1rem 0;
+            padding: 0.5rem 1rem;
+            background-color: #f8f9fa;
+            font-style: italic;
+        }
+
         .article-footer {
             padding: 1.5rem;
             background: rgba(106, 48, 147, 0.05);
@@ -228,7 +303,7 @@
                     </div>
 
                     <div class="article-content">
-                        @Html.Raw(Model.Description.Replace("\n", "<br/>"))
+                        @Html.Raw(Model.Description)
                     </div>
 
                     <div class="article-footer">
