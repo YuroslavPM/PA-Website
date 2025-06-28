@@ -3,143 +3,18 @@
 @{
     ViewData["Title"] = "Начало";
     Layout = "_Layout";
-
 }
 
 @section Styles {
     <style>
-        :root {
-            --primary-color: #4a0e78;
-            --secondary-color: #6a3093;
-            --accent-color: #ffd700;
-            --light-bg: #f8f9fa;
-            --card-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            --hover-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-
-        /* Основни стилове */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--light-bg);
-            color: #333;
-            padding-top: 0;
-            overflow-x: hidden;
-        }
-
-        .playfair {
-            font-family: 'Playfair Display', serif;
-        }
-
-        /* Hero секция */
-        .hero {
+        .hero-bg {
             background: linear-gradient(rgba(74, 14, 120, 0.85), rgba(106, 48, 147, 0.85)), url('../Images/psy.png') no-repeat center center;
             background-size: cover;
             background-attachment: fixed;
-            height: 100vh;
-            min-height: 700px;
-            position: relative;
-            color: white;
-            display: flex;
-            align-items: center;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-            margin-top: -80px;
-            padding-top: 80px;
+        }
+
+        .clip-path-hero {
             clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            animation: fadeInUp 1.2s ease-out;
-        }
-
-        .hero-title {
-            font-size: 4.2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-            animation: textFadeIn 1.5s ease-out;
-            background: linear-gradient(45deg, #fff, #e0e0e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: none;
-        }
-
-        .hero-subtitle {
-            font-size: 1.8rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.95;
-            animation: textFadeIn 1.8s ease-out;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-
-        /* Бутон с ефекти */
-        .hero-btn {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-            padding: 18px 40px;
-            font-size: 1.3rem;
-            border-radius: 50px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            color: white;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            display: inline-flex;
-            align-items: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 500;
-        }
-
-            .hero-btn:before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-                z-index: -1;
-                opacity: 0;
-                transition: opacity 0.4s ease;
-            }
-
-            .hero-btn:hover {
-                transform: translateY(-5px) scale(1.05);
-                box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            }
-
-                .hero-btn:hover:before {
-                    opacity: 1;
-                }
-
-            .hero-btn:active {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            }
-
-            .hero-btn i {
-                margin-right: 12px;
-                transition: transform 0.3s ease;
-                font-size: 1.2rem;
-            }
-
-            .hero-btn:hover i {
-                transform: translateY(-3px) rotate(360deg);
-            }
-
-        /* Floating елементи */
-        .floating-elements {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
         }
 
         .star {
@@ -150,780 +25,337 @@
             box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
-        /* Секции */
-        .section {
-            padding: 6rem 0;
-            position: relative;
-            background: var(--light-bg);
-        }
-
-        .section-title {
-            font-size: 3.2rem;
-            margin-bottom: 4rem;
-            position: relative;
-            display: inline-block;
-            color: var(--primary-color);
-        }
-
-            .section-title:after {
-                content: '';
-                position: absolute;
-                bottom: -20px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 120px;
-                height: 6px;
-                background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-                border-radius: 3px;
-            }
-
-        .bg-purple-light {
-            background: linear-gradient(135deg, rgba(106, 48, 147, 0.08) 0%, rgba(74, 14, 120, 0.08) 100%);
-        }
-
-        /* Картички */
-        .service-card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.5s;
-            box-shadow: var(--card-shadow);
-            height: 100%;
-            background: white;
-            position: relative;
-        }
-
-            .service-card:hover {
-                transform: translateY(-15px) scale(1.02);
-                box-shadow: var(--hover-shadow);
-            }
-
-            .service-card img {
-                height: 320px;
-                object-fit: cover;
-                transition: transform 0.8s;
-            }
-
-            .service-card:hover img {
-                transform: scale(1.1);
-            }
-
-            .service-card .card-body {
-                padding: 2.5rem;
-            }
-
-            .service-card .card-title {
-                font-size: 1.8rem;
-                margin-bottom: 1.5rem;
-                color: var(--primary-color);
-                font-weight: 600;
-            }
-
-            .service-card .card-text {
-                font-size: 1.1rem;
-                line-height: 1.8;
-                color: #666;
-            }
-
-            .service-card .btn {
-                background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-                border: none;
-                border-radius: 25px;
-                padding: 12px 35px;
-                font-weight: 500;
-                letter-spacing: 1px;
-                transition: all 0.4s;
-                font-size: 1rem;
-            }
-
-                .service-card .btn:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 10px 25px rgba(74, 14, 120, 0.4);
-                }
-
-        /* Автор секция */
-        .author-section {
-            background: white;
-            padding: 6rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .author-section:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236a3093' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.5;
-        }
-
-        .author-image {
-            width: 380px;
-            height: 380px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 15px solid white;
-            box-shadow: var(--hover-shadow);
-            transition: all 0.6s;
-            position: relative;
-            z-index: 2;
-        }
-
-            .author-image:hover {
-                transform: scale(1.08) rotate(5deg);
-                box-shadow: 0 30px 70px rgba(0,0,0,0.3);
-            }
-
-        .author-quote {
-            font-style: italic;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            position: relative;
-            padding: 2.5rem;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            line-height: 1.8;
-            margin-top: 2rem;
-        }
-
-            .author-quote:before {
-                content: '"';
-                font-size: 6rem;
-                position: absolute;
-                top: -30px;
-                left: 20px;
-                color: rgba(106, 48, 147, 0.1);
-                font-family: serif;
-                line-height: 1;
-            }
-
-        /* Анимации */
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(60px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @@keyframes textFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         @@keyframes float {
             0% {
                 transform: translateY(0) rotate(0deg);
                 opacity: 0;
             }
-
             10% {
                 opacity: 1;
             }
-
             90% {
                 opacity: 1;
             }
-
             100% {
                 transform: translateY(-100vh) rotate(360deg);
                 opacity: 0;
             }
         }
 
-        .animate {
-            opacity: 0;
-            animation: fadeInUp 1.2s ease-out forwards;
-        }
-
-        .delay-1 {
-            animation-delay: 0.4s;
-        }
-
-        .delay-2 {
-            animation-delay: 0.8s;
-        }
-
-        /* Статии секция */
-        .articles-section {
-            padding: 6rem 0;
-            background: var(--light-bg);
-            position: relative;
-        }
-
-        .article-card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.5s;
-            box-shadow: var(--card-shadow);
-            height: 100%;
-            margin-bottom: 2rem;
-            background: white;
-        }
-
-            .article-card:hover {
-                transform: translateY(-12px);
-                box-shadow: var(--hover-shadow);
-            }
-
-            .article-card img {
-                height: 250px;
-                object-fit: cover;
-                width: 100%;
-                transition: transform 0.7s;
-            }
-
-            .article-card:hover img {
-                transform: scale(1.1);
-            }
-
-            .article-card .card-body {
-                padding: 2rem;
-            }
-
-            .article-card .card-title {
-                font-family: 'Playfair Display', serif;
-                color: var(--primary-color);
-                margin-bottom: 1rem;
-                font-size: 1.5rem;
-                font-weight: 600;
-            }
-
-            .article-card .card-text {
-                color: #666;
-                margin-bottom: 1.5rem;
-                line-height: 1.7;
-            }
-
-            .article-card .btn {
-                background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-                border: none;
-                border-radius: 25px;
-                padding: 10px 25px;
-                font-size: 1rem;
-                transition: all 0.3s;
-            }
-
-                .article-card .btn:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
-                }
-
-        /* Отзиви секция */
-        .testimonials-section {
-            padding: 6rem 0;
-            background: var(--light-bg);
-            position: relative;
-        }
-
         .testimonial-card {
             background: white;
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: var(--card-shadow);
-            margin: 1rem;
-            height: 100%;
-            transition: all 0.4s;
-            border: 1px solid rgba(106, 48, 147, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .testimonial-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--hover-shadow);
+        .testimonial-rating {
+            margin-bottom: 1rem;
         }
 
         .testimonial-text {
             font-style: italic;
-            color: #555;
-            position: relative;
-            padding: 0 1.5rem;
-            font-size: 1.2rem;
-            line-height: 1.8;
-        }
-
-            .testimonial-text:before,
-            .testimonial-text:after {
-                content: '"';
-                font-size: 4rem;
-                color: rgba(106, 48, 147, 0.2);
-                position: absolute;
-            }
-
-            .testimonial-text:before {
-                top: -30px;
-                left: -15px;
-            }
-
-            .testimonial-text:after {
-                bottom: -50px;
-                right: -15px;
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
             }
 
         .testimonial-author {
-            margin-top: 2.5rem;
             font-weight: 600;
-            color: var(--primary-color);
-            font-size: 1.2rem;
+            color: #4a0e78;
+            margin-bottom: 0.25rem;
         }
 
         .testimonial-role {
-            color: #777;
-            font-size: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 5%;
-            color: var(--primary-color);
-            opacity: 0.8;
-            transition: all 0.3s;
-        }
-
-        .carousel-control-prev:hover,
-        .carousel-control-next:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        .carousel-indicators button {
-            background-color: var(--secondary-color);
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin: 0 8px;
-            transition: all 0.3s;
-        }
-
-        .carousel-indicators button.active {
-            transform: scale(1.3);
-        }
-
-        .testimonial-rating {
-            font-size: 1.4rem;
-            color: #ffc107;
-            margin-bottom: 1.5rem;
-        }
-
-            .testimonial-rating .text-muted {
-                opacity: 0.5;
-            }
-
-        /* About section improvements */
-        .about-content {
-            background: white;
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: var(--card-shadow);
-            position: relative;
-            z-index: 2;
-        }
-
-        .about-image {
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-            transition: all 0.5s;
-        }
-
-        .about-image:hover {
-            transform: scale(1.05);
-            box-shadow: var(--hover-shadow);
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .feature-list li {
-            padding: 0.5rem 0;
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        .feature-list li:before {
-            content: '✨';
-            margin-right: 0.5rem;
-            color: var(--secondary-color);
-        }
-
-        /* Responsive */
-        @@media (max-width: 1200px) {
-            .hero-title {
-                font-size: 3.5rem;
-            }
-            
-            .section-title {
-                font-size: 2.8rem;
-            }
-        }
-
-        @@media (max-width: 992px) {
-            .hero-title {
-                font-size: 3rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1.5rem;
-            }
-
-            .section {
-                padding: 4rem 0;
-            }
-
-            .author-image {
-                width: 300px;
-                height: 300px;
-            }
-        }
-
-        @@media (max-width: 768px) {
-            .hero {
-                height: 85vh;
-                min-height: 600px;
-                clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-            }
-
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1.3rem;
-            }
-
-            .section-title {
-                font-size: 2.2rem;
-            }
-
-            .author-image {
-                width: 250px;
-                height: 250px;
-                margin-bottom: 2rem;
-            }
-
-            .service-card .card-body {
-                padding: 2rem;
-            }
-
-            .testimonial-card {
-                padding: 2rem;
-            }
-
-            .about-content {
-                padding: 2rem;
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .hero {
-                height: 75vh;
-                min-height: 500px;
-            }
-
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .hero-btn {
-                padding: 15px 30px;
-                font-size: 1.1rem;
-            }
-
-            .section-title {
-                font-size: 1.8rem;
-            }
-
-            .author-image {
-                width: 200px;
-                height: 200px;
-            }
-
-            .testimonial-text {
-                font-size: 1.1rem;
-            }
+            color: #6a3093;
+            font-size: 0.9rem;
         }
     </style>
 }
 
-<header class="hero">
-    <div class="floating-elements">
-        @* звезди *@
-        @for (var i = 0; i < 15; i++)
-        {
-            <div class="star" style="
-                width: @(new Random().Next(3, 7))px;
-                height: @(new Random().Next(3, 7))px;
-                left: @(new Random().Next(0, 100))%;
-                top: @(new Random().Next(0, 100))%;
-                animation-delay: @(new Random().Next(0, 5))s;
-                animation-duration: @(new Random().Next(5, 15))s;
-                        "></div>
-        }
-    </div>
-    <div class="container text-center hero-content">
-        <h1 class="hero-title playfair">Добре дошли в Душевна Музайка</h1>
-        <p class="hero-subtitle">Вашето място за хороскопи и психология</p>
-        <a href="#services" class="btn hero-btn animate delay-1">
-            <i class="fas fa-chevron-down"></i> Разгледайте услугите ни
-        </a>
-    </div>
-</header>
-
 <main>
-    <!-- За нас секция -->
-    <section class="section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-5 mb-lg-0 animate">
-                    <img src="https://www.explorepsychology.com/wp-content/uploads/2021/09/personality-psych2.png"
-                         alt="Psychology illustration"
-                         class="img-fluid rounded about-image">
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-center justify-center relative clip-path-hero">
+        <!-- Floating elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none" id="floating-elements"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center text-white">
+                <h1 class="font-playfair text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-text-fade-in">
+                    Душевна Мозайка
+                </h1>
+                <p class="text-xl md:text-2xl mb-10 opacity-95 animate-text-fade-in" style="animation-delay: 0.3s;">
+                    Вашето място за хороскопи и психологически консултации
+                        </p>
+                <a href="#services" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-xl transform hover:scale-105 uppercase tracking-wider">
+                    <i class="fas fa-star mr-3 text-accent"></i>
+                    Запази час
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 md:py-24 bg-gradient-to-br from-purple-50 to-indigo-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block">
+                    Нашите Услуги
+                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Комбинация от астрология и психология за пълно разбиране на вашата личност
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Psychology Service -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                    <div class="h-80 bg-gradient-to-br from-blue-400 to-purple-600 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-brain text-6xl text-white opacity-80 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Психологически Консултации</h3>
+                        <p class="text-gray-600 leading-relaxed mb-6">
+                            Професионална психологическа подкрепа за преодоляване на житейски предизвикателства и постигане на вътрешна хармония.
+                        </p>
+                        <a href="/Services/Index" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                            Научи повече
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="col-lg-6 animate delay-1">
-                    <div class="about-content">
-                        <h2 class="section-title playfair text-center text-lg-start">Кои сме ние?</h2>
-                        <p class="lead mb-4">
-                            Добре дошли в Душевна Мозайка!
+
+                <!-- Astrology Service -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                    <div class="h-80 bg-gradient-to-br from-purple-500 to-pink-600 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-star text-6xl text-white opacity-80 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Астрологически Хороскопи</h3>
+                        <p class="text-gray-600 leading-relaxed mb-6">
+                            Персонализирани астрологически анализи за разбиране на вашия характер и житейски път.
+                            </p>
+                        <a href="/Services/Index" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                            Научи повече
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Combined Service -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                    <div class="h-80 bg-gradient-to-br from-indigo-500 to-purple-600 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-magic text-6xl text-white opacity-80 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Комбинирани Сесии</h3>
+                        <p class="text-gray-600 leading-relaxed mb-6">
+                            Уникална комбинация от астрология и психология за пълно разбиране на вашата личност.
                         </p>
-                        <p class="mb-3">
-                            Тук всяко парченце от вътрешния ви свят намира своето място.
-                        </p>
-                        <p class="mb-4">
-                            Предлагам астрологически и психологически консултации, които да ви помогнат да разберете по-добре себе си, емоциите си и житейския си път.
-                        </p>
-                        <ul class="feature-list mb-4">
-                            <li>Индивидуален подход</li>
-                            <li>Комбинирани сесии - астрология и психология</li>
-                            <li>Индивидуални психологически консултации</li>
-                            <li>Подкрепа в моменти на промяна, търсене и осъзнаване</li>
-                        </ul>
-                        <p class="mb-0">
-                            Открийте хармонията в себе си. Вашата душа е уникална мозайка – нека я подредим заедно.
-                        </p>
+                        <a href="/Services/Index" class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                            Научи повече
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Услуги секция -->
-    <section id="services" class="section">
-        <div class="container">
-            <h2 class="section-title playfair text-center">Нашите услуги</h2>
-            <div class="row g-4">
-                <div class="col-md-6 animate">
-                    <div class="service-card">
-                        <img src="https://cdn.knd.ro/media/521/2863/1682/20227288/1/horoscop-2-iunie-2022.jpeg"
-                             class="card-img-top"
-                             alt="Хороскопи">
-                        <div class="card-body text-center">
-                            <h3 class="card-title playfair">Хороскопи</h3>
-                            <p class="card-text">
-                                Персонализирани хороскопи, базирани на точната ви дата, час и място на раждане. Разберете как звездите
-                                влияят на вашия характер, взаимоотношения и житейски път.
-                            </p>
-                            <a href='@Url.Action("Index", "Services")' class="btn btn-primary">Прочети хороскоп</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 animate delay-1">
-                    <div class="service-card">
-                        <img src="https://www.ollusa.edu/blog/_resources/top-10-psychologist-skills-you-must-have.png"
-                             class="card-img-top"
-                             alt="Психологически консултации">
-                        <div class="card-body text-center">
-                            <h3 class="card-title playfair">Психологически консултации</h3>
-                            <p class="card-text">
-                                Индивидуални сесии с опитни психолози, които ще ви помогнат да се справите с ежедневни предизвикателства,
-                                стресови ситуации и да подобрите качеството на живота си.
-                            </p>
-                            <a href='@Url.Action("Index", "Services")' class="btn btn-primary">Запази час</a>
-                        </div>
-                    </div>
-                </div>
+    <!-- Articles Section -->
+    <section class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block">
+                    Последни Статии
+                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Полезни статии за психология, астрология и личностно развитие
+                </p>
             </div>
-        </div>
-    </section>
 
-    <!-- Секция с последни статии -->
-    <section class="articles-section">
-        <div class="container">
-            <h2 class="section-title playfair text-center">Последни статии</h2>
-
-            @if (Model != null && Model.Any())
+            @if (Model.Any())
             {
-                <div class="row">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                     @foreach (var article in Model)
                     {
-                        <div class="col-md-4 mb-4">
-                            <div class="article-card h-100">
-                                <img src="@article.ImagePath"
-                                     class="card-img-top"
-                                     alt="@article.Title">
-                                <div class="card-body">
-                                    <h5 class="card-title">@article.Title</h5>
-                                    @* <p class="card-text">@GetShortDescription(article.Description, 100)</p> *@
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="far fa-calendar-alt me-1"></i>
-                                            @article.PublicationDate.ToString("dd.MM.yyyy")
-                                        </small>
-                                        <a href="@Url.Action("Details", "Articles", new { id = article.Id })"
-                                           class="btn btn-sm btn-primary">
-                                            Прочети
-                                        </a>
-                                    </div>
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group">
+                            @if (!string.IsNullOrEmpty(article.ImagePath))
+                            {
+                                <div class="h-64 overflow-hidden">
+                                    <img src="@article.ImagePath" alt="@article.Title" 
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 </div>
+                            }
+                            else
+                            {
+                                <div class="h-64 bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
+                                    <i class="fas fa-newspaper text-4xl text-primary opacity-50"></i>
+                                </div>
+                            }
+                            <div class="p-6">
+                                <div class="flex items-center text-sm text-secondary mb-3">
+                                    <i class="fas fa-calendar mr-2"></i>
+                                            @article.PublicationDate.ToString("dd.MM.yyyy")
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-tag mr-2"></i>
+                                    @article.Category
+                                </div>
+                                <h3 class="text-xl font-bold text-primary mb-3 line-clamp-2">@article.Title</h3>
+                                <p class="text-gray-600 mb-4 line-clamp-3">@article.Description</p>
+                                <a href="@Url.Action("Details", "Articles", new { id = article.Id })" 
+                                   class="inline-flex items-center text-primary hover:text-secondary font-medium transition-colors duration-300">
+                                    Прочети повече
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
                             </div>
                         </div>
                     }
                 </div>
-
-                <div class="text-center mt-4">
-                    <a href="@Url.Action("Index", "Articles")" class="btn btn-outline-primary">
-                        Виж всички статии <i class="fas fa-arrow-right ms-1"></i>
+                <div class="text-center">
+                    <a href="@Url.Action("Index", "Articles")" class="inline-flex items-center border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-medium transition-all duration-300">
+                        Виж всички статии
+                        <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
             }
             else
             {
-                <div class="alert alert-info text-center">
-                    Все още няма публикувани статии.
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
+                    <i class="fas fa-info-circle text-3xl text-blue-500 mb-4"></i>
+                    <p class="text-blue-700 text-lg">Все още няма публикувани статии.</p>
                 </div>
             }
         </div>
     </section>
 
-   
-
-    <!-- Автор секция -->
-    <section class="section author-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-4 text-center mb-5 mb-md-0 animate">
+    <!-- Author Section -->
+    <section class="py-16 md:py-24 bg-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236a3093\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
                     <img src="https://scontent.fsof5-1.fna.fbcdn.net/v/t39.30808-6/492612847_24008185045446073_5271774732973390534_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=2qjZ8vG_NhIQ7kNvwFkVTgu&_nc_oc=Adk8wN6OtvsycYfJmiPQvO6z-PPIxKHSBhzSxV8gKMUvcFShbnfuU_OSKYcJL64fsKk&_nc_zt=23&_nc_ht=scontent.fsof5-1.fna&_nc_gid=kFVujh4rWh_RTzRaPjlfPA&oh=00_AfN2NZwmvob7UI-E1IOMQDowbwIY4S-ypqLJ3wcnvirHdQ&oe=685F662A"
                          alt="Авторът"
-                         class="author-image">
+                         class="w-96 h-96 rounded-full object-cover border-8 border-white shadow-2xl mx-auto lg:mx-0 hover:scale-105 transition-transform duration-600">
                 </div>
-                <div class="col-md-8 text-center mb-5 mb-md-0 animate delay-1">
-                    <div class="about-content">
-                        <h2 class="section-title playfair">За автора</h2>
-                        <p class="mb-4">
+                <div class="text-center lg:text-left">
+                    <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-8 relative inline-block">
+                        За автора
+                        <div class="absolute bottom-0 left-0 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                    </h2>
+                    <div class="space-y-6 text-lg text-gray-700 leading-relaxed">
+                        <p>
                             Аз съм Мариела Разпопова и съм създател на Душевна Мозайка. Пътят ми започна с астропсихологията през 2019-та година – тя отвори врата към ново разбиране за човека и душата. Именно тя ме отведе и към психологията, където припознах своето истинско призвание.
                         </p>
-                        <p class="mb-4">
+                        <p>
                             Завърших магистратура по Приложна психология и базов курс по Позитивна психотерапия, а днес съм тук – за да бъда с теб в процеса на осъзнаване, промяна и вътрешна хармония.
                         </p>
-                        <div class="author-quote">
-                            "Вашата душа е уникална мозайка – нека я подредим заедно."
                         </div>
+                    <div class="mt-8 p-8 bg-white rounded-2xl shadow-lg relative">
+                        <div class="absolute -top-4 left-8 text-6xl text-primary/20 font-serif">"</div>
+                        <p class="text-xl italic text-primary font-medium leading-relaxed relative z-10">
+                            Вашата душа е уникална мозайка – нека я подредим заедно.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Testimonials Section -->
+    <section class="py-16 md:py-24 bg-gradient-to-br from-purple-50 to-indigo-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block">
+                    Какво казват нашите клиенти
+                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                </h2>
+            </div>
 
-    <!-- Секция с отзиви -->
-    <section class="testimonials-section">
-        <div class="container">
-            <h2 class="section-title playfair text-center">Какво казват нашите клиенти</h2>
-            <div id="testimonialsCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <!-- Отзив 1 -->
-                    <div class="carousel-item active">
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
+            <div class="max-w-4xl mx-auto">
+                <div id="testimonialsCarousel" class="relative">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-slide active">
                                 <div class="testimonial-card">
                                     <div class="testimonial-rating">
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
                                     </div>
                                     <p class="testimonial-text">
                                         Благодаря на Душевна Музайка за невероятната психологическа подкрепа.
                                     </p>
                                     <div class="testimonial-author">Мария Иванова</div>
                                     <div class="testimonial-role">Учител</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Отзив 2 -->
-                    <div class="carousel-item">
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-slide hidden">
                                 <div class="testimonial-card">
                                     <div class="testimonial-rating">
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-muted"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-gray-300"></i>
                                     </div>
                                     <p class="testimonial-text">
                                         Хороскопът ми беше изключително точен и полезен.
                                     </p>
                                     <div class="testimonial-author">Георги Петров</div>
                                     <div class="testimonial-role">IT Специалист</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Отзив 3 -->
-                    <div class="carousel-item">
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-slide hidden">
                                 <div class="testimonial-card">
                                     <div class="testimonial-rating">
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
                                     </div>
                                     <p class="testimonial-text">
                                         Комбинацията от астрология и психология е нещо уникално.
                                     </p>
                                     <div class="testimonial-author">Анна Димитрова</div>
                                     <div class="testimonial-role">Архитект</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Отзив 4 -->
-                    <div class="carousel-item">
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
+                    <!-- Testimonial 4 -->
+                    <div class="testimonial-slide hidden">
                                 <div class="testimonial-card">
                                     <div class="testimonial-rating">
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-muted"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-gray-300"></i>
                                     </div>
                                     <p class="testimonial-text">
                                         Психологическите сесии бяха много полезни, но бих искал още малко практически съвети. Като цяло – добро преживяване!
@@ -932,19 +364,16 @@
                                     <div class="testimonial-role">Предприемач</div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- Отзив 5 -->
-                    <div class="carousel-item">
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
+
+                    <!-- Testimonial 5 -->
+                    <div class="testimonial-slide hidden">
                                 <div class="testimonial-card">
                                     <div class="testimonial-rating">
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-muted"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-gray-300"></i>
                                     </div>
                                     <p class="testimonial-text">
                                         Професионален и човешки подход! Сеансът ми помогна да разбера себе си по-добре. Единствено малко по-дългите сесии биха били перфектни.
@@ -953,20 +382,24 @@
                                     <div class="testimonial-role">Мениджър</div>
                                 </div>
                             </div>
-                        </div>
+
+                    <!-- Navigation buttons -->
+                    <button class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110" id="nextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                     </div>
 
+                <!-- Dots indicator -->
+                <div class="flex justify-center mt-8 space-x-2">
+                    <button class="w-3 h-3 bg-primary rounded-full transition-all duration-300 testimonial-dot active" data-slide="0"></button>
+                    <button class="w-3 h-3 bg-gray-300 rounded-full transition-all duration-300 testimonial-dot" data-slide="1"></button>
+                    <button class="w-3 h-3 bg-gray-300 rounded-full transition-all duration-300 testimonial-dot" data-slide="2"></button>
+                    <button class="w-3 h-3 bg-gray-300 rounded-full transition-all duration-300 testimonial-dot" data-slide="3"></button>
+                    <button class="w-3 h-3 bg-gray-300 rounded-full transition-all duration-300 testimonial-dot" data-slide="4"></button>
                 </div>
-
-                <!-- Контроли за карусела -->
-                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Предишен</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Следващ</span>
-                </button>
             </div>
         </div>
     </section>
@@ -975,28 +408,72 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Initialize carousel
-            var testimonialsCarousel = new bootstrap.Carousel(document.getElementById('testimonialsCarousel'), {
-                interval: 5000, // Change every 5 seconds
-                pause: 'hover' // Pause on hover
+            // Testimonials carousel
+            let currentSlide = 0;
+            const slides = $('.testimonial-slide');
+            const dots = $('.testimonial-dot');
+            const totalSlides = slides.length;
+
+            function showSlide(index) {
+                slides.removeClass('active').addClass('hidden');
+                dots.removeClass('active bg-primary').addClass('bg-gray-300');
+                
+                slides.eq(index).removeClass('hidden').addClass('active');
+                dots.eq(index).removeClass('bg-gray-300').addClass('active bg-primary');
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                showSlide(currentSlide);
+            }
+
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                showSlide(currentSlide);
+            }
+
+            // Event listeners
+            $('#nextBtn').click(nextSlide);
+            $('#prevBtn').click(prevSlide);
+
+            dots.click(function() {
+                currentSlide = $(this).data('slide');
+                showSlide(currentSlide);
             });
 
-            // Scroll animations
-            $(window).scroll(function() {
-                $('.animate').each(function() {
-                    var position = $(this).offset().top;
-                    var scroll = $(window).scrollTop();
-                    var windowHeight = $(window).height();
+            // Auto-advance slides
+            setInterval(nextSlide, 5000);
 
-                    if (scroll > position - windowHeight + 200) {
-                        $(this).addClass('fadeInUp');
+            // Generate random stars
+            function createStars() {
+                const starsContainer = document.getElementById('floating-elements');
+                for (let i = 0; i < 20; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    const size = Math.random() * 4 + 3;
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    const delay = Math.random() * 5;
+                    const duration = Math.random() * 10 + 5;
+
+                    star.style.cssText = `
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${posX}%;
+                        top: ${posY}%;
+                        animation-delay: ${delay}s;
+                        animation-duration: ${duration}s;
+                    `;
+
+                    starsContainer.appendChild(star);
                     }
-                });
-            });
+            }
 
-            // Smooth scrolling
+            createStars();
+
+            // Smooth scrolling for anchor links
             $('a[href^="#"]').on('click', function(event) {
-                var target = $($(this).attr('href'));
+                const target = $($(this).attr('href'));
                 if (target.length) {
                     event.preventDefault();
                     $('html, body').animate({
@@ -1004,32 +481,6 @@
                     }, 800);
                 }
             });
-
-            // Generate random stars
-            function createStars() {
-                var starsContainer = $('.floating-elements');
-                for (var i = 0; i < 20; i++) {
-                    var star = $('<div class="star"></div>');
-                    var size = Math.random() * 4 + 3;
-                    var posX = Math.random() * 100;
-                    var posY = Math.random() * 100;
-                    var delay = Math.random() * 5;
-                    var duration = Math.random() * 10 + 5;
-
-                    star.css({
-                        'width': size + 'px',
-                        'height': size + 'px',
-                        'left': posX + '%',
-                        'top': posY + '%',
-                        'animation-delay': delay + 's',
-                        'animation-duration': duration + 's'
-                    });
-
-                    starsContainer.append(star);
-                }
-            }
-
-            createStars();
         });
     </script>
 }

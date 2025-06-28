@@ -12,316 +12,331 @@
 
 @section Styles {
     <style>
-        .article-detail-container {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 2rem 0;
+        .details-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: calc(100vh - 80px);
+            padding: 2rem 0;
         }
 
-        .article-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        .details-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
             overflow: hidden;
             position: relative;
-            background: white;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-            .article-card:before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 5px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-            }
-
-        .article-header {
-            padding: 2rem;
+        .details-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
         }
 
-        .article-title {
+        .details-header {
+            padding: 2.5rem 2.5rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .details-title {
             font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
             text-align: center;
+            line-height: 1.3;
+        }
+
+        .details-subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
         }
 
         .article-meta {
             display: flex;
             justify-content: center;
             gap: 2rem;
-            margin-bottom: 1.5rem;
-            color: #6a3093;
-            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
 
-        .article-meta-item {
+        .meta-item {
             display: flex;
             align-items: center;
+            gap: 0.5rem;
+            color: #4c1d95;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
-            .article-meta-item i {
-                margin-right: 8px;
-            }
-
-        .article-content {
-            padding: 0 2rem 2rem;
-            line-height: 1.8;
-            color: #333;
+        .meta-icon {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
         }
 
-        .article-content img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 1rem auto;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .article-content img.image-style-align-left {
-            float: left;
-            margin: 0 1rem 1rem 0;
-            max-width: 50%;
-        }
-
-        .article-content img.image-style-align-right {
-            float: right;
-            margin: 0 0 1rem 1rem;
-            max-width: 50%;
-        }
-
-        .article-content img.image-style-align-center {
-            display: block;
-            margin: 1rem auto;
-            text-align: center;
-        }
-
-        .article-content img.image-style-side {
-            float: right;
-            margin: 0 0 1rem 1rem;
-            max-width: 40%;
-        }
-
-        .article-content img.image-style-full {
-            width: 100%;
-            height: auto;
-            margin: 1rem 0;
-        }
-
-        .article-content h1, .article-content h2, .article-content h3, 
-        .article-content h4, .article-content h5, .article-content h6 {
-            color: #4a0e78;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .article-content p {
-            margin-bottom: 1rem;
-        }
-
-        .article-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        .article-content table td, .article-content table th {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .article-content table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        .article-content blockquote {
-            border-left: 4px solid #6a3093;
-            margin: 1rem 0;
-            padding: 0.5rem 1rem;
-            background-color: #f8f9fa;
-            font-style: italic;
-        }
-
-        .article-footer {
-            padding: 1.5rem;
-            background: rgba(106, 48, 147, 0.05);
-            border-top: 1px solid rgba(106, 48, 147, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .details-body {
+            padding: 2.5rem;
         }
 
         .article-image-wrapper {
             width: 100%;
             display: flex;
             justify-content: center;
-            margin: 1.5rem 0 2.5rem 0;
-            padding: 0 2rem;
+            margin-bottom: 2rem;
         }
 
         .article-image-container {
-            max-width: 80%;
-            max-height: 430px;
-            border-radius: 8px;
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            background-color: #f8f9fa;
+            box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.2);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         }
 
-            .article-image-container img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                display: block;
-            }
+        .article-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
-        .btn-article {
-            background: linear-gradient(135deg, #4a0e78, #6a3093);
+        .article-content {
+            line-height: 1.8;
+            color: #374151;
+            font-size: 1.1rem;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1.5rem auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+        }
+
+        .article-content h1, .article-content h2, .article-content h3, 
+        .article-content h4, .article-content h5, .article-content h6 {
+            color: #4c1d95;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+        }
+
+        .article-content table td, .article-content table th {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .article-content table th {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            font-weight: 600;
+        }
+
+        .article-content blockquote {
+            border-left: 4px solid #7c3aed;
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            font-style: italic;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
             border: none;
-            border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-            .btn-article:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.3);
-                color: white;
-            }
-
-        .btn-outline-article {
-            border: 1px solid #4a0e78;
-            color: #4a0e78;
-            border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
         }
 
-            .btn-outline-article:hover {
-                background: linear-gradient(135deg, #4a0e78, #6a3093);
-                color: white;
-            }
-
-        .btn-warning {
-            border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        @@media (max-width: 992px) {
-            .article-image-wrapper {
-                padding: 0 1.5rem;
-            }
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
 
-            .article-image-container {
-                max-height: 400px;
-            }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
         }
 
         @@media (max-width: 768px) {
-            .article-title {
-                font-size: 1.8rem;
+            .details-title {
+                font-size: 2rem;
             }
 
-            .article-image-wrapper {
-                padding: 0 1rem;
-            }
-
-            .article-image-container {
-                max-height: 350px;
+            .details-header,
+            .details-body {
+                padding: 1.5rem;
             }
 
             .article-meta {
                 flex-direction: column;
-                gap: 0.5rem;
                 align-items: center;
-            }
-
-            .article-footer {
-                flex-direction: column;
                 gap: 1rem;
             }
-        }
 
-        @@media (max-width: 576px) {
-            .article-image-wrapper {
-                padding: 0;
-            }
-
-            .article-image-container {
-                border-radius: 0;
-                max-height: 300px;
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
 }
 
-<div class="article-detail-container">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="article-card">
-                    <div class="article-header">
-                        <h1 class="article-title">@Model.Title</h1>
-                        <div class="article-meta">
-                            <div class="article-meta-item">
-                                <i class="fas fa-tag"></i>
-                                <span>@Model.Category</span>
-                            </div>
-                            <div class="article-meta-item">
-                                <i class="far fa-calendar-alt"></i>
-                                <span>@Model.PublicationDate.ToString("dd MMMM yyyy")</span>
-                            </div>
-                        </div>
+<div class="details-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="details-card">
+            <div class="details-header">
+                <h1 class="details-title">@Model.Title</h1>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="details-subtitle">@Model.Description</p>
+                }
+                
+                <div class="article-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                        <span>@Model.PublicationDate.ToString("dd.MM.yyyy")</span>
                     </div>
+                    @if (!string.IsNullOrEmpty(Model.Category))
+                    {
+                        <div class="meta-item">
+                            <span class="meta-icon">
+                                <i class="fas fa-tag"></i>
+                            </span>
+                            <span>@Model.Category</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Creator?.UserName))
+                    {
+                        <div class="meta-item">
+                            <span class="meta-icon">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <span>@Model.Creator.UserName</span>
+                        </div>
+                    }
+                </div>
+            </div>
 
+            <div class="details-body">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
                     <div class="article-image-wrapper">
                         <div class="article-image-container">
-                            @if (!string.IsNullOrEmpty(Model.ImagePath))
-                            {
-                                <img src="@Model.ImagePath"
-                                     alt="@Model.Title"
-                                     loading="lazy"
-                                     onerror="this.onerror=null;this.src='/images/placeholder-article.jpg'">
-                            }
-                            else
-                            {
-                                <img src="/images/default-article.jpg"
-                                     alt="Няма изображение">
-                            }
+                            <img src="@Model.ImagePath" alt="@Model.Title" />
                         </div>
                     </div>
+                }
 
-                    <div class="article-content">
-                        @Html.Raw(Model.Description)
-                    </div>
+                <div class="article-content">
+                    @Html.Raw(Model.Description)
+                </div>
 
-                    <div class="article-footer">
-                        <a asp-action="Index" class="btn btn-outline-article">
-                            <i class="fas fa-arrow-left me-1"></i> Обратно към статиите
+                <div class="action-buttons">
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-primary">
+                            <i class="fas fa-edit"></i>Редактирай
                         </a>
-                        @if (isAdmin)
-                        {
-                            <div class="d-flex gap-2">
-                                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">
-                                    <i class="fas fa-edit me-1"></i> Редактирай
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger">
-                                    <i class="fas fa-trash-alt me-1"></i> Изтрий
-                                </a>
-                            </div>
-                        }
-                    </div>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-danger">
+                            <i class="fas fa-trash"></i>Изтрий
+                        </a>
+                    }
+                    <a asp-action="Index" class="btn-outline">
+                        <i class="fas fa-arrow-left"></i>Назад към списъка
+                    </a>
                 </div>
             </div>
         </div>

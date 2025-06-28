@@ -6,499 +6,543 @@
     var totalPages = (int)ViewData["TotalPages"];
     var sortOrder = ViewData["SortOrder"] as string;
     Layout = "_Layout";
+
+    var statuses = new[] {
+        new { Value = "", Text = "Всички статуси" },
+        new { Value = "Pending", Text = "Чакаща" },
+        new { Value = "Confirmed", Text = "Потвърдена" },
+        new { Value = "Completed", Text = "Завършена" },
+        new { Value = "Cancelled", Text = "Отменена" }
+    };
+    var selectedStatus = ViewData["StatusFilter"]?.ToString();
+    var sortOrders = new[] {
+        new { Value = "date_desc", Text = "Дата (най-нови)" },
+        new { Value = "date_asc", Text = "Дата (най-стари)" },
+        new { Value = "service", Text = "Услуга" },
+        new { Value = "status", Text = "Статус" }
+    };
+    var selectedSort = sortOrder;
 }
 
 @section Styles {
     <style>
-        .user-reservations-container {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 3rem 0;
+        .user-services-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: calc(100vh - 80px);
+            padding: 2rem 0;
         }
-
-        .user-reservations-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
-            position: relative;
-            background: white;
-        }
-
-            .user-reservations-card:before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 5px;
-                background: linear-gradient(90deg, #007bff, #00bfff);
-            }
-
-        .user-reservations-header {
-            padding: 2rem 2rem 1rem;
-            background: white;
-        }
-
-        .user-reservations-title {
-            font-family: 'Playfair Display', serif;
-            color: #007bff;
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            position: relative;
-        }
-
-            .user-reservations-title:after {
-                content: '';
-                position: absolute;
-                bottom: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 80px;
-                height: 4px;
-                background: linear-gradient(90deg, #007bff, #00bfff);
-                border-radius: 2px;
-            }
-
-        .user-reservations-body {
-            padding: 0 2rem 2rem;
-        }
-
-        /* НОВ ДИЗАЙН ЗА ФИЛТРИТЕ */
-        .filters-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
+        .user-services-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 220px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .form-select {
-            border-radius: 8px;
-            padding: 10px 15px;
-            border: 1px solid #ced4da;
-            transition: all 0.3s;
-            width: 100%;
-            background-color: white;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 16px 12px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
-            .form-select:focus {
-                border-color: #007bff;
-                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-                outline: none;
-            }
-
-        .reservation-card {
-            border-left: 4px solid #007bff;
-            border-radius: 8px;
-            transition: all 0.3s;
-            margin-bottom: 1.5rem;
+            position: relative;
             overflow: hidden;
         }
-
-            .reservation-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-
-        .reservation-card-header {
-            background-color: rgba(0, 123, 255, 0.05);
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            color: #007bff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+        .user-services-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
         }
-
-        .reservation-card-body {
-            padding: 1.5rem;
-        }
-
-        .reservation-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
+        .user-services-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 1rem;
+            position: relative;
+        }
+        .user-services-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+        .user-services-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        .reservation-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        
+        .reservation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border-color: rgba(124, 58, 237, 0.2);
         }
 
-        .reservation-meta-item {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .reservation-meta-label {
-            font-weight: 600;
-            color: #6c757d;
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
-        }
-
-        .reservation-meta-value {
-            color: #212529;
-            font-size: 1rem;
-        }
-
-        .btn-user {
-            background: linear-gradient(135deg, #007bff, #00bfff);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-            .btn-user:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-                color: white;
-            }
-
-        .btn-outline-user {
-            border: 1px solid #007bff;
-            color: #007bff;
-            border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-            .btn-outline-user:hover {
-                background: linear-gradient(135deg, #007bff, #00bfff);
-                color: white;
-            }
-
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .page-info {
-            margin: 0 1.5rem;
-            font-weight: 500;
-        }
-
-        /* ОБНОВЕН ДИЗАЙН ЗА СТАТУС БАДЖОВЕТЕ */
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.35rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
             font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            line-height: 1;
-        }
-
-        .status-badge-icon {
-            margin-right: 0.4rem;
-            font-size: 0.7rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .status-pending {
-            background-color: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
-            border: 1px solid rgba(255, 193, 7, 0.3);
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
         }
 
         .status-confirmed {
-            background-color: rgba(23, 162, 184, 0.15);
-            color: #17a2b8;
-            border: 1px solid rgba(23, 162, 184, 0.3);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
         }
 
         .status-completed {
-            background-color: rgba(40, 167, 69, 0.15);
-            color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
         }
 
         .status-cancelled {
-            background-color: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
-            border: 1px solid rgba(220, 53, 69, 0.3);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
         }
 
-        .status-expired {
-            background-color: rgba(108, 117, 125, 0.15);
-            color: #6c757d;
-            border: 1px solid rgba(108, 117, 125, 0.3);
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            border: none;
+            color: white;
         }
 
-        @@media (max-width: 768px) {
-            .user-reservations-title {
-                font-size: 1.8rem;
-            }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            color: white;
+        }
 
-            .user-reservations-header,
-            .user-reservations-body {
-                padding: 1.5rem;
-            }
+        .btn-secondary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.2);
+            border: none;
+            color: white;
+        }
 
-            .reservation-meta-item {
-                min-width: 100%;
-            }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
+            color: white;
+        }
 
-            .filters-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
 
-            .filter-group {
-                width: 100%;
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .form-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .form-input:focus {
+            border-color: #4c1d95;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            outline: none;
+        }
+
+        .card-header-gradient {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(124, 58, 237, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: rgba(124, 58, 237, 0.1);
+        }
+
+        .pagination-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #4c1d95;
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: #4c1d95;
+            background: white;
+            font-weight: 600;
+        }
+
+        .pagination-btn:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .shadow-soft {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-delay-100 { animation-delay: 0.1s; }
+        .animate-delay-200 { animation-delay: 0.2s; }
+        .animate-delay-300 { animation-delay: 0.3s; }
+        .animate-delay-400 { animation-delay: 0.4s; }
     </style>
 }
 
-<div class="user-reservations-container">
-    <div class="container">
-        <div class="user-reservations-card">
-            <div class="user-reservations-header">
-                <h1 class="user-reservations-title">Моите Резервации</h1>
-                <p class="text-center text-muted">Преглед на вашите резервации</p>
+<div class="user-services-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="user-services-header">
+            <h1 class="user-services-title">Моите Резервации</h1>
+            <p class="user-services-subtitle">Всички ваши резервации на едно място</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-3xl shadow-soft p-8 mb-12 animate-fade-in-up animate-delay-100">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Филтри и Сортиране</h2>
+                <p class="text-gray-600">Персонализирайте изгледа на вашите резервации</p>
+            </div>
+            
+            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">Статус</label>
+                    <select name="status" class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        @foreach (var status in statuses)
+                        {
+                            if (status.Value == selectedStatus)
+                            {
+                                @:<option value="@status.Value" selected>@status.Text</option>
+                            }
+                            else
+                            {
+                                @:<option value="@status.Value">@status.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">Сортиране</label>
+                    <select name="sortOrder" class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        @foreach (var so in sortOrders)
+                        {
+                            if (so.Value == selectedSort)
+                            {
+                                @:<option value="@so.Value" selected>@so.Text</option>
+                            }
+                            else
+                            {
+                                @:<option value="@so.Value">@so.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">От дата</label>
+                    <input type="date" name="startDate" value="@ViewData["StartDate"]" 
+                           class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">До дата</label>
+                    <input type="date" name="endDate" value="@ViewData["EndDate"]" 
+                           class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                </div>
+
+                <div class="md:col-span-2 lg:col-span-4 flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                    <button type="submit" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg">
+                        <i class="fas fa-filter mr-3"></i>
+                        Филтрирай
+                    </button>
+                    <a href="@Url.Action("Index", "UserServices")" 
+                       class="btn-outline px-8 py-4 rounded-xl font-semibold text-lg">
+                        <i class="fas fa-times mr-3"></i>
+                        Изчисти филтри
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Reservations List -->
+        @if (Model.Any())
+        {
+            <div class="space-y-8">
+                @foreach (var reservation in Model)
+                {
+                    <div class="reservation-card shadow-soft border-l-4 border-purple-500 animate-fade-in-up">
+                        <!-- Header -->
+                        <div class="card-header-gradient px-8 py-6 rounded-t-3xl">
+                            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center">
+                                            <i class="fas fa-calendar-check text-white text-2xl"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-gray-800 mb-2">@reservation.Service.NameService</h3>
+                                        <div class="flex items-center gap-4">
+                                            <span class="status-badge
+                                                @(reservation.Status == "Pending" ? "status-pending" : 
+                                                  reservation.Status == "Confirmed" ? "status-confirmed" : 
+                                                  reservation.Status == "Completed" ? "status-completed" : "status-cancelled")">
+                                                @(reservation.Status == "Pending" ? "Чакаща" : 
+                                                  reservation.Status == "Confirmed" ? "Потвърдена" : 
+                                                  reservation.Status == "Completed" ? "Завършена" : "Отменена")
+                                            </span>
+                                            <div class="flex items-center gap-2 text-gray-600">
+                                                <i class="fas fa-calendar text-purple-500"></i>
+                                                <span class="font-medium">@reservation.ReservationDate.ToString("dd.MM.yyyy")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="p-8">
+                            <div class="info-grid mb-8">
+                                <div class="info-item">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <i class="fas fa-tag text-purple-500 text-lg"></i>
+                                        <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Категория</label>
+                                    </div>
+                                    <p class="text-gray-800 font-medium text-lg">@reservation.Service.CategoryOfService</p>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <i class="fas fa-coins text-purple-500 text-lg"></i>
+                                        <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Цена</label>
+                                    </div>
+                                    <p class="text-gray-800 font-medium text-lg">@reservation.Service.Price.ToString("C")</p>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <i class="fas fa-clock text-purple-500 text-lg"></i>
+                                        <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Час</label>
+                                    </div>
+                                    <p class="text-gray-800 font-medium text-lg">@(reservation.ReservationTime?.ToString(@"hh\:mm") ?? "Не е посочен")</p>
+                                </div>
+                                
+                                @if (reservation.AstrologicalDate.HasValue)
+                                {
+                                    <div class="info-item">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <i class="fas fa-star text-purple-500 text-lg"></i>
+                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Астрологическа дата</label>
+                                        </div>
+                                        <p class="text-gray-800 font-medium text-lg">@reservation.AstrologicalDate.Value.ToString("dd.MM.yyyy")</p>
+                                    </div>
+                                }
+                                
+                                @if (!string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth))
+                                {
+                                    <div class="info-item">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <i class="fas fa-map-marker-alt text-purple-500 text-lg"></i>
+                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Място на раждане</label>
+                                        </div>
+                                        <p class="text-gray-800 font-medium text-lg">@reservation.AstrologicalPlaceOfBirth</p>
+                                    </div>
+                                }
+                                
+                                @if (!string.IsNullOrEmpty(reservation.AstroCardFileName))
+                                {
+                                    <div class="info-item">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <i class="fas fa-file-alt text-purple-500 text-lg"></i>
+                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Астро карта</label>
+                                        </div>
+                                        <p class="text-gray-800 font-medium text-lg">@reservation.AstroCardFileName</p>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(reservation.Service.Description))
+                            {
+                                <div class="mb-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-100">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <i class="fas fa-info-circle text-purple-500 text-lg"></i>
+                                        <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Описание на услугата</label>
+                                    </div>
+                                    <p class="text-gray-700 leading-relaxed text-lg">@reservation.Service.Description</p>
+                                </div>
+                            }
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-wrap gap-4">
+                                <a href="@Url.Action("Details", "UserServices", new { id = reservation.Id })" 
+                                   class="btn-primary px-6 py-3 rounded-xl font-semibold">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Детайли
+                                </a>
+
+                                @if (reservation.Status == "Pending")
+                                {
+                                    <a href="@Url.Action("Edit", "UserServices", new { id = reservation.Id })" 
+                                       class="btn-secondary px-6 py-3 rounded-xl font-semibold">
+                                        <i class="fas fa-edit mr-2"></i>
+                                        Редактирай
+                                    </a>
+
+                                    <a href="@Url.Action("Delete", "UserServices", new { id = reservation.Id })" 
+                                       class="btn-outline px-6 py-3 rounded-xl font-semibold">
+                                        <i class="fas fa-trash mr-2"></i>
+                                        Отмени
+                                    </a>
+                                }
+
+                                @if (!string.IsNullOrEmpty(reservation.AstroCardFilePath))
+                                {
+                                    <a href="/astro-cards/@reservation.AstroCardFileName" target="_blank" 
+                                       class="btn-outline px-6 py-3 rounded-xl font-semibold">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Изтегли карта
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
 
-            <div class="user-reservations-body">
-                <!-- ОБНОВЕН ДИЗАЙН ЗА ФИЛТРИТЕ -->
-                <div class="filters-container">
-                    <div class="filter-group">
-                        <label for="categoryFilter" class="form-label">Категория</label>
-                        <select id="categoryFilter" class="form-select">
-                            <option value="">Всички категории</option>
-                            <option value="астрология" selected="@(ViewData["CategoryFilter"]?.ToString() == "астрология")">Астрология</option>
-                            <option value="психология" selected="@(ViewData["CategoryFilter"]?.ToString() == "психология")">Психология</option>
-                        </select>
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <div class="flex justify-center items-center gap-8 mt-16 animate-fade-in-up animate-delay-300">
+                    <div class="font-playfair text-purple-600 font-semibold text-lg">
+                        Страница @currentPage от @totalPages
                     </div>
 
-                    <div class="filter-group">
-                        <label for="statusFilter" class="form-label">Статус</label>
-                        <select id="statusFilter" class="form-select">
-                            <option value="">Всички статуси</option>
-                            <option value="Pending" selected="@(ViewData["StatusFilter"]?.ToString() == "Pending")">Чакащи</option>
-                            <option value="Confirmed" selected="@(ViewData["StatusFilter"]?.ToString() == "Confirmed")">Потвърдени</option>
-                            <option value="Completed" selected="@(ViewData["StatusFilter"]?.ToString() == "Completed")">Завършени</option>
-                            <option value="Cancelled" selected="@(ViewData["StatusFilter"]?.ToString() == "Cancelled")">Отказани</option>
-                            <option value="Expired" selected="@(ViewData["StatusFilter"]?.ToString() == "Expired")">Изтекла</option>
-                        </select>
-                    </div>
+                    <div class="flex items-center gap-4">
+                        @if (currentPage > 1)
+                        {
+                            <a href="@Url.Action("Index", "UserServices", new { page = currentPage - 1, status = ViewData["StatusFilter"], sortOrder = sortOrder, startDate = ViewData["StartDate"], endDate = ViewData["EndDate"] })" 
+                               class="pagination-btn inline-flex items-center text-lg font-semibold">
+                                <i class="fas fa-chevron-left mr-2"></i>
+                                Предишна
+                            </a>
+                        }
 
-                    <div class="filter-group">
-                        <label for="sortDropdown" class="form-label">Сортиране</label>
-                        <select id="sortDropdown" class="form-select">
-                            <option value="date_desc" selected="@((sortOrder == "date_desc") ? "selected" : null)">Последни резервации</option>
-                            <option value="date_asc" selected="@((sortOrder == "date_asc") ? "selected" : null)">Най-стари резервации</option>
-                        </select>
+                        @if (currentPage < totalPages)
+                        {
+                            <a href="@Url.Action("Index", "UserServices", new { page = currentPage + 1, status = ViewData["StatusFilter"], sortOrder = sortOrder, startDate = ViewData["StartDate"], endDate = ViewData["EndDate"] })" 
+                               class="pagination-btn inline-flex items-center text-lg font-semibold">
+                                Следваща
+                                <i class="fas fa-chevron-right ml-2"></i>
+                            </a>
+                        }
                     </div>
                 </div>
-
-                <div id="reservationsTable">
-                    @foreach (var item in Model)
-                    {
-                        <div class="reservation-card">
-                            <div class="reservation-card-header">
-                                <div>
-                                    Резервация #@item.Id
-                                    <!-- ОБНОВЕН ДИЗАЙН ЗА СТАТУС БАДЖА -->
-                                    <span class="status-badge @(item.Status == "Pending" ? "status-pending" :
-                                                        item.Status == "Confirmed" ? "status-confirmed" :
-                                                        item.Status == "Completed" ? "status-completed" :
-                                                        item.Status == "Cancelled" ? "status-cancelled" :
-                                                        item.Status == "Expired" ? "status-expired" : "")">
-                                        <i class="fas @(item.Status == "Pending" ? "fa-clock" :
-                                                  item.Status == "Confirmed" ? "fa-check-circle" :
-                                                  item.Status == "Completed" ? "fa-check-double" :
-                                                  item.Status == "Cancelled" ? "fa-times-circle" :
-                                                  item.Status == "Expired" ? "fa-hourglass-end" : "") status-badge-icon"></i>
-                                        @(item.Status == "Pending" ? "Чакаща" :
-                                            item.Status == "Confirmed" ? "Потвърдена" :
-                                            item.Status == "Completed" ? "Завършена" :
-                                            item.Status == "Cancelled" ? "Отказана" :
-                                            item.Status == "Expired" ? "Изтекла" : "")
-                                    </span>
-                                </div>
-                                <div>
-                                    <a href="@Url.Action("Details", "UserServices", new { id = item.Id })" class="btn btn-user btn-sm">
-                                        <i class="fas fa-info-circle me-1"></i> Детайли
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="reservation-card-body">
-                                <div class="reservation-meta">
-                                    <div class="reservation-meta-item">
-                                        <div class="reservation-meta-label">Услуга</div>
-                                        <div class="reservation-meta-value">@item.Service.NameService</div>
-                                    </div>
-                                    <div class="reservation-meta-item">
-                                        <div class="reservation-meta-label">Категория</div>
-                                        <div class="reservation-meta-value">@item.Service.CategoryOfService</div>
-                                    </div>
-                                    @if (item.Service.CategoryOfService.ToLower() == "психология")
-                                    {
-                                        <div class="reservation-meta-item">
-                                            <div class="reservation-meta-label">Дата на резервация</div>
-                                            <div class="reservation-meta-value">@item.ReservationDate.ToString("dd.MM.yyyy HH:mm")</div>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="reservation-meta-item">
-                                            <div class="reservation-meta-label">Дата на раждане</div>
-                                            <div class="reservation-meta-value">@item.AstrologicalDate</div>
-                                        </div>
-                                    }
-                                    <div class="reservation-meta-item">
-                                        <div class="reservation-meta-label">Статус</div>
-                                        <div class="reservation-meta-value">
-                                            <span class="status-badge @(item.Status == "Pending" ? "status-pending" :
-                                                                item.Status == "Confirmed" ? "status-confirmed" :
-                                                                item.Status == "Completed" ? "status-completed" :
-                                                                item.Status == "Cancelled" ? "status-cancelled" :
-                                                                item.Status == "Expired" ? "status-expired" : "")">
-                                                <i class="fas @(item.Status == "Pending" ? "fa-clock" :
-                                                          item.Status == "Confirmed" ? "fa-check-circle" :
-                                                          item.Status == "Completed" ? "fa-check-double" :
-                                                          item.Status == "Cancelled" ? "fa-times-circle" :
-                                                          item.Status == "Expired" ? "fa-hourglass-end" : "") status-badge-icon"></i>
-                                                @(item.Status == "Pending" ? "Чакаща" :
-                                                    item.Status == "Confirmed" ? "Потвърдена" :
-                                                    item.Status == "Completed" ? "Завършена" :
-                                                    item.Status == "Cancelled" ? "Отказана" :
-                                                    item.Status == "Expired" ? "Изтекла" : "")
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    @if (!Model.Any())
-                    {
-                        <div class="alert alert-info text-center">
-                            Нямате направени резервации.
-                        </div>
-                    }
+            }
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="text-center py-20 animate-fade-in-up animate-delay-200">
+                <div class="bg-white rounded-3xl shadow-soft p-16 max-w-2xl mx-auto">
+                    <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                        <i class="fas fa-calendar-times text-4xl text-purple-500"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-800 mb-4">Няма резервации</h3>
+                    <p class="text-gray-600 mb-8 text-lg leading-relaxed">
+                        Все още нямате резервации. Разгледайте нашите услуги и запазете час за консултация.
+                    </p>
+                    <a href="@Url.Action("Index", "Services")" 
+                       class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center">
+                        <i class="fas fa-magic mr-3"></i>
+                        Разгледай услуги
+                    </a>
                 </div>
+            </div>
+        }
 
-                <div class="pagination-container">
-                    <button id="prevPage" class="btn btn-outline-user" @(currentPage <= 1 ? "disabled" : "")>
-                        <i class="fas fa-chevron-left me-1"></i> Предишна
-                    </button>
-                    <span class="page-info">Страница @currentPage от @totalPages</span>
-                    <button id="nextPage" class="btn btn-outline-user" @(currentPage >= totalPages ? "disabled" : "")>
-                        Следваща <i class="fas fa-chevron-right ms-1"></i>
-                    </button>
+        <!-- Call to Action -->
+        <div class="text-center mt-20 animate-fade-in-up animate-delay-400">
+            <div class="bg-white rounded-3xl shadow-soft p-12 max-w-3xl mx-auto">
+                <h3 class="text-3xl font-bold text-gradient mb-6">Искате ли нова резервация?</h3>
+                <p class="text-gray-600 mb-8 text-lg leading-relaxed">
+                    Разгледайте нашите услуги и запазете час за професионална консултация.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <a href="@Url.Action("Index", "Services")" 
+                       class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center">
+                        <i class="fas fa-magic mr-3"></i>
+                        Разгледай услуги
+                    </a>
+                    <a href="@Url.Action("Index", "Home")" 
+                       class="btn-outline px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center">
+                        <i class="fas fa-home mr-3"></i>
+                        Начална страница
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            function loadReservations(page, sort, category, status) {
-                $.ajax({
-                    url: '@Url.Action("Index", "UserServices")',
-                    type: 'GET',
-                    data: {
-                        pageNumber: page,
-                        sortOrder: sort,
-                        categoryFilter: category,
-                        statusFilter: status
-                    },
-                    success: function (data) {
-                        var $data = $(data);
-                        $('#reservationsTable').html($data.find('#reservationsTable').html());
-                        $('.pagination-container').html($data.find('.pagination-container').html());
-                    },
-                    error: function (xhr, status, error) {
-                        // По-добра обработка на грешки
-                        if (xhr.responseText) {
-                            try {
-                                var response = JSON.parse(xhr.responseText);
-                                if (response.message) {
-                                    alert(response.message);
-                                    return;
-                                }
-                            } catch (e) {
-                                console.error("Error parsing response", e);
-                            }
-                        }
-                        alert("Възникна грешка при зареждане на данните. Моля, опитайте отново.");
-                    }
-                });
-            }
-
-            function applyFilters() {
-                var selectedSort = $('#sortDropdown').val();
-                var selectedCategory = $('#categoryFilter').val();
-                var selectedStatus = $('#statusFilter').val();
-                loadReservations(1, selectedSort, selectedCategory, selectedStatus);
-            }
-
-            $('#sortDropdown, #categoryFilter, #statusFilter').change(function () {
-                applyFilters();
-            });
-
-            $(document).on('click', '#prevPage', function () {
-                var currentPage = parseInt($('.page-info').text().match(/\d+/)[0]);
-                if (currentPage > 1) {
-                    loadReservations(
-                        currentPage - 1,
-                        $('#sortDropdown').val(),
-                        $('#categoryFilter').val(),
-                        $('#statusFilter').val()
-                    );
-                }
-            });
-
-            $(document).on('click', '#nextPage', function () {
-                var currentPage = parseInt($('.page-info').text().match(/\d+/)[0]);
-                var totalPages = parseInt($('.page-info').text().match(/\d+/g)[1]);
-                if (currentPage < totalPages) {
-                    loadReservations(
-                        currentPage + 1,
-                        $('#sortDropdown').val(),
-                        $('#categoryFilter').val(),
-                        $('#statusFilter').val()
-                    );
-                }
-            });
-        });
-    </script>
-}

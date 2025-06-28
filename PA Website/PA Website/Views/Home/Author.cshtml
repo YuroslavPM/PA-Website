@@ -5,240 +5,159 @@
 
 @section Styles {
     <style>
-        .author-page {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 3rem 0;
-            min-height: calc(100vh - 80px);
-        }
-
-        .author-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .author-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            overflow: hidden;
-            position: relative;
-        }
-
-            .author-card:before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 5px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-            }
-
-        .author-header {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .author-title {
-            font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-            .author-title:after {
-                content: '';
-                position: absolute;
-                bottom: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 80px;
-                height: 4px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-                border-radius: 2px;
-            }
-
-        .author-subtitle {
-            color: #6a3093;
-            font-size: 1.1rem;
-        }
-
-        .author-content {
-            padding: 2rem;
-        }
-
-        .author-avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid rgba(106, 48, 147, 0.1);
-            margin: 0 auto 1.5rem;
-            display: block;
-        }
-
-        .author-bio {
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 2rem;
-            font-size: 1.05rem;
-        }
-
-        .author-details {
-            background: rgba(106, 48, 147, 0.03);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .detail-item {
-            display: flex;
-            margin-bottom: 1rem;
-            align-items: center;
-        }
-
-        .detail-icon {
-            color: #6a3093;
-            font-size: 1.2rem;
-            width: 30px;
-            text-align: center;
-            margin-right: 10px;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 1.5rem;
-            margin: 2rem 0 1rem;
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-            .section-title:after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 50px;
-                height: 3px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-            }
-
-        .btn-contact {
+        .btn-gradient {
             background: linear-gradient(135deg, #4a0e78, #6a3093);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 25px;
-            font-size: 1rem;
-            transition: all 0.3s;
-            display: inline-block;
-            text-decoration: none;
-            margin-top: 1rem;
         }
 
-            .btn-contact:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.2);
-                color: white;
-            }
-
-        .work-themes {
-            margin-left: 20px;
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #6a3093, #4a0e78);
         }
 
-            .work-themes li {
-                margin-bottom: 0.5rem;
-                position: relative;
-                padding-left: 20px;
-            }
-
-                .work-themes li:before {
-                    color: #6a3093;
-                    font-size: 1.5rem;
-                    position: absolute;
-                    left: 0;
-                    top: -5px;
-                }
-
-        .signature {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            margin-top: 2rem;
-            text-align: right;
-            color: #4a0e78;
-        }
-
-        @@media (max-width: 768px) {
-            .author-header {
-                padding: 1.5rem;
-            }
-
-            .author-content {
-                padding: 1.5rem;
-            }
-
-            .author-title {
-                font-size: 1.8rem;
-            }
+        .work-themes li::before {
+            content: '✨';
+            color: #6a3093;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -5px;
         }
     </style>
 }
 
-<div class="author-page">
-    <div class="author-container">
-        <div class="author-card">
-            <div class="author-header">
-                <h1 class="author-title">За мен</h1>
-                <p class="author-subtitle">Психолог и астропсихолог</p>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Author Card -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden relative">
+            <!-- Top border -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+            
+            <!-- Header -->
+            <div class="text-center p-8">
+                <h1 class="font-playfair text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block">
+                    За мен
+                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                </h1>
+                <p class="text-xl text-secondary font-medium">Психолог и астропсихолог</p>
             </div>
 
-            <div class="author-content">
-                <img src="https://scontent.fsof5-1.fna.fbcdn.net/v/t39.30808-6/492612847_24008185045446073_5271774732973390534_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=2qjZ8vG_NhIQ7kNvwFkVTgu&_nc_oc=Adk8wN6OtvsycYfJmiPQvO6z-PPIxKHSBhzSxV8gKMUvcFShbnfuU_OSKYcJL64fsKk&_nc_zt=23&_nc_ht=scontent.fsof5-1.fna&_nc_gid=kFVujh4rWh_RTzRaPjlfPA&oh=00_AfN2NZwmvob7UI-E1IOMQDowbwIY4S-ypqLJ3wcnvirHdQ&oe=685F662A"
-                     alt="Мариела Разпопова" class="author-avatar">
-
-                <div class="author-bio">
-                    <p>Здравей и добре дошъл в Душевна Мозайка – пространство, родено от стремежа към разбиране, дълбочина и истинска връзка със себе си.</p>
-
-                    <p>Моето пътуване към психологията започна не в университетска аудитория, а в сърцето – през 2019 година, когато за първи път се срещнах с астропсихологията. Тя отключи в мен дълбок интерес към вътрешния свят на човека и разбирането за това как преживяванията, мислите, емоциите и звездното небе се вплитат в нашата лична история.</p>
-
-                    <p>С времето осъзнах, че това не е просто любопитство, а призвание – и го последвах. Завърших магистратура по Приложна психология и преминах базово обучение по Позитивна психотерапия, което ми помогна да обогатя своя подход с научна основа, емпатия и методология.</p>
+            <!-- Content -->
+            <div class="p-8">
+                <!-- Avatar -->
+                <div class="text-center mb-8">
+                    <img src="https://scontent.fsof5-1.fna.fbcdn.net/v/t39.30808-6/492612847_24008185045446073_5271774732973390534_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=2qjZ8vG_NhIQ7kNvwFkVTgu&_nc_oc=Adk8wN6OtvsycYfJmiPQvO6z-PPIxKHSBhzSxV8gKMUvcFShbnfuU_OSKYcJL64fsKk&_nc_zt=23&_nc_ht=scontent.fsof5-1.fna&_nc_gid=kFVujh4rWh_RTzRaPjlfPA&oh=00_AfN2NZwmvob7UI-E1IOMQDowbwIY4S-ypqLJ3wcnvirHdQ&oe=685F662A"
+                         alt="Мариела Разпопова" 
+                         class="w-40 h-40 rounded-full object-cover border-4 border-secondary/20 mx-auto shadow-lg">
                 </div>
 
-                <div class="author-details">
-                    <h3 class="section-title">Моята философия</h3>
-                    <p class="author-bio">
-                        Вярвам, че всеки човек носи в себе си уникална душевна мозайка – съвкупност от опитности, мечти, страхове и сили. Моята роля не е да ти давам готови отговори, а да бъда до теб в процеса на откриването им в теб самия – с внимание, разбиране и професионална подкрепа.
+                <!-- Bio -->
+                <div class="mb-8">
+                    <p class="text-gray-700 leading-relaxed text-lg">
+                        Здравейте! Аз съм Мариела Разпопова, създател на "Душевна Мозайка". 
+                        Пътят ми започна с астропсихологията през 2019-та година – тя отвори врата към ново разбиране за човека и душата. 
+                        Именно тя ме отведе и към психологията, където припознах своето истинско призвание.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed text-lg mt-4">
+                        Завърших магистратура по Приложна психология и базов курс по Позитивна психотерапия, 
+                        а днес съм тук – за да бъда с теб в процеса на осъзнаване, промяна и вътрешна хармония.
                     </p>
                 </div>
 
-                <h3 class="section-title">Работя с теми като:</h3>
-                <ul class="work-themes">
-                    <li>самооценка и идентичност</li>
-                    <li>вътрешни конфликти и емоционално напрежение</li>
-                    <li>житейски преходи и решения</li>
-                    <li>взаимоотношения с другите и със себе си</li>
-                    <li>желание за личностно развитие и самопознание</li>
-                </ul>
-
-                <p class="author-bio">
-                    Съчетавайки психологически знания с дълбочината на астропсихологията, подходът ми е холистичен, интуитивен и същевременно структуриран. Уважавам темпото на всеки човек и вярвам, че дори най-малката стъпка към себе си има значение.
-                </p>
-
-                <p class="author-bio">
-                    Ако усещаш, че Душевна Мозайка може да бъде част от твоя път – добре дошъл си. Ще се радвам да вървим заедно.
-                </p>
-
-                <div class="signature">
-                    <p>С топлина,</p>
-                    <p>Мариела Разпопова</p>
+                <!-- Details -->
+                <div class="bg-secondary/5 rounded-xl p-6 mb-8">
+                    <h3 class="font-playfair text-2xl font-bold text-primary mb-4 relative pb-2">
+                        Образование и квалификации
+                        <div class="absolute bottom-0 left-0 w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-graduation-cap text-secondary text-xl w-8 text-center mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-gray-800">Магистратура по Приложна психология</p>
+                                <p class="text-gray-600 text-sm">Университет за национално и световно стопанство</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <i class="fas fa-certificate text-secondary text-xl w-8 text-center mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-gray-800">Базов курс по Позитивна психотерапия</p>
+                                <p class="text-gray-600 text-sm">Сертифициран курс</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-secondary text-xl w-8 text-center mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-gray-800">Астропсихология</p>
+                                <p class="text-gray-600 text-sm">Специализация от 2019 година</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <a href="/Contact" class="btn-contact">
-                    <i class="fas fa-envelope me-1"></i> Свържете се с мен
-                </a>
+                <!-- Work Areas -->
+                <div class="mb-8">
+                    <h3 class="font-playfair text-2xl font-bold text-primary mb-4 relative pb-2">
+                        Области на работа
+                        <div class="absolute bottom-0 left-0 w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                    </h3>
+                    
+                    <ul class="work-themes space-y-2 ml-6">
+                        <li class="relative pl-8 text-gray-700">Индивидуални психологически консултации</li>
+                        <li class="relative pl-8 text-gray-700">Астрологически хороскопи и анализи</li>
+                        <li class="relative pl-8 text-gray-700">Комбинирани сесии - астрология и психология</li>
+                        <li class="relative pl-8 text-gray-700">Подкрепа при житейски предизвикателства</li>
+                        <li class="relative pl-8 text-gray-700">Работа с емоционални блокове</li>
+                        <li class="relative pl-8 text-gray-700">Личностно развитие и самопознание</li>
+                    </ul>
+                </div>
+
+                <!-- Philosophy -->
+                <div class="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6 mb-8">
+                    <h3 class="font-playfair text-2xl font-bold text-primary mb-4 relative pb-2">
+                        Моята философия
+                        <div class="absolute bottom-0 left-0 w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                    </h3>
+                    
+                    <div class="relative">
+                        <div class="absolute -top-4 left-4 text-6xl text-primary/20 font-serif">"</div>
+                        <p class="text-gray-700 leading-relaxed text-lg pl-8 relative z-10">
+                            Вярвам, че всеки човек е уникална мозайка от опит, емоции и потенциал. 
+                            Моята роля е да помогна на хората да разберат и приемат всички парченца от себе си, 
+                            да намерят хармонията в собствения си свят и да изградят по-добър живот.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="text-center">
+                    <h3 class="font-playfair text-2xl font-bold text-primary mb-4">Готови сте да започнем?</h3>
+                    <p class="text-gray-600 mb-6">
+                        Нека работим заедно за по-добро разбиране на себе си и вашия път.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="@Url.Action("Index", "Services")" 
+                           class="inline-flex items-center btn-gradient text-white px-8 py-4 rounded-full font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                            <i class="fas fa-magic mr-2"></i>
+                            Разгледай услугите
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" 
+                           class="inline-flex items-center border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 rounded-full font-medium transition-all duration-300">
+                            <i class="fas fa-home mr-2"></i>
+                            Начална страница
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Signature -->
+                <div class="text-right mt-8 pt-8 border-t border-gray-200">
+                    <p class="font-playfair text-xl italic text-primary">
+                        "Вашата душа е уникална мозайка – нека я подредим заедно."
+                    </p>
+                    <p class="text-secondary font-medium mt-2">Мариела Разпопова</p>
+                </div>
             </div>
         </div>
     </div>

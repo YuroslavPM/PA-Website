@@ -15,18 +15,23 @@
 @section Styles {
     <style>
         .service-detail-container {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             padding: 3rem 0;
             min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .service-detail-card {
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
             overflow: hidden;
             position: relative;
             background: white;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
             .service-detail-card:before {
@@ -35,19 +40,20 @@
                 top: 0;
                 left: 0;
                 width: 100%;
-                height: 5px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
             }
 
         .service-detail-header {
-            padding: 2rem;
-            background: white;
+            padding: 2.5rem 2.5rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
         }
 
         .service-detail-title {
             font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 2.2rem;
+            color: #4c1d95;
+            font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             text-align: center;
@@ -57,17 +63,17 @@
             .service-detail-title:after {
                 content: '';
                 position: absolute;
-                bottom: -10px;
+            bottom: -12px;
                 left: 50%;
                 transform: translateX(-50%);
-                width: 80px;
+            width: 100px;
                 height: 4px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
                 border-radius: 2px;
             }
 
         .service-detail-body {
-            padding: 0 2rem 2rem;
+            padding: 0 2.5rem 2.5rem;
         }
 
         .service-detail-dl {
@@ -79,7 +85,7 @@
 
             .service-detail-dl dt {
                 font-weight: 600;
-                color: #4a0e78;
+            color: #4c1d95;
                 margin: 0;
                 padding: 0.5rem 0;
             }
@@ -91,7 +97,7 @@
             }
 
         .price-display {
-            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
             border-radius: 20px;
             padding: 0.5rem 1rem;
@@ -99,13 +105,13 @@
             display: inline-flex;
             align-items: center;
             font-weight: 500;
-            box-shadow: 0 2px 8px rgba(74, 14, 120, 0.2);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
             transition: all 0.3s ease;
         }
 
         .price-display:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(74, 14, 120, 0.3);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
         }
 
         .price-display i {
@@ -119,51 +125,43 @@
             letter-spacing: 0.5px;
         }
 
-        /* Стилове за ценовия блок */
         .service-meta {
             font-family: 'Playfair Display', serif;
         }
 
         .price-badge, .date-badge {
-            background: rgba(106, 48, 147, 0.1);
+            background: rgba(124, 58, 237, 0.1);
             border-radius: 20px;
             padding: 6px 12px;
             font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
-            border: 1px solid rgba(106, 48, 147, 0.2);
+            border: 1px solid rgba(124, 58, 237, 0.2);
         }
 
         .price-badge {
-            color: #4a0e78;
+            color: #4c1d95;
         }
 
         .date-badge {
-            color: #6a3093;
+            color: #7c3aed;
         }
 
         .text-purple {
-            color: #4a0e78 !important;
-        }
-
-        /* Адаптивни корекции */
-        @@media (max-width: 576px) {
-            .service-meta {
-                flex-direction: column;
-                gap: 8px !important;
-            }
+            color: #4c1d95 !important;
         }
 
         .reservation-section {
-            background: rgba(106, 48, 147, 0.05);
-            border-radius: 12px;
+            background: rgba(124, 58, 237, 0.05);
+            border-radius: 16px;
             padding: 1.5rem;
             margin-top: 2rem;
+            border: 1px solid rgba(124, 58, 237, 0.1);
         }
 
         .reservation-title {
             font-family: 'Playfair Display', serif;
-            color: #4a0e78;
+            color: #4c1d95;
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
             text-align: center;
@@ -171,19 +169,21 @@
 
         .form-label {
             font-weight: 600;
-            color: #4a0e78;
+            color: #4c1d95;
         }
 
         .form-control {
-            border-radius: 8px;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
             transition: all 0.3s;
+            background: #fff;
         }
 
             .form-control:focus {
-                border-color: #6a3093;
-                box-shadow: 0 0 0 0.25rem rgba(106, 48, 147, 0.25);
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            outline: none;
             }
 
         .time-slot-btn {
@@ -194,37 +194,58 @@
         }
 
         .btn-service {
-            background: linear-gradient(135deg, #4a0e78, #6a3093);
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
             border: none;
             border-radius: 25px;
-            padding: 10px 25px;
+            padding: 12px 32px;
             font-size: 1rem;
             transition: all 0.3s;
+            font-weight: 600;
         }
 
             .btn-service:hover {
                 transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
                 color: white;
             }
 
         .btn-outline-service {
-            border: 1px solid #4a0e78;
-            color: #4a0e78;
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
             border-radius: 25px;
-            padding: 10px 25px;
+            padding: 12px 32px;
             font-size: 1rem;
             transition: all 0.3s;
+            font-weight: 600;
+            background: transparent;
         }
 
             .btn-outline-service:hover {
-                background: linear-gradient(135deg, #4a0e78, #6a3093);
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
                 color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
             }
 
         .alert {
-            border-radius: 10px;
+            border-radius: 12px;
+            border: none;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
         }
 
         @@media (max-width: 768px) {
@@ -239,6 +260,30 @@
 
             .service-detail-title {
                 font-size: 1.8rem;
+            }
+
+            .service-detail-container {
+                padding: 1rem 0;
+            }
+
+            .service-detail-card {
+                margin: 0 1rem;
+                border-radius: 16px;
+            }
+
+            .service-detail-header {
+                padding: 2rem 1.5rem 1rem;
+            }
+
+            .service-detail-body {
+                padding: 0 1.5rem 1.5rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .service-meta {
+                flex-direction: column;
+                gap: 8px !important;
             }
         }
     </style>

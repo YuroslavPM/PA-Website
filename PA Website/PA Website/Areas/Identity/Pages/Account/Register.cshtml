@@ -1,84 +1,284 @@
 ﻿@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Регистрация";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+@section Styles {
+    <style>
+        .auth-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
 
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div class="form-floating mb-3">
-                <input asp-for="Input.FName" class="form-control" aria-required="true" placeholder="Име" />
-                <label asp-for="Input.FName">Име</label>
-                <span asp-validation-for="Input.FName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.LName" class="form-control" aria-required="true" placeholder="Фамилия" />
-                <label asp-for="Input.LName">Фамилия</label>
-                <span asp-validation-for="Input.LName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Birth_Date" class="form-control" type="date" aria-required="true" placeholder="Ден на раждане" />
-                <label asp-for="Input.Birth_Date">Име</label>
-                <span asp-validation-for="Input.Birth_Date" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Phone_Number" class="form-control"  aria-required="true" placeholder="Телефонен номер" />
-                <label asp-for="Input.Phone_Number">Телефонен номер</label>
-                <span asp-validation-for="Input.Phone_Number" class="text-danger"></span>
-            </div>
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
+        .auth-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            overflow: hidden;
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .auth-header {
+            padding: 2.5rem 2.5rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .auth-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .auth-subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+
+        .auth-body {
+            padding: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4c1d95;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            padding: 12px 16px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 32px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .text-danger {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            color: #dc2626;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .external-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .external-title {
+            color: #4c1d95;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .external-login .btn {
+            margin: 0.5rem;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .external-login .btn-primary {
+            background: linear-gradient(135deg, #4285F4, #34A853);
+            border: none;
+        }
+
+        .external-login .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -5px rgba(66, 133, 244, 0.3);
+        }
+
+        @@media (max-width: 768px) {
+            .auth-title {
+                font-size: 2rem;
             }
-        </section>
+
+            .auth-header,
+            .auth-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="auth-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="auth-title">@ViewData["Title"]</h1>
+                <p class="auth-subtitle">Създайте нов акаунт</p>
+            </div>
+
+            <div class="auth-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert-danger" role="alert"></div>
+                            
+                            <div class="form-group">
+                                <label asp-for="Input.FName" class="form-label">Име</label>
+                                <input asp-for="Input.FName" class="form-control" aria-required="true" placeholder="Име" />
+                                <span asp-validation-for="Input.FName" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="Input.LName" class="form-label">Фамилия</label>
+                                <input asp-for="Input.LName" class="form-control" aria-required="true" placeholder="Фамилия" />
+                                <span asp-validation-for="Input.LName" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="Input.Birth_Date" class="form-label">Дата на раждане</label>
+                                <input asp-for="Input.Birth_Date" class="form-control" type="date" aria-required="true" />
+                                <span asp-validation-for="Input.Birth_Date" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="Input.Phone_Number" class="form-label">Телефонен номер</label>
+                                <input asp-for="Input.Phone_Number" class="form-control" aria-required="true" placeholder="Телефонен номер" />
+                                <span asp-validation-for="Input.Phone_Number" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="Input.Email" class="form-label">Имейл адрес</label>
+                                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="Input.Password" class="form-label">Парола</label>
+                                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Парола" />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="Input.ConfirmPassword" class="form-label">Потвърди парола</label>
+                                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Потвърди парола" />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            
+                            <button id="registerSubmit" type="submit" class="btn-primary">Регистрация</button>
+                        </form>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="external-section">
+                            <h3 class="external-title">Регистрация чрез външни услуги</h3>
+                            @{
+                                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                {
+                                    <div class="text-center">
+                                        <p style="color: #64748b;">
+                                            В момента няма конфигурирани външни услуги за автентикация.
+                                        </p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                        <div class="external-login text-center">
+                                            <p class="mb-3" style="color: #64748b;">
+                                                @foreach (var provider in Model.ExternalLogins!)
+                                                {
+                                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Регистрация чрез вашия @provider.DisplayName акаунт">
+                                                        @provider.DisplayName
+                                                    </button>
+                                                }
+                                            </p>
+                                        </div>
+                                    </form>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

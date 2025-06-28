@@ -7,212 +7,283 @@
 
 @section Styles {
     <style>
-        .create-service-container {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 3rem 0;
+        .create-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: calc(100vh - 80px);
+            padding: 2rem 0;
         }
 
-        .create-service-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        .create-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
             overflow: hidden;
             position: relative;
-            background: white;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-            .create-service-card:before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 5px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-            }
-
-        .create-service-header {
-            padding: 2rem 2rem 1rem;
-            background: white;
+        .create-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
         }
 
-        .create-service-title {
+        .create-header {
+            padding: 2.5rem 2.5rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .create-title {
             font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
             text-align: center;
             position: relative;
         }
 
-            .create-service-title:after {
-                content: '';
-                position: absolute;
-                bottom: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 80px;
-                height: 4px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-                border-radius: 2px;
-            }
+        .create-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
 
-        .create-service-body {
-            padding: 0 2rem 2rem;
+        .create-subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+
+        .create-body {
+            padding: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
         .form-label {
             font-weight: 600;
-            color: #4a0e78;
+            color: #4c1d95;
             margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .form-control {
-            border-radius: 8px;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            transition: all 0.3s;
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            padding: 12px 16px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
         }
 
-            .form-control:focus {
-                border-color: #6a3093;
-                box-shadow: 0 0 0 0.25rem rgba(106, 48, 147, 0.25);
-            }
+        .form-control:focus, .form-select:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            outline: none;
+        }
+
+        .input-group {
+            position: relative;
+        }
 
         .input-group-text {
-            background-color: rgba(106, 48, 147, 0.1);
-            border-color: #ddd;
-            color: #4a0e78;
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            z-index: 10;
+        }
+
+        .input-group .form-control {
+            padding-left: 48px;
         }
 
         .text-danger {
-            font-size: 0.85rem;
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
         }
 
-        .btn-service {
-            background: linear-gradient(135deg, #4a0e78, #6a3093);
+        .alert-danger {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            color: #dc2626;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
             border: none;
-            border-radius: 25px;
-            padding: 10px 25px;
+            border-radius: 12px;
+            padding: 12px 32px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
             font-size: 1rem;
-            transition: all 0.3s;
         }
 
-            .btn-service:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(74, 14, 120, 0.3);
-                color: white;
-            }
-
-        .btn-outline-service {
-            border: 1px solid #4a0e78;
-            color: #4a0e78;
-            border-radius: 25px;
-            padding: 10px 25px;
-            font-size: 1rem;
-            transition: all 0.3s;
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
         }
 
-            .btn-outline-service:hover {
-                background: linear-gradient(135deg, #4a0e78, #6a3093);
-                color: white;
-            }
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
 
         @@media (max-width: 768px) {
-            .create-service-title {
-                font-size: 1.8rem;
+            .create-title {
+                font-size: 2rem;
             }
 
-            .create-service-header,
-            .create-service-body {
+            .create-header,
+            .create-body {
                 padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
 }
 
-<div class="create-service-container">
-    <div class="container">
-        <div class="create-service-card">
-            <div class="create-service-header">
-                <h1 class="create-service-title">Създай Нова Услуга</h1>
+<div class="create-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="create-card">
+            <div class="create-header">
+                <h1 class="create-title">Създай Нова Услуга</h1>
+                <p class="create-subtitle">Добавете нова услуга към вашия каталог</p>
             </div>
 
-            <form asp-action="Create" class="create-service-body">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+            <div class="create-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="alert-danger"></div>
 
-                <div class="mb-4">
-                    <label asp-for="NameService" class="form-label">Име на услугата</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
-                        <input asp-for="NameService" class="form-control" placeholder="Въведете име на услугата" />
+                    <div class="form-group">
+                        <label asp-for="NameService" class="form-label">Име на услугата</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                            <input asp-for="NameService" class="form-control" placeholder="Въведете име на услугата" />
+                        </div>
+                        <span asp-validation-for="NameService" class="text-danger"></span>
                     </div>
-                    <span asp-validation-for="NameService" class="text-danger"></span>
-                </div>
 
-                <div class="mb-4">
-                    <label asp-for="CategoryOfService" class="form-label">Категория</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                        <select asp-for="CategoryOfService" class="form-control">
-                            <option value="">Изберете категория</option>
-                            <option value="Психология">Психология</option>
-                            <option value="Астрология">Астрология</option>
-                            <option value="Друго">Друго</option>
-                        </select>
+                    <div class="form-group">
+                        <label asp-for="CategoryOfService" class="form-label">Категория</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                            <select asp-for="CategoryOfService" class="form-control">
+                                <option value="">Изберете категория</option>
+                                <option value="Психология">Психология</option>
+                                <option value="Астрология">Астрология</option>
+                                <option value="Друго">Друго</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="CategoryOfService" class="text-danger"></span>
                     </div>
-                    <span asp-validation-for="CategoryOfService" class="text-danger"></span>
-                </div>
-                <div class="mb-4">
-                    <label asp-for="Price" class="form-label">Цена (лв.)</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light">
-                            <i class="fas fa-money-bill-alt text-warning me-1"></i>
-                        </span>
-                        <input asp-for="Price"
-                               class="form-control"
-                               type="number"
-                               step="0.01"
-                               min="0" />
-                    </div>
-                    <span asp-validation-for="Price" class="text-danger small"></span>
-                </div>
-                <div class="mb-4">
-                    <label asp-for="ReservationDate" class="form-label">Дата за резервация</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                        <input asp-for="ReservationDate" type="date" class="form-control" />
-                    </div>
-                    <span asp-validation-for="ReservationDate" class="text-danger"></span>
-                </div>
 
-                <div class="mb-4">
-                    <label asp-for="Description" class="form-label">Описание</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Въведете описание на услугата"></textarea>
+                    <div class="form-group">
+                        <label asp-for="Price" class="form-label">Цена (лв.)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                            <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger"></span>
                     </div>
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div>
 
-                <div class="d-flex justify-content-between mt-5">
-                    <a asp-action="Index" class="btn btn-outline-service">
-                        <i class="fas fa-arrow-left me-2"></i> Отказ
-                    </a>
-                    <button type="submit" class="btn btn-service">
-                        <i class="fas fa-plus me-2"></i> Създай услуга
-                    </button>
-                </div>
-            </form>
+                    <div class="form-group">
+                        <label asp-for="ReservationDate" class="form-label">Дата за резервация</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            <input asp-for="ReservationDate" type="date" class="form-control" />
+                        </div>
+                        <span asp-validation-for="ReservationDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description" class="form-label">Описание</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Въведете описание на услугата"></textarea>
+                        </div>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save mr-2"></i>Създай услуга
+                        </button>
+                        <a asp-action="Index" class="btn-outline">
+                            <i class="fas fa-arrow-left"></i>Назад към списъка
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

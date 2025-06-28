@@ -13,357 +13,499 @@
 
 @section Styles {
     <style>
-        :root {
-            --primary-color: #4a0e78;
-            --secondary-color: #6a3093;
-            --accent-color: #ffd700;
-            --light-bg: #f8f9fa;
-            --card-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            --hover-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-
-        .services-page {
-            background: var(--light-bg);
-            padding: 2rem 0;
-            min-height: calc(100vh - 80px);
-        }
-
         .services-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
         }
 
         .services-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            gap: 1rem;
-        }
-
-        .page-title {
-            color: var(--primary-color);
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0;
             position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-            .page-title:after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 60px;
-                height: 3px;
-                background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            }
-
-        .service-card {
-            border: none;
-            border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: var(--card-shadow);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: white;
+        }
+
+        .services-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .services-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
             position: relative;
+        }
+
+        .services-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .services-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
             margin-bottom: 1.5rem;
         }
 
-            .service-card:hover {
-                transform: translateY(-5px);
-                box-shadow: var(--hover-shadow);
-            }
-
-        .service-card-body {
-            padding: 1.25rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .service-card-title {
-            color: var(--primary-color);
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+        .btn-create {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 32px;
             font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .service-card-category {
-            font-size: 0.85rem;
-            color: var(--secondary-color) !important;
-            margin-bottom: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .btn-create:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
         }
 
-        .service-card-text {
-            font-size: 0.9rem;
-            color: #555;
-            margin-bottom: 1rem;
-            flex-grow: 1;
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
 
-        .service-card-footer {
-            padding: 0.75rem 1.25rem;
-            background: rgba(106, 48, 147, 0.05);
-            border-top: 1px solid rgba(106, 48, 147, 0.1);
+        .service-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.1);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25);
+        }
+
+        .service-image {
+            height: 200px;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(76, 29, 149, 0.8), rgba(124, 58, 237, 0.8));
+        }
+
+        .service-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .service-content {
+            padding: 1.5rem;
         }
 
         .service-meta {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
             margin-bottom: 1rem;
         }
 
-        .price-badge {
-            background: linear-gradient(135deg, #4a0e78, #6a3093);
+        .category-badge {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
             color: white;
-            border-radius: 20px;
+            border-radius: 12px;
             padding: 0.5rem 1rem;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.875rem;
             display: inline-flex;
             align-items: center;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(74, 14, 120, 0.2);
-            transition: all 0.3s ease;
-        }
-
-            .price-badge:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(74, 14, 120, 0.3);
-            }
-
-            .price-badge i {
-                color: white;
-                margin-right: 0.5rem;
-                font-size: 0.95rem;
-            }
-
-        .btn-service {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0.5rem 1.25rem;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .btn-service:hover {
-                background: var(--secondary-color);
-                color: white;
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.3);
-            }
-
-        .btn-service-outline {
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            border-radius: 20px;
-            padding: 0.5rem 1.25rem;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-
-            .btn-service-outline:hover {
-                background: var(--primary-color);
-                color: white;
-            }
-
-        .action-buttons {
-            display: flex;
             gap: 0.5rem;
+        }
+
+        .price-badge {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .service-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .service-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .service-date {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-actions {
+            display: flex;
+            gap: 0.75rem;
             flex-wrap: wrap;
         }
 
-        .promo-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff4757;
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.7rem;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
             font-weight: 500;
-            z-index: 1;
-            animation: pulse 1.5s infinite;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        @@keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-1px);
         }
 
-        .no-services {
+        .btn-outline {
+            border: 1px solid #4c1d95;
+            color: #4c1d95;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
             text-align: center;
-            padding: 2rem;
-            color: var(--secondary-color);
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-            .no-services i {
-                font-size: 2.5rem;
-                margin-bottom: 1rem;
-                color: #d3d9e8;
-            }
+        .empty-icon {
+            font-size: 4rem;
+            color: #4c1d95;
+            opacity: 0.5;
+            margin-bottom: 1.5rem;
+        }
 
-        /* Responsive adjustments */
+        .empty-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .empty-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .cta-description {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-home {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 32px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-home:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
         @@media (max-width: 768px) {
+            .services-title {
+                font-size: 2rem;
+            }
+
             .services-header {
+                padding: 1.5rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .service-actions {
                 flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .page-title {
-                font-size: 1.75rem;
-            }
-
-            .service-card {
-                margin-bottom: 1rem;
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .services-container {
-                padding: 1rem;
-            }
-
-            .page-title {
-                font-size: 1.5rem;
-            }
-
-            .action-buttons {
-                justify-content: center;
-            }
-
-            .service-meta {
-                flex-direction: column;
-                align-items: flex-start;
             }
         }
     </style>
 }
 
-<div class="services-page">
-    <div class="container">
-        <div class="services-container">
-            <div class="services-header">
-                <h1 class="page-title">Нашите Услуги</h1>
+<div class="services-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="services-header">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="services-title">Услуги</h1>
+                    <p class="services-subtitle">Разгледайте нашите психологически и астрологически услуги</p>
+                </div>
+                
                 @if (isAdmin)
                 {
-                    <a asp-action="Create" class="btn btn-service">
-                        <i class="fas fa-plus me-2"></i>Добави услуга
+                    <a href="@Url.Action("Create", "Services")" class="btn-create">
+                        <i class="fas fa-plus"></i>
+                        Добави услуга
                     </a>
                 }
             </div>
+        </div>
 
-            @if (Model.Any())
-            {
-                <div class="row">
-                    @foreach (var item in Model)
-                    {
-                        <div class="col-lg-4 col-md-6">
-                            <div class="service-card">
-                                @if (item.Price < 50)
+        <!-- Services Grid -->
+        @if (Model.Any())
+        {
+            <div class="services-grid">
+                @foreach (var service in Model)
+                {
+                    <div class="service-card">
+                        <!-- Service Image -->
+                        <div class="service-image">
+                            <div class="service-icon">
+                                @if (service.CategoryOfService.ToLower().Contains("психология"))
                                 {
-                                    <div class="promo-badge">
-                                        <i class="fas fa-bolt me-1"></i> Промоция
-                                    </div>
+                                    <i class="fas fa-brain"></i>
                                 }
-
-                                <div class="service-card-body">
-                                    <h5 class="service-card-title">@item.NameService</h5>
-                                    <h6 class="service-card-category">@item.CategoryOfService</h6>
-
-                                    <div class="service-meta">
-                                        <div class="price-badge">
-                                            <i class="fas fa-money-bill-alt me-1"></i>
-                                            <span>@item.Price.ToString("0.00") лв.</span>
-                                        </div>
-                                    </div>
-
-                                    <p class="service-card-text">@item.Description</p>
-                                </div>
-
-                                <div class="service-card-footer">
-                                    <div class="action-buttons">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-service-outline btn-sm">
-                                            <i class="fas fa-info-circle me-1"></i> Детайли
-                                        </a>
-
-                                        @if (user != null)
-                                        {
-                                            @if (item.CategoryOfService.ToLower() == "психология" || item.CategoryOfService.ToLower() == "астрология")
-                                            {
-                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-service btn-sm">
-                                                    <i class="fas fa-calendar-check me-1"></i> Резервирай
-                                                </a>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path"
-                                               class="btn btn-service btn-sm">
-                                                <i class="fas fa-calendar-check me-1"></i> Резервирай
-                                            </a>
-                                        }
-
-                                        @if (isAdmin)
-                                        {
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </a>
-                                        }
-                                    </div>
-                                </div>
+                                else if (service.CategoryOfService.ToLower().Contains("астрология"))
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-magic"></i>
+                                }
                             </div>
                         </div>
-                    }
+
+                        <!-- Service Content -->
+                        <div class="service-content">
+                            <div class="service-meta">
+                                <span class="category-badge">
+                                    <i class="fas fa-tag"></i>
+                                    @service.CategoryOfService
+                                </span>
+                                @if (service.Price > 0)
+                                {
+                                    <span class="price-badge">
+                                        <i class="fas fa-coins"></i>
+                                        @service.Price.ToString("C")
+                                    </span>
+                                }
+                            </div>
+
+                            <h3 class="service-title">@service.NameService</h3>
+                            
+                            @if (!string.IsNullOrEmpty(service.Description))
+                            {
+                                <p class="service-description">@service.Description</p>
+                            }
+
+                            <div class="service-date">
+                                <i class="fas fa-calendar"></i>
+                                <span>Доступна от: @service.ReservationDate.ToString("dd.MM.yyyy")</span>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="service-actions">
+                                <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                    Детайли
+                                </a>
+
+                                @if (isAdmin)
+                                {
+                                    <a href="@Url.Action("Edit", "Services", new { id = service.Id })" class="btn-outline">
+                                        <i class="fas fa-edit"></i>
+                                        Редактирай
+                                    </a>
+
+                                    <a href="@Url.Action("Delete", "Services", new { id = service.Id })" class="btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                        Изтрий
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Create", "UserServices", new { serviceId = service.Id })" class="btn-primary">
+                                        <i class="fas fa-calendar-plus"></i>
+                                        Запази час
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-magic"></i>
                 </div>
-            }
-            else
-            {
-                <div class="no-services">
-                    <i class="fas fa-concierge-bell"></i>
-                    <h3>Все още няма добавени услуги</h3>
-                    @if (isAdmin)
-                    {
-                        <a asp-action="Create" class="btn btn-service mt-3">
-                            <i class="fas fa-plus me-2"></i>Добави първата услуга
-                        </a>
-                    }
-                </div>
-            }
-        </div>
+                <h3 class="empty-title">Все още няма услуги</h3>
+                <p class="empty-description">
+                    В момента не са налични услуги. Моля, проверете отново по-късно.
+                </p>
+                @if (isAdmin)
+                {
+                    <a href="@Url.Action("Create", "Services")" class="btn-create">
+                        <i class="fas fa-plus"></i>
+                        Добави първата услуга
+                    </a>
+                }
+            </div>
+        }
+
+        <!-- Call to Action -->
+        @if (!isAdmin && Model.Any())
+        {
+            <div class="cta-section">
+                <h3 class="cta-title">Готови сте да започнете?</h3>
+                <p class="cta-description">
+                    Изберете услуга и запазете час за консултация. Ще се свържем с вас за потвърждение.
+                </p>
+                <a href="@Url.Action("Index", "Home")" class="btn-home">
+                    <i class="fas fa-home"></i>
+                    Обратно към началната страница
+                </a>
+            </div>
+        }
     </div>
 </div>
 

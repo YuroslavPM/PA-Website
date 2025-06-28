@@ -4,43 +4,244 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="create-container">
+    <div class="container">
+        <div class="create-card">
+            <div class="create-header">
+                <h1 class="create-title">Create</h1>
+                <h4 class="create-subtitle">UserService</h4>
+            </div>
+            
+            <div class="create-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <form asp-action="Create">
+                            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+                            <div class="form-group">
+                                <label asp-for="UserId" class="form-label"></label>
+                                <select asp-for="UserId" class="form-select" asp-items="ViewBag.UserId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ServiceId" class="form-label"></label>
+                                <select asp-for="ServiceId" class="form-select" asp-items="ViewBag.ServiceId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ReservationDate" class="form-label"></label>
+                                <input asp-for="ReservationDate" class="form-control" />
+                                <span asp-validation-for="ReservationDate" class="validation-message"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ReservationTime" class="form-label"></label>
+                                <input asp-for="ReservationTime" class="form-control" />
+                                <span asp-validation-for="ReservationTime" class="validation-message"></span>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" value="Create" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Create
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-<h4>UserService</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <div class="back-link">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to List
+                    </a>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ServiceId" class="control-label"></label>
-                <select asp-for="ServiceId" class ="form-control" asp-items="ViewBag.ServiceId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReservationDate" class="control-label"></label>
-                <input asp-for="ReservationDate" class="form-control" />
-                <span asp-validation-for="ReservationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReservationTime" class="control-label"></label>
-                <input asp-for="ReservationTime" class="form-control" />
-                <span asp-validation-for="ReservationTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@section Styles {
+    <style>
+        .create-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+        
+        .create-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            overflow: hidden;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .create-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+        
+        .create-header {
+            padding: 2.5rem 2.5rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+        
+        .create-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .create-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+        
+        .create-subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .create-body {
+            padding: 2.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+        
+        .validation-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+        
+        .validation-summary {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #dc2626;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3730a3, #5b21b6);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #9ca3af);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563, #6b7280);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(107, 114, 128, 0.3);
+        }
+        
+        .back-link {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        @@media (max-width: 768px) {
+            .create-container {
+                padding: 1rem 0;
+            }
+            
+            .create-card {
+                margin: 0 1rem;
+                border-radius: 16px;
+            }
+            
+            .create-header {
+                padding: 2rem 1.5rem 1rem;
+            }
+            
+            .create-title {
+                font-size: 2rem;
+            }
+            
+            .create-body {
+                padding: 1.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 }

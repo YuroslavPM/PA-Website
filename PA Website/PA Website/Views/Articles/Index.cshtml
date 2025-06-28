@@ -6,371 +6,438 @@
 @model IEnumerable<PA_Website.Models.Article>
 
 @{
-    ViewData["Title"] = "Articles";
+    ViewData["Title"] = "Статии";
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
-    var currentPage = (int)ViewData["CurrentPage"];
-    var totalPages = (int)ViewData["TotalPages"];
     Layout = "_Layout";
 }
 
 @section Styles {
     <style>
-        .articles-page {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        .articles-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
             padding: 2rem 0;
         }
 
-        .page-title {
-            font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
+        .articles-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
             position: relative;
-            display: inline-block;
-            font-size: 2rem;
+            overflow: hidden;
         }
 
-            .page-title:after {
-                content: '';
-                position: absolute;
-                bottom: -8px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 60px;
-                height: 3px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-                border-radius: 2px;
-            }
+        .articles-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
 
-        .article-card {
+        .articles-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .articles-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .articles-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
             border: none;
             border-radius: 12px;
+            padding: 12px 32px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-create:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .article-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.1);
             overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            height: 380px;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            position: relative;
-            margin-bottom: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .article-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25);
         }
 
         .article-image {
+            height: 250px;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
             position: relative;
-            width: 100%;
-            height: 200px;
             overflow: hidden;
-            border-bottom: 1px solid rgba(106, 48, 147, 0.1);
         }
 
-            .article-image img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.3s ease;
-            }
+        .article-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
 
         .article-card:hover .article-image img {
             transform: scale(1.05);
         }
 
-            .article-card:before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 4px;
-                background: linear-gradient(90deg, #4a0e78, #6a3093);
-            }
-
-            .article-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-            }
-
-            .article-card .card-body {
-                padding: 1.25rem;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .article-card .card-title {
-                font-family: 'Playfair Display', serif;
-                color: #4a0e78;
-                font-size: 1.25rem;
-                margin-bottom: 0.5rem;
-                line-height: 1.4;
-            }
-
-            .article-card .meta-info {
-                font-size: 0.8rem;
-                color: #6a3093;
-                margin-bottom: 0.75rem;
-                display: flex;
-                align-items: center;
-            }
-
-            .article-card .card-text {
-                font-size: 0.85rem;
-                color: #555;
-                flex: 1;
-                overflow: hidden;
-                display: -webkit-box;
-                -webkit-line-clamp: 4;
-                -webkit-box-orient: vertical;
-                line-height: 1.5;
-                margin-bottom: 0.75rem;
-            }
-
-            .article-card .card-footer {
-                background: rgba(106, 48, 147, 0.03);
-                border-top: 1px solid rgba(106, 48, 147, 0.1);
-                padding: 0.75rem 1.25rem;
-            }
-
-        .btn-article {
-            background: linear-gradient(135deg, #4a0e78, #6a3093);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-            min-width: 100px;
-            text-align: center;
-        }
-
-            .btn-article:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.2);
-                color: white;
-            }
-
-        .btn-article-outline {
-            border: 1px solid #4a0e78;
-            color: #4a0e78;
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-            min-width: 100px;
-            text-align: center;
-        }
-
-            .btn-article-outline:hover {
-                background: linear-gradient(135deg, #4a0e78, #6a3093);
-                color: white;
-            }
-
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1.5rem;
-            margin: 2.5rem 0;
-        }
-
-        .page-info {
-            font-family: 'Playfair Display', serif;
-            color: #4a0e78;
-            font-size: 0.95rem;
-            font-weight: 500;
-            min-width: 120px;
-            text-align: center;
-        }
-
-        .btn-outline {
-            background: white;
-            border: 1px solid #4a0e78;
-            color: #4a0e78;
-            border-radius: 20px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-            .btn-outline:hover {
-                background: linear-gradient(135deg, #4a0e78, #6a3093);
-                color: white;
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(74, 14, 120, 0.15);
-            }
-
-            .btn-outline:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                background: white;
-                color: #4a0e78;
-                transform: none;
-                box-shadow: none;
-            }
-
-            .btn-outline i {
-                font-size: 0.8rem;
-            }
-
-        @@media (max-width: 576px) {
-            .pagination-container {
-                gap: 1rem;
-            }
-
-            .btn-outline {
-                padding: 6px 14px;
-                font-size: 0.85rem;
-            }
-
-            .page-info {
-                min-width: 100px;
-            }
-        }
-
-        .category-badge {
+        .article-image::before {
+            content: '';
             position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(255,255,255,0.95);
-            color: #4a0e78;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            inset: 0;
+            background: linear-gradient(135deg, rgba(76, 29, 149, 0.3), rgba(124, 58, 237, 0.3));
+            z-index: 1;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 6px;
+        .article-content {
+            padding: 1.5rem;
         }
 
-        .btn-sm {
-            min-width: auto;
-            padding: 5px 10px;
-            font-size: 0.8rem;
-        }
-
-        .card-footer-content {
+        .article-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
-        .no-articles {
+        .category-badge {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: white;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .date-badge {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .article-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .article-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-author {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            border: 1px solid #4c1d95;
+            color: #4c1d95;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
             text-align: center;
-            padding: 3rem 0;
-            color: #6a3093;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-            .no-articles i {
-                font-size: 2.5rem;
-                margin-bottom: 1rem;
-                color: #c3cfe2;
-            }
+        .empty-icon {
+            font-size: 4rem;
+            color: #4c1d95;
+            opacity: 0.5;
+            margin-bottom: 1.5rem;
+        }
 
-            .no-articles h3 {
-                font-size: 1.5rem;
-                margin-bottom: 0.5rem;
-            }
+        .empty-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .empty-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
 
         @@media (max-width: 768px) {
-            .article-card {
-                height: auto;
-                min-height: 320px;
+            .articles-title {
+                font-size: 2rem;
             }
 
-            .page-title {
-                font-size: 1.8rem;
+            .articles-header {
+                padding: 1.5rem;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .article-actions {
+                flex-direction: column;
             }
         }
     </style>
 }
 
-<div class="articles-page">
-    <div class="container">
-        <h1 class="page-title text-center">Статии</h1>
-
-        @if (isAdmin)
-        {
-            <div class="text-center mb-4">
-                <a asp-action="Create" class="btn btn-article">
-                    <i class="fas fa-plus me-1"></i>Нова статия
-                </a>
+<div class="articles-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="articles-header">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="articles-title">Статии</h1>
+                    <p class="articles-subtitle">Разгледайте нашите статии за психология и астрология</p>
+                </div>
+                
+                @if (isAdmin)
+                {
+                    <a href="@Url.Action("Create", "Articles")" class="btn-create">
+                        <i class="fas fa-plus"></i>
+                        Добави статия
+                    </a>
+                }
             </div>
-        }
+        </div>
 
+        <!-- Articles Grid -->
         @if (Model.Any())
         {
-            <div class="row">
-                @foreach (var item in Model.OrderByDescending(prop => prop.PublicationDate))
+            <div class="articles-grid">
+                @foreach (var article in Model)
                 {
-                    <div class="col-lg-4 col-md-6">
-                        <div class="article-card">
-                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                    <div class="article-card">
+                        <!-- Article Image -->
+                        <div class="article-image">
+                            @if (!string.IsNullOrEmpty(article.ImagePath))
                             {
-                                <div class="article-image" style="height: 200px; overflow: hidden;">
-                                    <img src="@item.ImagePath" alt="@item.Title" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="@article.ImagePath" alt="@article.Title" />
+                            }
+                            else
+                            {
+                                <div class="flex items-center justify-center h-full">
+                                    <i class="fas fa-newspaper text-6xl text-white opacity-50"></i>
                                 </div>
                             }
-                            <div class="category-badge">@item.Category</div>
-                            <div class="card-body">
-                                <h5 class="card-title">@item.Title</h5>
-                                <div class="meta-info">
-                                    <i class="far fa-calendar-alt me-1"></i>
-                                    <span>@item.PublicationDate.ToString("dd.MM.yyyy")</span>
-                                </div>
-                                <p class="card-text">
-                                    @(item.Description.Length > 480 ? item.Description.Substring(0, 480) + "..." : item.Description)
-                                </p>
+                        </div>
+
+                        <!-- Article Content -->
+                        <div class="article-content">
+                            <div class="article-meta">
+                                @if (!string.IsNullOrEmpty(article.Category))
+                                {
+                                    <span class="category-badge">
+                                        <i class="fas fa-tag"></i>
+                                        @article.Category
+                                    </span>
+                                }
+                                <span class="date-badge">
+                                    <i class="fas fa-calendar"></i>
+                                    @article.PublicationDate.ToString("dd.MM.yyyy")
+                                </span>
                             </div>
-                            <div class="card-footer">
-                                <div class="card-footer-content">
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-article-outline">
-                                        <i class="fas fa-book-open me-1"></i>Прочети
-                                    </a>
-                                    @if (isAdmin)
-                                    {
-                                        <div class="action-buttons">
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </a>
-                                        </div>
-                                    }
+
+                            <h3 class="article-title">@article.Title</h3>
+                            
+                            @if (!string.IsNullOrEmpty(article.Description))
+                            {
+                                <p class="article-description">@article.Description</p>
+                            }
+
+                            @if (!string.IsNullOrEmpty(article.Creator?.UserName))
+                            {
+                                <div class="article-author">
+                                    <i class="fas fa-user"></i>
+                                    <span>@article.Creator.UserName</span>
                                 </div>
+                            }
+
+                            <!-- Action Buttons -->
+                            <div class="article-actions">
+                                <a href="@Url.Action("Details", "Articles", new { id = article.Id })" class="btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                    Прочети
+                                </a>
+
+                                @if (isAdmin)
+                                {
+                                    <a href="@Url.Action("Edit", "Articles", new { id = article.Id })" class="btn-outline">
+                                        <i class="fas fa-edit"></i>
+                                        Редактирай
+                                    </a>
+
+                                    <a href="@Url.Action("Delete", "Articles", new { id = article.Id })" class="btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                        Изтрий
+                                    </a>
+                                }
                             </div>
                         </div>
                     </div>
                 }
             </div>
-            <div class="pagination-container">
-                <button id="prevPage" class="btn btn-outline" @(currentPage <= 1 ? "disabled" : "")>
-                    <i class="fas fa-chevron-left me-1"></i> Предишна
-                </button>
-                <span class="page-info">Страница @currentPage от @totalPages</span>
-                <button id="nextPage" class="btn btn-outline" @(currentPage >= totalPages ? "disabled" : "")>
-                    Следваща <i class="fas fa-chevron-right ms-1"></i>
-                </button>
-            </div>
         }
         else
         {
-            <div class="no-articles">
-                <i class="fas fa-book-open"></i>
-                <h3>Все още няма публикувани статии</h3>
-                <p>Очаквайте скоро нови материали</p>
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3 class="empty-title">Все още няма статии</h3>
+                <p class="empty-description">
+                    В момента не са налични статии. Моля, проверете отново по-късно.
+                </p>
                 @if (isAdmin)
                 {
-                    <a asp-action="Create" class="btn btn-article mt-3">
-                        <i class="fas fa-plus me-1"></i>Създай първата статия
+                    <a href="@Url.Action("Create", "Articles")" class="btn-create">
+                        <i class="fas fa-plus"></i>
+                        Добави първата статия
                     </a>
                 }
             </div>
