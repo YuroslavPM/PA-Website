@@ -1,0 +1,352 @@
+@model IEnumerable<PA_Website.Models.UserService>
+
+@{
+    ViewData["Title"] = "Изпращане на имейли";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .email-sender-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .email-sender-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .email-sender-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .email-sender-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .email-sender-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .email-sender-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .email-form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4c1d95;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-control:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        }
+
+        .reservation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reservation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .reservation-card.selected {
+            border-color: #7c3aed;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .status-confirmed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .email-type-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .email-type-title {
+            font-weight: 600;
+            color: #4c1d95;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .custom-message-section {
+            display: none;
+        }
+
+        .custom-message-section.show {
+            display: block;
+        }
+    </style>
+}
+
+<div class="email-sender-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="email-sender-header">
+            <h1 class="email-sender-title">Изпращане на имейли</h1>
+            <p class="email-sender-subtitle">Изпратете имейли на потребители за техните резервации</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Reservation Selection -->
+            <div class="email-form-card">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Избор на резервация</h2>
+                
+                <div class="space-y-4 max-h-96 overflow-y-auto">
+                    @foreach (var reservation in ViewBag.Reservations)
+                    {
+                        <div class="reservation-card cursor-pointer" onclick="selectReservation(@reservation.Id)">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">@reservation.User.FName @reservation.User.LName</h3>
+                                    <p class="text-gray-600 text-sm">@reservation.User.Email</p>
+                                    <p class="text-gray-700 mt-2">
+                                        <strong>Услуга:</strong> @reservation.Service.NameService<br>
+                                        <strong>Дата:</strong> 
+                                        @if (reservation.Service.CategoryOfService.ToLower() == "астрология")
+                                        {
+                                            @reservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                                        }
+                                        else
+                                        {
+                                            @reservation.ReservationDate.ToString("dd.MM.yyyy")
+                                            @if (reservation.ReservationTime != null)
+                                            {
+                                                <span>@reservation.ReservationTime.ToString(@"hh\:mm")</span>
+                                            }
+                                        }
+                                    </p>
+                                </div>
+                                <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
+                                                          reservation.Status == "Confirmed" ? "status-confirmed" : "status-completed")">
+                                    @(reservation.Status == "Pending" ? "Чакаща" : 
+                                      reservation.Status == "Confirmed" ? "Потвърдена" : "Завършена")
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Email Form -->
+            <div class="email-form-card">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Изпращане на имейл</h2>
+                
+                <form method="post" id="emailForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="reservationId" name="reservationId" value="@ViewBag.SelectedReservationId" />
+                    
+                    <div class="form-group">
+                        <label class="form-label">Тип имейл</label>
+                        <select id="emailType" name="emailType" class="form-control" onchange="toggleCustomMessage()">
+                            <option value="">Изберете тип имейл</option>
+                            <option value="confirmation">Потвърждение на резервация</option>
+                            <option value="reminder">Напомняне за резервация</option>
+                            <option value="custom">Персонализирано съобщение</option>
+                        </select>
+                    </div>
+
+                    <div id="customMessageSection" class="custom-message-section">
+                        <div class="form-group">
+                            <label class="form-label">Заглавие на имейла</label>
+                            <input type="text" id="subject" name="subject" class="form-control" placeholder="Въведете заглавие">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Съобщение</label>
+                            <textarea id="message" name="message" class="form-control" rows="6" placeholder="Въведете вашето съобщение"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" class="btn-primary flex-1">
+                            <i class="fas fa-paper-plane mr-2"></i> Изпрати имейл
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectReservation(reservationId) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.reservation-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            event.currentTarget.classList.add('selected');
+            
+            // Update hidden input
+            document.getElementById('reservationId').value = reservationId;
+        }
+
+        function toggleCustomMessage() {
+            const emailType = document.getElementById('emailType').value;
+            const customSection = document.getElementById('customMessageSection');
+            
+            if (emailType === 'custom') {
+                customSection.classList.add('show');
+            } else {
+                customSection.classList.remove('show');
+            }
+        }
+
+        // Initialize with selected reservation if any
+        @if (ViewBag.SelectedReservationId != null)
+        {
+            <text>
+            document.addEventListener('DOMContentLoaded', function() {
+                const reservationId = @ViewBag.SelectedReservationId;
+                const card = document.querySelector(`[onclick="selectReservation(${reservationId})"]`);
+                if (card) {
+                    card.classList.add('selected');
+                }
+            });
+            </text>
+        }
+    </script>
+} 

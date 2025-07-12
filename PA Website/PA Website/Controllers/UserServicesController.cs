@@ -21,12 +21,16 @@ namespace PA_Website.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly ILogger<UserServicesController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public UserServicesController(ApplicationDbContext context, UserManager<User> userService, IEmailSender emailSender)
+        public UserServicesController(ApplicationDbContext context, UserManager<User> userService, IEmailSender emailSender, ILogger<UserServicesController> logger, IConfiguration configuration)
         {
             _context = context;
             _userManager = userService;
             _emailSender = emailSender;
+            _logger = logger;
+            _configuration = configuration;
         }
 
         // GET: UserServices
@@ -704,7 +708,1042 @@ namespace PA_Website.Controllers
             return File(memory, reservation.AstroCardContentType, reservation.AstroCardFileName);
         }
 
+        // GET: UserServices/Dashboard
+        public async Task<IActionResult> Dashboard()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
 
+            // Get user's reservations
+            var reservations = await _context.userServices
+                .Where(u => u.UserId == user.Id)
+                .Include(u => u.Service)
+                .OrderByDescending(r => r.ReservationDate)
+                .Take(5)
+                .ToListAsync();
 
+            // Get available services for scheduling
+            var availableServices = await _context.Service
+                .Where(s => s.CategoryOfService.ToLower() == "психология")
+                .ToListAsync();
+
+            ViewData["User"] = user;
+            ViewData["RecentReservations"] = reservations;
+            ViewData["AvailableServices"] = availableServices;
+
+            return View();
+        }
+
+        // GET: UserServices/AdminDashboard
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminDashboard()
+        {
+            var allReservations = await _context.userServices
+                .Include(u => u.User)
+                .Include(u => u.Service)
+                .ToListAsync();
+
+            return View(allReservations);
+        }
+
+        // GET: UserServices/Profile
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            return View(user);
+        }
+
+        // POST: UserServices/UpdateProfile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile([Bind("Id,FName,LName,Email,PhoneNumber,Zodiacal_Sign,Birth_Date")] User user)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return Challenge();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    currentUser.FName = user.FName;
+                    currentUser.LName = user.LName;
+                    currentUser.Email = user.Email;
+                    currentUser.PhoneNumber = user.PhoneNumber;
+                    currentUser.Zodiacal_Sign = user.Zodiacal_Sign;
+                    currentUser.Birth_Date = user.Birth_Date;
+
+                    await _userManager.UpdateAsync(currentUser);
+                    TempData["SuccessMessage"] = "Профилът е обновен успешно!";
+                }
+                catch (Exception)
+                {
+                    TempData["ErrorMessage"] = "Грешка при обновяване на профила.";
+                }
+            }
+
+            return RedirectToAction(nameof(Profile));
+        }
+
+        // POST: UserServices/CancelReservation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelReservation(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            var reservation = await _context.userServices
+                .Include(r => r.Service)
+                .FirstOrDefaultAsync(r => r.Id == id && r.UserId == user.Id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            if (reservation.Status == "Completed" || reservation.Status == "Cancelled")
+            {
+                TempData["ErrorMessage"] = "Не можете да отмените тази резервация.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            reservation.Status = "Cancelled";
+            _context.Update(reservation);
+            await _context.SaveChangesAsync();
+
+            // Send email notifications
+            try
+            {
+                // Send email to user
+                var userEmailHtml = CancelReservationEmailTemplate(user, reservation, reservation.Service);
+                await _emailSender.SendEmailAsync(user.Email, "Резервация отменена - Душевна Мозайка", userEmailHtml);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send user cancellation email");
+            }
+            try
+            {
+                // Send email to admin
+                var adminEmailHtml = AdminNotificationEmailTemplate(user, reservation, reservation.Service, "cancelled");
+                var adminEmail = _configuration["EmailSettings:AdminEmail"] ?? "dushevna_mozaika@abv.bg";
+                await _emailSender.SendEmailAsync(adminEmail, "Отменена резервация - Известие", adminEmailHtml);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send admin cancellation email");
+            }
+
+            TempData["SuccessMessage"] = "Резервацията е отменена успешно!";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        // POST: UserServices/RescheduleReservation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RescheduleReservation(int id, DateTime newDate, TimeSpan newTime, int serviceId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            var reservation = await _context.userServices
+                .Include(r => r.Service)
+                .FirstOrDefaultAsync(r => r.Id == id && r.UserId == user.Id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            if (reservation.Status == "Completed" || reservation.Status == "Cancelled")
+            {
+                TempData["ErrorMessage"] = "Не можете да пренасрочите тази резервация.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            // Check if new date/time is available
+            var conflictingReservation = await _context.userServices
+                .Where(r => r.ServiceId == serviceId && 
+                           r.ReservationDate == newDate.Date && 
+                           r.ReservationTime == newTime &&
+                           r.Status != "Cancelled" &&
+                           r.Id != id)
+                .FirstOrDefaultAsync();
+
+            if (conflictingReservation != null)
+            {
+                TempData["ErrorMessage"] = "Избраният час вече е зает. Моля, изберете друг час.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            // Cancel the old reservation
+            reservation.Status = "Cancelled";
+            _context.Update(reservation);
+
+            // Create new reservation
+            var newReservation = new UserService
+            {
+                UserId = user.Id,
+                ServiceId = serviceId,
+                ReservationDate = newDate.Date,
+                ReservationTime = newTime,
+                Status = "Pending",
+                AstrologicalDate = reservation.AstrologicalDate,
+                AstrologicalPlaceOfBirth = reservation.AstrologicalPlaceOfBirth,
+                AstroCardFileName = reservation.AstroCardFileName,
+                AstroCardFilePath = reservation.AstroCardFilePath,
+                AstroCardFileSize = reservation.AstroCardFileSize,
+                AstroCardContentType = reservation.AstroCardContentType,
+                AstroCardUploadDate = reservation.AstroCardUploadDate
+            };
+
+            _context.userServices.Add(newReservation);
+            await _context.SaveChangesAsync();
+
+            // Send email notifications
+            try
+            {
+                // Send email to user
+                var userEmailHtml = RescheduleReservationEmailTemplate(user, reservation, newReservation, reservation.Service);
+                await _emailSender.SendEmailAsync(user.Email, "Резервация пренасрочена - Душевна Мозайка", userEmailHtml);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send user reschedule email");
+            }
+            try
+            {
+                // Send email to admin
+                var adminEmailHtml = AdminNotificationEmailTemplate(user, newReservation, reservation.Service, "rescheduled");
+                var adminEmail = _configuration["EmailSettings:AdminEmail"] ?? "dushevna_mozaika@abv.bg";
+                await _emailSender.SendEmailAsync(adminEmail, "Пренасрочена резервация - Известие", adminEmailHtml);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send admin reschedule email");
+            }
+
+            TempData["SuccessMessage"] = "Резервацията е пренасрочена успешно!";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        // Email template methods
+        private string CreateReservationEmailTemplate(User user, UserService reservation, Service service)
+        {
+            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : reservation.ReservationTime.HasValue 
+                    ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{reservation.ReservationDate:dd.MM.yyyy}";
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Нова резервация</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Вашата резервация е създадена успешно. Ето детайлите:
+                        </p>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #f59e0b; font-weight: bold;'>Чакаща</span></p>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Ще получите потвърждение от администратор в най-кратки срокове.
+                        </p>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Url.Action("Dashboard", "UserServices")}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Преглед на резервациите
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен автоматично. Моля, не отговаряйте на него.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        private string RescheduleReservationEmailTemplate(User user, UserService oldReservation, UserService newReservation, Service service)
+        {
+            var oldDateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? oldReservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : oldReservation.ReservationTime.HasValue 
+                    ? $"{oldReservation.ReservationDate:dd.MM.yyyy} в {oldReservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{oldReservation.ReservationDate:dd.MM.yyyy}";
+
+            var newDateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? newReservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : newReservation.ReservationTime.HasValue 
+                    ? $"{newReservation.ReservationDate:dd.MM.yyyy} в {newReservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{newReservation.ReservationDate:dd.MM.yyyy}";
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Резервация пренасрочена</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Вашата резервация е пренасрочена успешно. Ето промените:
+                        </p>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на промяната</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Стара дата:</strong> <span style='color: #ef4444;'>{oldDateTime}</span></p>
+                            <p style='margin: 5px 0;'><strong>Нова дата:</strong> <span style='color: #10b981;'>{newDateTime}</span></p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #f59e0b; font-weight: bold;'>Чакаща</span></p>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Ще получите потвърждение от администратор в най-кратки срокове.
+                        </p>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Url.Action("Dashboard", "UserServices")}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Преглед на резервациите
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен автоматично. Моля, не отговаряйте на него.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        private string CancelReservationEmailTemplate(User user, UserService reservation, Service service)
+        {
+            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : reservation.ReservationTime.HasValue 
+                    ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{reservation.ReservationDate:dd.MM.yyyy}";
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Резервация отменена</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Вашата резервация е отменена успешно. Ето детайлите:
+                        </p>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на отменената резервация</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #ef4444; font-weight: bold;'>Отменена</span></p>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Ако имате въпроси или искате да направите нова резервация, не се колебайте да се свържете с нас.
+                        </p>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Url.Action("Dashboard", "UserServices")}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Нова резервация
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен автоматично. Моля, не отговаряйте на него.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        private string AdminNotificationEmailTemplate(User user, UserService reservation, Service service, string action)
+        {
+            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : reservation.ReservationTime.HasValue 
+                    ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{reservation.ReservationDate:dd.MM.yyyy}";
+
+            var actionText = action switch
+            {
+                "created" => "нова резервация",
+                "rescheduled" => "пренасрочена резервация",
+                "cancelled" => "отменена резервация",
+                _ => "промяна в резервация"
+            };
+
+            var color = action switch
+            {
+                "created" => "#10b981",
+                "rescheduled" => "#f59e0b",
+                "cancelled" => "#ef4444",
+                _ => "#6b7280"
+            };
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Административно известие</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Известие за администратор</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Има {actionText} от потребител. Ето детайлите:
+                        </p>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <p style='margin: 5px 0;'><strong>Потребител:</strong> {user.FName} {user.LName}</p>
+                            <p style='margin: 5px 0;'><strong>Имейл:</strong> {user.Email}</p>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: {color}; font-weight: bold;'>{reservation.Status}</span></p>
+                            <p style='margin: 5px 0;'><strong>ID на резервация:</strong> {reservation.Id}</p>
+                        </div>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Url.Action("IndexAdmin", "UserServices")}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Преглед на резервациите
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен автоматично.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        // POST: UserServices/CreateReservation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateReservation(int serviceId, DateTime reservationDate, TimeSpan? reservationTime, DateTime? astrologicalDate, string? astrologicalPlaceOfBirth)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            var service = await _context.Service.FindAsync(serviceId);
+            if (service == null)
+            {
+                TempData["ErrorMessage"] = "Избраната услуга не съществува.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            // Validate based on service category
+            if (service.CategoryOfService.ToLower() == "астрология")
+            {
+                if (!astrologicalDate.HasValue || astrologicalDate.Value == DateTime.MinValue)
+                {
+                    TempData["ErrorMessage"] = "Моля, въведете валидна дата за астрологичната услуга.";
+                    return RedirectToAction(nameof(Dashboard));
+                }
+            }
+            else
+            {
+                if (reservationDate < DateTime.Now)
+                {
+                    TempData["ErrorMessage"] = "Моля, изберете бъдеща дата.";
+                    return RedirectToAction(nameof(Dashboard));
+                }
+                if (!reservationTime.HasValue)
+                {
+                    TempData["ErrorMessage"] = "Моля, изберете час за среща.";
+                    return RedirectToAction(nameof(Dashboard));
+                }
+
+                // Check for conflicts
+                var conflictingReservation = await _context.userServices
+                    .Where(r => r.ServiceId == serviceId && 
+                               r.ReservationDate == reservationDate.Date && 
+                               r.ReservationTime == reservationTime &&
+                               r.Status != "Cancelled")
+                    .FirstOrDefaultAsync();
+
+                if (conflictingReservation != null)
+                {
+                    TempData["ErrorMessage"] = "Избраният час вече е зает. Моля, изберете друг час.";
+                    return RedirectToAction(nameof(Dashboard));
+                }
+            }
+
+            // Create new reservation
+            var newReservation = new UserService
+            {
+                UserId = user.Id,
+                ServiceId = serviceId,
+                ReservationDate = service.CategoryOfService.ToLower() == "астрология" ? DateTime.MinValue : reservationDate.Date,
+                ReservationTime = service.CategoryOfService.ToLower() == "астрология" ? null : reservationTime,
+                AstrologicalDate = service.CategoryOfService.ToLower() == "астрология" ? astrologicalDate : DateTime.MinValue,
+                AstrologicalPlaceOfBirth = astrologicalPlaceOfBirth,
+                Status = "Pending"
+            };
+
+            _context.userServices.Add(newReservation);
+            await _context.SaveChangesAsync();
+
+            // Send email notifications
+            try
+            {
+                // Send email to user
+                var userEmailHtml = CreateReservationEmailTemplate(user, newReservation, service);
+                await _emailSender.SendEmailAsync(user.Email, "Нова резервация - Душевна Мозайка", userEmailHtml);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send user creation email");
+            }
+            try
+            {
+                // Send email to admin
+                var adminEmailHtml = AdminNotificationEmailTemplate(user, newReservation, service, "created");
+                var adminEmail = _configuration["EmailSettings:AdminEmail"] ?? "dushevna_mozaika@abv.bg";
+                await _emailSender.SendEmailAsync(adminEmail, "Нова резервация - Известие", adminEmailHtml);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send admin creation email");
+            }
+
+            TempData["SuccessMessage"] = "Резервацията е създадена успешно!";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        // GET: UserServices/SendEmail
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SendEmail(int? reservationId = null)
+        {
+            var reservations = await _context.userServices
+                .Include(r => r.User)
+                .Include(r => r.Service)
+                .Where(r => r.Status != "Cancelled")
+                .OrderByDescending(r => r.ReservationDate)
+                .ToListAsync();
+
+            ViewBag.Reservations = reservations;
+            ViewBag.SelectedReservationId = reservationId;
+
+            return View();
+        }
+
+        // POST: UserServices/SendEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SendEmail(int reservationId, string subject, string message, string emailType)
+        {
+            var reservation = await _context.userServices
+                .Include(r => r.User)
+                .Include(r => r.Service)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation == null)
+            {
+                TempData["ErrorMessage"] = "Резервацията не е намерена.";
+                return RedirectToAction(nameof(SendEmail));
+            }
+
+            try
+            {
+                string emailHtml = "";
+                string emailSubject = "";
+
+                switch (emailType)
+                {
+                    case "confirmation":
+                        emailHtml = CreateConfirmationEmailTemplate(reservation.User, reservation, reservation.Service);
+                        emailSubject = "Потвърждение на резервация - Душевна Мозайка";
+                        break;
+                    case "reminder":
+                        emailHtml = CreateReminderEmailTemplate(reservation.User, reservation, reservation.Service);
+                        emailSubject = "Напомняне за резервация - Душевна Мозайка";
+                        break;
+                    case "custom":
+                        emailHtml = CreateCustomEmailTemplate(reservation.User, reservation, reservation.Service, message);
+                        emailSubject = subject;
+                        break;
+                    default:
+                        TempData["ErrorMessage"] = "Невалиден тип имейл.";
+                        return RedirectToAction(nameof(SendEmail));
+                }
+
+                await _emailSender.SendEmailAsync(reservation.User.Email, emailSubject, emailHtml);
+                TempData["SuccessMessage"] = "Имейлът е изпратен успешно!";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send admin email to user");
+                TempData["ErrorMessage"] = "Грешка при изпращане на имейла.";
+            }
+
+            return RedirectToAction(nameof(SendEmail));
+        }
+
+        // Email template for confirmation
+        private string CreateConfirmationEmailTemplate(User user, UserService reservation, Service service)
+        {
+            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : reservation.ReservationTime.HasValue 
+                    ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{reservation.ReservationDate:dd.MM.yyyy}";
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Потвърждение на резервация</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Вашата резервация е потвърдена от администратор. Ето детайлите:
+                        </p>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #10b981; font-weight: bold;'>Потвърдена</span></p>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Очакваме ви в посочения час. Ако имате въпроси, не се колебайте да се свържете с нас.
+                        </p>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Url.Action("Dashboard", "UserServices")}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Преглед на резервациите
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен от администратор.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        // Email template for reminder
+        private string CreateReminderEmailTemplate(User user, UserService reservation, Service service)
+        {
+            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : reservation.ReservationTime.HasValue 
+                    ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{reservation.ReservationDate:dd.MM.yyyy}";
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Напомняне за резервация</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Напомняме ви за предстоящата резервация. Ето детайлите:
+                        </p>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #f59e0b; font-weight: bold;'>Потвърдена</span></p>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Моля, пристигнете навреме за вашата среща. Ако имате въпроси, не се колебайте да се свържете с нас.
+                        </p>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Url.Action("Dashboard", "UserServices")}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Преглед на резервациите
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен от администратор.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        // Email template for custom message
+        private string CreateCustomEmailTemplate(User user, UserService reservation, Service service, string customMessage)
+        {
+            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
+                : reservation.ReservationTime.HasValue 
+                    ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
+                    : $"{reservation.ReservationDate:dd.MM.yyyy}";
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Съобщение от администратор</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Вашата резервация</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                        </div>
+                        
+                        <div style='background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f59e0b;'>
+                            <h3 style='color: #92400e; margin: 0 0 15px 0;'>Съобщение от администратор</h3>
+                            <p style='color: #374151; line-height: 1.6; margin: 0;'>{customMessage}</p>
+                        </div>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Url.Action("Dashboard", "UserServices")}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Преглед на резервациите
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен от администратор.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        // GET: UserServices/GetAvailableTimes
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableTimes(int serviceId, DateTime date)
+        {
+            var service = await _context.Service.FindAsync(serviceId);
+            if (service == null)
+            {
+                return Json(new { success = false, message = "Услугата не е намерена." });
+            }
+
+            // Determine allowed times based on the day
+            List<TimeSpan> allowedTimes = new List<TimeSpan>();
+
+            switch (date.DayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                case DayOfWeek.Tuesday:
+                case DayOfWeek.Wednesday:
+                case DayOfWeek.Thursday:
+                case DayOfWeek.Friday:
+                    allowedTimes.Add(new TimeSpan(18, 30, 0));
+                    allowedTimes.Add(new TimeSpan(19, 30, 0));
+                    break;
+                case DayOfWeek.Saturday:
+                    for (int hour = 9; hour <= 16; hour++)
+                    {
+                        allowedTimes.Add(new TimeSpan(hour, 0, 0));
+                    }
+                    break;
+                case DayOfWeek.Sunday:
+                    for (int hour = 9; hour <= 13; hour++)
+                    {
+                        allowedTimes.Add(new TimeSpan(hour, 0, 0));
+                    }
+                    break;
+                default:
+                    return Json(new { success = false, message = "Невалиден ден." });
+            }
+
+            // Get already reserved times
+            var reservedTimes = await _context.userServices
+                .Where(r => r.ServiceId == serviceId && 
+                           r.ReservationTime.HasValue && 
+                           r.ReservationDate.Date == date.Date &&
+                           r.Status != "Cancelled")
+                .Select(r => r.ReservationTime!.Value)
+                .ToListAsync();
+
+            // Filter only available times
+            var availableTimes = allowedTimes
+                .Where(time => !reservedTimes.Contains(time))
+                .Select(time => time.ToString(@"hh\:mm"))
+                .ToList();
+
+            return Json(new { success = true, availableTimes });
+        }
+
+        // GET: UserServices/SendBulkEmail
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SendBulkEmail()
+        {
+            var users = await _userManager.Users
+                .OrderBy(u => u.FName)
+                .ThenBy(u => u.LName)
+                .ToListAsync();
+
+            ViewBag.Users = users;
+            return View();
+        }
+
+        // POST: UserServices/SendBulkEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SendBulkEmail(string[] selectedUserIds, string subject, string message, string emailType)
+        {
+            _logger.LogInformation($"Bulk email request received. Selected users: {selectedUserIds?.Length ?? 0}, Subject: {subject}, EmailType: {emailType}");
+
+            if (selectedUserIds == null || !selectedUserIds.Any())
+            {
+                _logger.LogWarning("No users selected for bulk email");
+                TempData["ErrorMessage"] = "Моля, изберете поне един потребител.";
+                return RedirectToAction(nameof(SendBulkEmail));
+            }
+
+            if (string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(message))
+            {
+                _logger.LogWarning("Missing subject or message for bulk email");
+                TempData["ErrorMessage"] = "Моля, попълнете заглавие и съобщение.";
+                return RedirectToAction(nameof(SendBulkEmail));
+            }
+
+            var users = await _userManager.Users
+                .Where(u => selectedUserIds.Contains(u.Id))
+                .Where(u => !string.IsNullOrEmpty(u.Email)) // Only users with valid email addresses
+                .ToListAsync();
+
+            _logger.LogInformation($"Found {users.Count} users to send emails to");
+
+            if (!users.Any())
+            {
+                _logger.LogWarning("No users with valid email addresses found");
+                TempData["ErrorMessage"] = "Не са намерени потребители с валидни имейл адреси.";
+                return RedirectToAction(nameof(SendBulkEmail));
+            }
+
+            int successCount = 0;
+            int failureCount = 0;
+            var failedEmails = new List<string>();
+
+            foreach (var user in users)
+            {
+                try
+                {
+                    _logger.LogInformation($"Attempting to send email to {user.Email}");
+                    
+                    // Validate user email
+                    if (string.IsNullOrEmpty(user.Email))
+                    {
+                        _logger.LogWarning($"User {user.FName} {user.LName} has no email address");
+                        failureCount++;
+                        failedEmails.Add($"{user.FName} {user.LName} (no email)");
+                        continue;
+                    }
+
+                    string emailHtml = CreateBulkEmailTemplate(user, message, emailType);
+                    await _emailSender.SendEmailAsync(user.Email, subject, emailHtml);
+                    successCount++;
+                    _logger.LogInformation($"Successfully sent email to {user.Email}");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to send bulk email to user {user.Email}");
+                    failureCount++;
+                    failedEmails.Add($"{user.FName} {user.LName} ({user.Email})");
+                }
+            }
+
+            _logger.LogInformation($"Bulk email completed. Success: {successCount}, Failures: {failureCount}");
+
+            if (successCount > 0)
+            {
+                TempData["SuccessMessage"] = $"Имейлът е изпратен успешно на {successCount} потребител(и).";
+                if (failureCount > 0)
+                {
+                    TempData["WarningMessage"] = $"Грешка при изпращане на {failureCount} имейл(а): {string.Join(", ", failedEmails.Take(5))}";
+                    if (failedEmails.Count > 5)
+                    {
+                        TempData["WarningMessage"] += $" и още {failedEmails.Count - 5}...";
+                    }
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Грешка при изпращане на всички имейли.";
+            }
+
+            return RedirectToAction(nameof(SendBulkEmail));
+        }
+
+        // Email template for bulk emails
+        private string CreateBulkEmailTemplate(User user, string message, string emailType)
+        {
+            var headerColor = emailType switch
+            {
+                "announcement" => "linear-gradient(135deg, #4c1d95, #7c3aed)",
+                "newsletter" => "linear-gradient(135deg, #10b981, #059669)",
+                "promotion" => "linear-gradient(135deg, #f59e0b, #d97706)",
+                _ => "linear-gradient(135deg, #4c1d95, #7c3aed)"
+            };
+
+            var headerText = emailType switch
+            {
+                "announcement" => "Важно съобщение",
+                "newsletter" => "Новини и обновления",
+                "promotion" => "Специална оферта",
+                _ => "Съобщение от Душевна Мозайка"
+            };
+
+            // Generate the base URL for the website
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var servicesUrl = $"{baseUrl}/Services";
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{headerText}</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <div style='color: #374151; line-height: 1.6; white-space: pre-wrap;'>{message}</div>
+                        </div>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{servicesUrl}' 
+                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Разгледай услуги
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>Този имейл е изпратен от администратор.</p>
+                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        // GET: UserServices/EmailDiagnostics
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EmailDiagnostics()
+        {
+            var diagnostics = new Dictionary<string, object>();
+            
+            try
+            {
+                // Check configuration
+                diagnostics["SmtpServer"] = _configuration["EmailSettings:SmtpServer"] ?? "Not configured";
+                diagnostics["SmtpPort"] = _configuration["EmailSettings:SmtpPort"] ?? "Not configured";
+                diagnostics["FromEmail"] = _configuration["EmailSettings:FromEmail"] ?? "Not configured";
+                diagnostics["FromName"] = _configuration["EmailSettings:FromName"] ?? "Not configured";
+                diagnostics["EnableSsl"] = _configuration["EmailSettings:EnableSsl"] ?? "Not configured";
+                diagnostics["AdminEmail"] = _configuration["EmailSettings:AdminEmail"] ?? "Not configured";
+                
+                // Check if password is configured (don't show the actual password)
+                var password = _configuration["EmailSettings:Password"];
+                diagnostics["PasswordConfigured"] = !string.IsNullOrEmpty(password) && password != "your_abv_password_here";
+                
+                // Test SMTP connection
+                try
+                {
+                    using var client = new System.Net.Mail.SmtpClient(
+                        _configuration["EmailSettings:SmtpServer"],
+                        int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587")
+                    );
+                    client.EnableSsl = bool.Parse(_configuration["EmailSettings:EnableSsl"] ?? "true");
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new System.Net.NetworkCredential(
+                        _configuration["EmailSettings:FromEmail"],
+                        _configuration["EmailSettings:Password"]
+                    );
+                    client.Timeout = 5000; // 5 seconds timeout for diagnostics
+                    
+                    diagnostics["SmtpConnectionTest"] = "Success";
+                }
+                catch (Exception ex)
+                {
+                    diagnostics["SmtpConnectionTest"] = $"Failed: {ex.Message}";
+                }
+                
+                ViewBag.Diagnostics = diagnostics;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during email diagnostics");
+                diagnostics["Error"] = ex.Message;
+                ViewBag.Diagnostics = diagnostics;
+                return View();
+            }
+        }
     }
-    }
+}

@@ -1,0 +1,286 @@
+@{
+    ViewData["Title"] = "Email Diagnostics";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .diagnostics-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .diagnostics-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagnostics-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .diagnostics-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .diagnostics-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .diagnostics-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .diagnostics-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .diagnostics-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .diagnostics-body {
+            padding: 2rem;
+        }
+
+        .diagnostic-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .diagnostic-item:last-child {
+            border-bottom: none;
+        }
+
+        .diagnostic-label {
+            font-weight: 600;
+            color: #4c1d95;
+            font-size: 0.95rem;
+        }
+
+        .diagnostic-value {
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .status-success {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .status-error {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .status-warning {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            color: white;
+        }
+
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .troubleshooting-section {
+            background: #fef3c7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .troubleshooting-section h3 {
+            color: #92400e;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .troubleshooting-section ul {
+            color: #92400e;
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .troubleshooting-section li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+}
+
+<div class="diagnostics-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="diagnostics-header">
+            <h1 class="diagnostics-title">Email Diagnostics</h1>
+            <p class="diagnostics-subtitle">Проверете конфигурацията на email системата и открийте проблеми</p>
+        </div>
+
+        <div class="diagnostics-card">
+            <div class="diagnostics-body">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Email Configuration Status</h2>
+                
+                @if (ViewBag.Diagnostics != null)
+                {
+                    var diagnostics = (Dictionary<string, object>)ViewBag.Diagnostics;
+                    
+                    <div class="space-y-4">
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">SMTP Server:</span>
+                            <span class="diagnostic-value">@diagnostics["SmtpServer"]</span>
+                        </div>
+                        
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">SMTP Port:</span>
+                            <span class="diagnostic-value">@diagnostics["SmtpPort"]</span>
+                        </div>
+                        
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">From Email:</span>
+                            <span class="diagnostic-value">@diagnostics["FromEmail"]</span>
+                        </div>
+                        
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">From Name:</span>
+                            <span class="diagnostic-value">@diagnostics["FromName"]</span>
+                        </div>
+                        
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">SSL Enabled:</span>
+                            <span class="diagnostic-value">@diagnostics["EnableSsl"]</span>
+                        </div>
+                        
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">Admin Email:</span>
+                            <span class="diagnostic-value">@diagnostics["AdminEmail"]</span>
+                        </div>
+                        
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">Password Configured:</span>
+                            <span class="diagnostic-value @(diagnostics["PasswordConfigured"].ToString() == "True" ? "status-success" : "status-error")">
+                                @(diagnostics["PasswordConfigured"].ToString() == "True" ? "✓ Yes" : "✗ No")
+                            </span>
+                        </div>
+                        
+                        <div class="diagnostic-item">
+                            <span class="diagnostic-label">SMTP Connection Test:</span>
+                            <span class="diagnostic-value @(diagnostics["SmtpConnectionTest"].ToString().StartsWith("Success") ? "status-success" : "status-error")">
+                                @diagnostics["SmtpConnectionTest"]
+                            </span>
+                        </div>
+                        
+                        @if (diagnostics.ContainsKey("Error"))
+                        {
+                            <div class="diagnostic-item">
+                                <span class="diagnostic-label">Error:</span>
+                                <span class="diagnostic-value status-error">@diagnostics["Error"]</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-gray-600">No diagnostic information available.</p>
+                }
+                
+                <div class="troubleshooting-section">
+                    <h3>🔧 Troubleshooting Tips</h3>
+                    <ul>
+                        <li><strong>Gmail App Password:</strong> Уверете се, че използвате app password, не обикновената парола</li>
+                        <li><strong>2FA Enabled:</strong> Gmail изисква 2FA за app passwords</li>
+                        <li><strong>Less Secure Apps:</strong> Проверете дали "Less secure app access" е включено</li>
+                        <li><strong>Firewall:</strong> Проверете дали firewall не блокира порт 587</li>
+                        <li><strong>Internet Connection:</strong> Уверете се, че имате стабилна интернет връзка</li>
+                    </ul>
+                </div>
+                
+                <div class="flex gap-4 mt-6">
+                    <a href="@Url.Action("TestEmail", "UserServices")" class="btn-primary">
+                        <i class="fas fa-vial mr-2"></i> Test Email
+                    </a>
+                    <a href="@Url.Action("AdminDashboard", "UserServices")" class="btn-outline">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

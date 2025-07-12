@@ -1,0 +1,289 @@
+@model PA_Website.Models.User
+
+@{
+    ViewData["Title"] = "Профил";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .profile-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .profile-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .profile-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .profile-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4c1d95;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-control:focus {
+            border-color: #4c1d95;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            color: white;
+        }
+
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .validation-summary {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #dc2626;
+        }
+
+        .field-validation-error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .input-validation-error {
+            border-color: #dc2626;
+        }
+
+        .zodiac-signs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .zodiac-option {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.875rem;
+        }
+
+        .zodiac-option:hover {
+            border-color: #4c1d95;
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .zodiac-option.selected {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border-color: #4c1d95;
+        }
+
+        @@media (max-width: 768px) {
+            .profile-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="profile-container">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="profile-header">
+            <h1 class="profile-title">Профил</h1>
+            <p class="profile-subtitle">Управлявайте вашата лична информация</p>
+        </div>
+
+        <div class="profile-card">
+            <form asp-action="UpdateProfile" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label asp-for="FName" class="form-label">Име</label>
+                        <input asp-for="FName" class="form-control" />
+                        <span asp-validation-for="FName" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="LName" class="form-label">Фамилия</label>
+                        <input asp-for="LName" class="form-control" />
+                        <span asp-validation-for="LName" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="form-label">Имейл</label>
+                        <input asp-for="Email" type="email" class="form-control" />
+                        <span asp-validation-for="Email" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="form-label">Телефон</label>
+                        <input asp-for="PhoneNumber" type="tel" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Birth_Date" class="form-label">Дата на раждане</label>
+                        <input asp-for="Birth_Date" type="date" class="form-control" />
+                        <span asp-validation-for="Birth_Date" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Zodiacal_Sign" class="form-label">Зодия</label>
+                        <input asp-for="Zodiacal_Sign" type="hidden" id="zodiacInput" />
+                        <div class="zodiac-signs">
+                            @{
+                                var zodiacSigns = new[] {
+                                    "Овен", "Телец", "Близнаци", "Рак", "Лъв", "Дева",
+                                    "Везни", "Скорпион", "Стрелец", "Козирог", "Водолей", "Риби"
+                                };
+                            }
+                            @foreach (var sign in zodiacSigns)
+                            {
+                                <div class="zodiac-option @(Model.Zodiacal_Sign == sign ? "selected" : "")" 
+                                     data-value="@sign" onclick="selectZodiac(this)">
+                                    @sign
+                                </div>
+                            }
+                        </div>
+                        <span asp-validation-for="Zodiacal_Sign" class="field-validation-error"></span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save mr-2"></i> Запази промените
+                    </button>
+                    <a href="@Url.Action("Dashboard", "UserServices")" class="btn-outline">
+                        <i class="fas fa-arrow-left mr-2"></i> Назад към панела
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectZodiac(element) {
+            // Remove selected class from all options
+            document.querySelectorAll('.zodiac-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Update hidden input
+            document.getElementById('zodiacInput').value = element.getAttribute('data-value');
+        }
+    </script>
+} 

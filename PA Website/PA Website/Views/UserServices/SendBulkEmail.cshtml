@@ -1,0 +1,646 @@
+@{
+    ViewData["Title"] = "Изпращане на масови имейли";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .bulk-email-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .bulk-email-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bulk-email-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .bulk-email-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .bulk-email-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .bulk-email-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .bulk-email-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bulk-email-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px -15px rgba(0, 0, 0, 0.15);
+        }
+
+        .bulk-email-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .bulk-email-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4c1d95;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            color: #1e293b;
+        }
+
+        .form-control:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+            outline: none;
+            transform: translateY(-1px);
+        }
+
+        .form-control:hover {
+            border-color: #c4b5fd;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            color: white;
+        }
+
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .user-selection-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-selection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .user-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #4c1d95;
+        }
+
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 12px;
+            background: white;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .user-item:hover {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            transform: translateX(4px);
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-item.selected {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #7c3aed;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1);
+        }
+
+        .user-checkbox {
+            margin-right: 1rem;
+            transform: scale(1.3);
+            accent-color: #7c3aed;
+            cursor: pointer;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .user-email {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .email-form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .email-type-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .email-type-btn {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            color: #64748b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9rem;
+        }
+
+        .email-type-btn.active {
+            border-color: #7c3aed;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .email-type-btn:hover {
+            border-color: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(124, 58, 237, 0.2);
+        }
+
+        .select-all-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .select-all-checkbox {
+            transform: scale(1.3);
+            margin-right: 0.75rem;
+            accent-color: white;
+        }
+
+        .select-all-label {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .user-count-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+
+        .progress-indicator {
+            display: none;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .progress-indicator.show {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @@media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .bulk-email-title {
+                font-size: 1.8rem;
+            }
+
+            .email-type-buttons {
+                flex-direction: column;
+            }
+
+            .user-selection-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Custom scrollbar for user list */
+        .user-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .user-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .user-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            border-radius: 4px;
+        }
+
+        .user-list::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+        }
+    </style>
+}
+
+<div class="bulk-email-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bulk-email-header">
+            <h1 class="bulk-email-title">Изпращане на масови имейли</h1>
+            <p class="bulk-email-subtitle">Изпратете персонализирани имейли на всички потребители или изберете конкретни потребители</p>
+        </div>
+
+        <form method="post" id="bulkEmailForm">
+            @Html.AntiForgeryToken()
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- User Selection Card -->
+                <div class="bulk-email-card">
+                    <div class="bulk-email-body">
+                        <div class="user-selection-section">
+                            <div class="user-selection-header">
+                                <h2 class="text-xl font-bold text-gray-800">Избор на потребители</h2>
+                                <div class="user-count">
+                                    <i class="fas fa-users mr-2"></i>
+                                    Избрани: <span id="selectedCount" class="user-count-badge">0</span>
+                                </div>
+                            </div>
+
+                            <div class="select-all-section">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" id="selectAll" class="select-all-checkbox">
+                                    <span class="select-all-label">Избери всички потребители</span>
+                                </label>
+                            </div>
+
+                            <div class="user-list">
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <div class="user-item" onclick="toggleUserSelection(this)">
+                                        <input type="checkbox" name="selectedUserIds" value="@user.Id" class="user-checkbox user-select-checkbox">
+                                        <div class="user-info">
+                                            <div class="user-name">@user.FName @user.LName</div>
+                                            <div class="user-email">@user.Email</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Form Card -->
+                <div class="bulk-email-card">
+                    <div class="bulk-email-body">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6">Създаване на имейл</h2>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Тип имейл</label>
+                            <div class="email-type-buttons">
+                                <button type="button" class="email-type-btn active" data-type="announcement">
+                                    <i class="fas fa-bullhorn mr-2"></i>Важно съобщение
+                                </button>
+                                <button type="button" class="email-type-btn" data-type="newsletter">
+                                    <i class="fas fa-newspaper mr-2"></i>Новини
+                                </button>
+                                <button type="button" class="email-type-btn" data-type="promotion">
+                                    <i class="fas fa-gift mr-2"></i>Промоция
+                                </button>
+                            </div>
+                            <input type="hidden" id="emailType" name="emailType" value="announcement">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Заглавие на имейла</label>
+                            <input type="text" id="subject" name="subject" class="form-control" placeholder="Въведете заглавие на имейла" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Съобщение</label>
+                            <textarea id="message" name="message" class="form-control" rows="8" placeholder="Въведете вашето персонализирано съобщение..." required></textarea>
+                        </div>
+
+                        <div class="progress-indicator" id="progressIndicator">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            <span id="progressText">Изпращане на имейли...</span>
+                        </div>
+
+                        <div class="flex gap-4 mt-6">
+                            <button type="submit" class="btn-primary flex-1" id="sendButton">
+                                <i class="fas fa-paper-plane mr-2"></i> Изпрати имейли
+                            </button>
+                            <a href="@Url.Action("AdminDashboard", "UserServices")" class="btn-outline">
+                                <i class="fas fa-arrow-left mr-2"></i> Назад
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Show success/error messages
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                showMessage('@TempData["SuccessMessage"]', 'success');
+                </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>
+                showMessage('@TempData["ErrorMessage"]', 'error');
+                </text>
+            }
+            @if (TempData["WarningMessage"] != null)
+            {
+                <text>
+                showMessage('@TempData["WarningMessage"]', 'warning');
+                </text>
+            }
+
+            // Select all functionality
+            $('#selectAll').change(function() {
+                $('.user-select-checkbox').prop('checked', $(this).is(':checked'));
+                updateSelectedCount();
+                updateUserItemStyles();
+            });
+
+            // Individual checkbox functionality
+            $(document).on('change', '.user-select-checkbox', function() {
+                updateSelectedCount();
+                updateSelectAllState();
+                updateUserItemStyles();
+            });
+
+            // Email type buttons
+            $('.email-type-btn').click(function() {
+                $('.email-type-btn').removeClass('active');
+                $(this).addClass('active');
+                $('#emailType').val($(this).data('type'));
+            });
+
+            // Form submission
+            $('#bulkEmailForm').submit(function(e) {
+                var selectedUsers = $('.user-select-checkbox:checked').length;
+                if (selectedUsers === 0) {
+                    e.preventDefault();
+                    showMessage('Моля, изберете поне един потребител.', 'error');
+                    return false;
+                }
+
+                var subject = $('#subject').val().trim();
+                var message = $('#message').val().trim();
+
+                if (!subject || !message) {
+                    e.preventDefault();
+                    showMessage('Моля, попълнете заглавие и съобщение.', 'error');
+                    return false;
+                }
+
+                // Show confirmation
+                var confirmMessage = `Сигурни ли сте, че искате да изпратите имейл на ${selectedUsers} потребител(и)?`;
+                if (!confirm(confirmMessage)) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Show progress indicator
+                $('#progressIndicator').addClass('show');
+                $('#progressText').text(`Изпращане на имейли на ${selectedUsers} потребител(и)...`);
+
+                // Disable button and show loading
+                $('#sendButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Изпращане...');
+            });
+
+            function updateSelectedCount() {
+                var count = $('.user-select-checkbox:checked').length;
+                $('#selectedCount').text(count);
+            }
+
+            function updateSelectAllState() {
+                var totalCheckboxes = $('.user-select-checkbox').length;
+                var checkedCheckboxes = $('.user-select-checkbox:checked').length;
+                
+                if (checkedCheckboxes === 0) {
+                    $('#selectAll').prop('indeterminate', false).prop('checked', false);
+                } else if (checkedCheckboxes === totalCheckboxes) {
+                    $('#selectAll').prop('indeterminate', false).prop('checked', true);
+                } else {
+                    $('#selectAll').prop('indeterminate', true);
+                }
+            }
+
+            function updateUserItemStyles() {
+                $('.user-item').each(function() {
+                    var checkbox = $(this).find('.user-select-checkbox');
+                    if (checkbox.is(':checked')) {
+                        $(this).addClass('selected');
+                    } else {
+                        $(this).removeClass('selected');
+                    }
+                });
+            }
+
+            function showMessage(message, type) {
+                var alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-warning';
+                var icon = type === 'success' ? 'fas fa-check-circle' : type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-exclamation-triangle';
+                
+                var alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                        <i class="${icon} mr-2"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                $('.bulk-email-header').after(alertHtml);
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(function() {
+                    $('.alert').fadeOut();
+                }, 5000);
+            }
+
+            // Initialize
+            updateSelectedCount();
+            updateUserItemStyles();
+        });
+
+        function toggleUserSelection(element) {
+            var checkbox = $(element).find('.user-select-checkbox');
+            checkbox.prop('checked', !checkbox.is(':checked')).trigger('change');
+        }
+    </script>
+} 

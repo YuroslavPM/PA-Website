@@ -372,7 +372,16 @@
 
                         <div class="details-item">
                             <div class="details-label">Час на резервация</div>
-                            <div class="details-value">@($"{Model.ReservationTime:hh\\:mm}")</div>
+                            <div class="details-value">
+                                @if(Model.ReservationTime.HasValue)
+                                {
+                                    @Model.ReservationTime.Value.ToString(@"hh\:mm")
+                                }
+                                else
+                                {
+                                    <span>Не е посочен</span>
+                                }
+                            </div>
                         </div>
                     }
                     else

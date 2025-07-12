@@ -1,0 +1,771 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@model PA_Website.Models.User
+
+@{
+    ViewData["Title"] = "Потребителски Панел";
+    var user = ViewData["User"] as User;
+    var recentReservations = ViewData["RecentReservations"] as List<PA_Website.Models.UserService>;
+    var availableServices = ViewData["AvailableServices"] as List<PA_Website.Models.Service>;
+    Layout = "_Layout";
+
+    // Helper method to convert BGN to EUR
+    decimal ConvertToEur(decimal bgnPrice)
+    {
+        return Math.Round(bgnPrice / 1.95583m, 2);
+    }
+}
+
+@section Styles {
+    <style>
+        .dashboard-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .dashboard-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .dashboard-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .dashboard-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .tab-navigation {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+            display: flex;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #4c1d95;
+            background: white;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .tab-button:hover {
+            color: #4c1d95;
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .tab-content {
+            padding: 2rem;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .profile-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        .profile-avatar {
+            text-align: center;
+        }
+
+        .avatar-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .profile-info {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(124, 58, 237, 0.05);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4c1d95;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .reservation-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reservation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .status-confirmed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .status-cancelled {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
+            color: white;
+        }
+
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4c1d95;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-control:focus {
+            border-color: #4c1d95;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            outline: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #4c1d95;
+        }
+
+        .schedule-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(124, 58, 237, 0.05);
+        }
+
+        .time-slot {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 4px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .time-slot:hover {
+            border-color: #4c1d95;
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .time-slot.selected {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border-color: #4c1d95;
+        }
+
+        .time-slot.unavailable {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        @@media (max-width: 768px) {
+            .profile-section {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                text-align: center;
+            }
+        }
+    </style>
+}
+
+<div class="dashboard-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Потребителски Панел</h1>
+            <p class="dashboard-subtitle">Добре дошли, @user.FName @user.LName!</p>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-navigation">
+                <button class="tab-button active" onclick="showTab('profile')">
+                    <i class="fas fa-user mr-2"></i> Профил
+                </button>
+                <button class="tab-button" onclick="showTab('reservations')">
+                    <i class="fas fa-calendar-check mr-2"></i> Резервации
+                </button>
+                <button class="tab-button" onclick="showTab('schedule')">
+                    <i class="fas fa-clock mr-2"></i> Запазване на час
+                </button>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profile" class="tab-content active">
+                <div class="profile-section">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">
+                            @user.FName[0]@user.LName[0]
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">@user.FName @user.LName</h3>
+                        <p class="text-gray-600">@user.Email</p>
+                    </div>
+                    <div class="profile-info">
+                        <h4 class="text-lg font-bold text-gray-800 mb-4">Информация за профила</h4>
+                        <div class="info-item">
+                            <span class="info-label">Име</span>
+                            <span class="info-value">@user.FName</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Фамилия</span>
+                            <span class="info-value">@user.LName</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Имейл</span>
+                            <span class="info-value">@user.Email</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Телефон</span>
+                            <span class="info-value">@(user.PhoneNumber ?? "Не е посочен")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Зодия</span>
+                            <span class="info-value">@(user.Zodiacal_Sign ?? "Не е посочена")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Дата на раждане</span>
+                            <span class="info-value">@user.Birth_Date.ToString("dd.MM.yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservations Tab -->
+            <div id="reservations" class="tab-content">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Моите Резервации</h3>
+                @if (recentReservations != null && recentReservations.Any())
+                {
+                    @foreach (var reservation in recentReservations)
+                    {
+                        <div class="reservation-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-lg font-bold text-gray-800">@reservation.Service.NameService</h4>
+                                    <p class="text-gray-600">@reservation.Service.CategoryOfService</p>
+                                </div>
+                                <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
+                                                          reservation.Status == "Confirmed" ? "status-confirmed" : 
+                                                          reservation.Status == "Completed" ? "status-completed" : "status-cancelled")">
+                                    @(reservation.Status == "Pending" ? "Чакаща" : 
+                                      reservation.Status == "Confirmed" ? "Потвърдена" : 
+                                      reservation.Status == "Completed" ? "Завършена" : "Отменена")
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <span class="text-sm font-semibold text-gray-600">Дата:</span>
+                                    <span class="text-gray-800">@reservation.ReservationDate.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                @if (reservation.ReservationTime.HasValue)
+                                {
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-600">Час:</span>
+                                        <span class="text-gray-800">@reservation.ReservationTime.Value.ToString(@"hh\:mm")</span>
+                                    </div>
+                                }
+                                <div>
+                                    <span class="text-sm font-semibold text-gray-600">Цена:</span>
+                                    <span class="text-gray-800">@reservation.Service.Price.ToString("0.00") лв. / @ConvertToEur(reservation.Service.Price).ToString("0.00") €</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="@Url.Action("Details", "UserServices", new { id = reservation.Id })" class="btn-primary">
+                                    <i class="fas fa-eye mr-2"></i> Детайли
+                                </a>
+                                @if (reservation.Status == "Pending" || reservation.Status == "Confirmed")
+                                {
+                                    <button onclick="openRescheduleModal(@reservation.Id, @reservation.ServiceId)" class="btn-secondary">
+                                        <i class="fas fa-edit mr-2"></i> Пренасрочи
+                                    </button>
+                                    <form method="post" action="@Url.Action("CancelReservation", "UserServices")" style="display: inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@reservation.Id" />
+                                        <button type="submit" class="btn-outline" onclick="return confirm('Сигурни ли сте, че искате да отмените тази резервация?')">
+                                            <i class="fas fa-times mr-2"></i> Отмени
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <div class="text-center mt-6">
+                        <a href="@Url.Action("Index", "UserServices")" class="btn-primary">
+                            <i class="fas fa-list mr-2"></i> Всички резервации
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-12">
+                        <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-calendar-times text-3xl text-purple-500"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Няма резервации</h3>
+                        <p class="text-gray-600 mb-6">Все още нямате резервации. Запазете час за консултация.</p>
+                        <a href="@Url.Action("Index", "Services")" class="btn-primary">
+                            <i class="fas fa-magic mr-2"></i> Разгледай услуги
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <!-- Schedule Tab -->
+            <div id="schedule" class="tab-content">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Запазване на час</h3>
+                <div class="schedule-section">
+                    <form id="scheduleForm" method="post" action="@Url.Action("CreateReservation", "Services")">
+                        <input type="hidden" name="ServiceId" id="serviceIdInput" />
+                        <input type="hidden" name="reservationDate" id="reservationDateInput" />
+                        <input type="hidden" name="reservationTime" id="reservationTimeInput" />
+                        <input type="hidden" name="astrologicalDate" value="" />
+                        <input type="hidden" name="birthCity" value="" />
+                        @Html.AntiForgeryToken()
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label class="form-label">Услуга</label>
+                                <select id="serviceSelect" class="form-control" required>
+                                    <option value="">Изберете услуга</option>
+                                    @if (availableServices != null)
+                                    {
+                                        @foreach (var service in availableServices)
+                                        {
+                                            <option value="@service.Id" data-price="@service.Price">@service.NameService - @service.Price.ToString("0.00") лв.</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Дата</label>
+                                <input type="date" id="reservationDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Час</label>
+                                <select id="reservationTime" class="form-control" required>
+                                    <option value="">Изберете час</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Цена</label>
+                                <div id="priceDisplay" class="text-lg font-bold text-purple-600">-</div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-6">
+                            <button type="submit" class="btn-primary px-8 py-3">
+                                <i class="fas fa-calendar-plus mr-2"></i> Запази час
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reschedule Modal -->
+<div id="rescheduleModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeRescheduleModal()">&times;</span>
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Пренасрочване на резервация</h3>
+                            <form id="rescheduleForm" method="post" action="@Url.Action("RescheduleReservation", "UserServices")">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="reservationId" name="id" />
+                        <input type="hidden" id="rescheduleServiceId" name="serviceId" />
+                        <div class="form-group">
+                            <label class="form-label">Нова дата</label>
+                            <input type="date" id="newDate" name="newDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Нов час</label>
+                            <select id="newTime" name="newTime" class="form-control" required>
+                                <option value="">Изберете час</option>
+                            </select>
+                        </div>
+            <div class="flex gap-4 mt-6">
+                <button type="submit" class="btn-primary flex-1">
+                    <i class="fas fa-save mr-2"></i> Пренасрочи
+                </button>
+                <button type="button" onclick="closeRescheduleModal()" class="btn-outline flex-1">
+                    <i class="fas fa-times mr-2"></i> Отказ
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            var tabContents = document.getElementsByClassName('tab-content');
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            // Remove active class from all tab buttons
+            var tabButtons = document.getElementsByClassName('tab-button');
+            for (var i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function openRescheduleModal(reservationId, serviceId) {
+            document.getElementById('reservationId').value = reservationId;
+            document.getElementById('rescheduleServiceId').value = serviceId;
+            document.getElementById('rescheduleModal').style.display = 'block';
+            
+            // Store the service ID for the reschedule modal
+            window.currentRescheduleServiceId = serviceId;
+        }
+
+        function closeRescheduleModal() {
+            document.getElementById('rescheduleModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            var modal = document.getElementById('rescheduleModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Handle service selection for scheduling
+        document.getElementById('serviceSelect').addEventListener('change', function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var price = selectedOption.getAttribute('data-price');
+            var priceDisplay = document.getElementById('priceDisplay');
+            
+            if (price) {
+                var priceEur = (parseFloat(price) / 1.95583).toFixed(2);
+                priceDisplay.textContent = price + ' лв. / ' + priceEur + ' €';
+                document.getElementById('serviceIdInput').value = this.value;
+            } else {
+                priceDisplay.textContent = '-';
+                document.getElementById('serviceIdInput').value = '';
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+            var serviceId = document.getElementById('serviceSelect').value;
+            var reservationDate = document.getElementById('reservationDate').value;
+            var reservationTime = document.getElementById('reservationTime').value;
+            
+            if (!serviceId || !reservationDate || !reservationTime) {
+                e.preventDefault();
+                alert('Моля, попълнете всички полета.');
+                return;
+            }
+            
+            // Set hidden form values
+            document.getElementById('serviceIdInput').value = serviceId;
+            document.getElementById('reservationDateInput').value = reservationDate;
+            document.getElementById('reservationTimeInput').value = reservationTime;
+        });
+
+        // Handle date selection for available times
+        document.getElementById('reservationDate').addEventListener('change', function() {
+            var serviceId = document.getElementById('serviceSelect').value;
+            var date = this.value;
+            
+            if (serviceId && date) {
+                fetch(`/UserServices/GetAvailableTimes?serviceId=${serviceId}&date=${date}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var timeSelect = document.getElementById('reservationTime');
+                        timeSelect.innerHTML = '<option value="">Изберете час</option>';
+                        
+                        if (data.success && data.availableTimes.length > 0) {
+                            data.availableTimes.forEach(time => {
+                                var option = document.createElement('option');
+                                option.value = time;
+                                option.textContent = time;
+                                timeSelect.appendChild(option);
+                            });
+                        } else {
+                            var option = document.createElement('option');
+                            option.value = "";
+                            option.textContent = "Няма свободни часове";
+                            option.disabled = true;
+                            timeSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        var timeSelect = document.getElementById('reservationTime');
+                        timeSelect.innerHTML = '<option value="">Грешка при зареждане</option>';
+                    });
+            }
+        });
+
+        // Handle new date selection for rescheduling
+        document.getElementById('newDate').addEventListener('change', function() {
+            var serviceId = window.currentRescheduleServiceId;
+            var date = this.value;
+            
+            if (serviceId && date) {
+                fetch(`/UserServices/GetAvailableTimes?serviceId=${serviceId}&date=${date}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var timeSelect = document.getElementById('newTime');
+                        timeSelect.innerHTML = '<option value="">Изберете час</option>';
+                        
+                        if (data.success && data.availableTimes.length > 0) {
+                            data.availableTimes.forEach(time => {
+                                var option = document.createElement('option');
+                                option.value = time;
+                                option.textContent = time;
+                                timeSelect.appendChild(option);
+                            });
+                        } else {
+                            var option = document.createElement('option');
+                            option.value = "";
+                            option.textContent = "Няма свободни часове";
+                            option.disabled = true;
+                            timeSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        var timeSelect = document.getElementById('newTime');
+                        timeSelect.innerHTML = '<option value="">Грешка при зареждане</option>';
+                    });
+            }
+        });
+    </script>
+} 

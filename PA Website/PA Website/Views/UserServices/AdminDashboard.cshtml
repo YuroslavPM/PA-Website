@@ -1,0 +1,490 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@model IEnumerable<PA_Website.Models.UserService>
+
+@{
+    ViewData["Title"] = "Административен Панел";
+    var user = await UserManager.GetUserAsync(User);
+    Layout = "_Layout";
+
+    // Get statistics
+    var totalReservations = Model.Count();
+    var pendingReservations = Model.Count(r => r.Status == "Pending");
+    var confirmedReservations = Model.Count(r => r.Status == "Confirmed");
+    var completedReservations = Model.Count(r => r.Status == "Completed");
+    var cancelledReservations = Model.Count(r => r.Status == "Cancelled");
+    var recentReservations = Model.OrderByDescending(r => r.ReservationDate).Take(5).ToList();
+}
+
+@section Styles {
+    <style>
+        .admin-dashboard-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .admin-dashboard-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .admin-dashboard-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .admin-dashboard-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .admin-dashboard-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.total {
+            border-left-color: #4c1d95;
+        }
+
+        .stat-card.pending {
+            border-left-color: #fbbf24;
+        }
+
+        .stat-card.confirmed {
+            border-left-color: #10b981;
+        }
+
+        .stat-card.completed {
+            border-left-color: #6b7280;
+        }
+
+        .stat-card.cancelled {
+            border-left-color: #ef4444;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.total {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+        }
+
+        .stat-icon.pending {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .stat-icon.confirmed {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .stat-icon.completed {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .stat-icon.cancelled {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .admin-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-action-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .admin-action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        .admin-action-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            color: white;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+        }
+
+        .admin-action-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-action-description {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+        }
+
+        .btn-admin:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            color: white;
+        }
+
+        .recent-reservations {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .recent-reservations-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+
+        .reservation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reservation-item:hover {
+            background: #f8fafc;
+        }
+
+        .reservation-item:last-child {
+            border-bottom: none;
+        }
+
+        .reservation-info {
+            flex: 1;
+        }
+
+        .reservation-user {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .reservation-service {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .reservation-date {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .status-confirmed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .status-cancelled {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        @@media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .admin-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<div class="admin-dashboard-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="admin-dashboard-header">
+            <h1 class="admin-dashboard-title">Административен Панел</h1>
+            <p class="admin-dashboard-subtitle">Добре дошли, @user.FName @user.LName! Управлявайте вашия сайт от тук.</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-icon total">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-number">@totalReservations</div>
+                <div class="stat-label">Общо резервации</div>
+            </div>
+
+            <div class="stat-card pending">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">@pendingReservations</div>
+                <div class="stat-label">Чакащи</div>
+            </div>
+
+            <div class="stat-card confirmed">
+                <div class="stat-icon confirmed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number">@confirmedReservations</div>
+                <div class="stat-label">Потвърдени</div>
+            </div>
+
+            <div class="stat-card completed">
+                <div class="stat-icon completed">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="stat-number">@completedReservations</div>
+                <div class="stat-label">Завършени</div>
+            </div>
+
+            <div class="stat-card cancelled">
+                <div class="stat-icon cancelled">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-number">@cancelledReservations</div>
+                <div class="stat-label">Отменени</div>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="admin-actions-grid">
+            <div class="admin-action-card">
+                <div class="admin-action-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="admin-action-title">Управление на резервации</h3>
+                <p class="admin-action-description">Преглед и управление на всички резервации от потребителите</p>
+                <a href="@Url.Action("IndexAdmin", "UserServices")" class="btn-admin">
+                    <i class="fas fa-arrow-right mr-2"></i> Управлявай резервации
+                </a>
+            </div>
+
+            <div class="admin-action-card">
+                <div class="admin-action-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <h3 class="admin-action-title">Управление на услуги</h3>
+                <p class="admin-action-description">Добавяне, редактиране и изтриване на услуги</p>
+                <a href="@Url.Action("Index", "Services")" class="btn-admin">
+                    <i class="fas fa-arrow-right mr-2"></i> Управлявай услуги
+                </a>
+            </div>
+
+            <div class="admin-action-card">
+                <div class="admin-action-icon">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <h3 class="admin-action-title">Управление на потребители</h3>
+                <p class="admin-action-description">Преглед и управление на потребителски акаунти</p>
+                <a href="@Url.Action("Index", "Users")" class="btn-admin">
+                    <i class="fas fa-arrow-right mr-2"></i> Управлявай потребители
+                </a>
+            </div>
+
+            <div class="admin-action-card">
+                <div class="admin-action-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3 class="admin-action-title">Управление на статии</h3>
+                <p class="admin-action-description">Добавяне, редактиране и изтриване на статии</p>
+                <a href="@Url.Action("Index", "Articles")" class="btn-admin">
+                    <i class="fas fa-arrow-right mr-2"></i> Управлявай статии
+                </a>
+            </div>
+
+            <div class="admin-action-card">
+                <div class="admin-action-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3 class="admin-action-title">Изпращане на имейли</h3>
+                <p class="admin-action-description">Изпратете имейли на резервации или масови имейли</p>
+                <div class="flex gap-2">
+                    <a href="@Url.Action("SendEmail", "UserServices")" class="btn-admin flex-1">
+                        <i class="fas fa-envelope mr-2"></i> Резервации
+                    </a>
+                    <a href="@Url.Action("SendBulkEmail", "UserServices")" class="btn-admin flex-1">
+                        <i class="fas fa-users mr-2"></i> Масови
+                    </a>
+                </div>
+                <div class="mt-2">
+                    <a href="@Url.Action("EmailDiagnostics", "UserServices")" class="btn-admin w-full mt-2">
+                        <i class="fas fa-stethoscope mr-2"></i> Email Diagnostics
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Reservations -->
+        <div class="recent-reservations">
+            <h3 class="recent-reservations-title">Последни резервации</h3>
+            @if (recentReservations.Any())
+            {
+                @foreach (var reservation in recentReservations)
+                {
+                    <div class="reservation-item">
+                        <div class="reservation-info">
+                            <div class="reservation-user">@reservation.User.FName @reservation.User.LName</div>
+                            <div class="reservation-service">@reservation.Service.NameService</div>
+                            <div class="reservation-date">
+                                @reservation.ReservationDate.ToString("dd.MM.yyyy")
+                                @if(reservation.ReservationTime.HasValue)
+                                {
+                                    <span>@reservation.ReservationTime.Value.ToString(@"hh\:mm")</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
+                                                      reservation.Status == "Confirmed" ? "status-confirmed" : 
+                                                      reservation.Status == "Completed" ? "status-completed" : "status-cancelled")">
+                                @(reservation.Status == "Pending" ? "Чакаща" : 
+                                  reservation.Status == "Confirmed" ? "Потвърдена" : 
+                                  reservation.Status == "Completed" ? "Завършена" : "Отменена")
+                            </span>
+                            <a href="@Url.Action("Details", "UserServices", new { id = reservation.Id })" class="btn-admin">
+                                <i class="fas fa-eye mr-2"></i> Детайли
+                            </a>
+                        </div>
+                    </div>
+                }
+                <div class="text-center mt-6">
+                    <a href="@Url.Action("IndexAdmin", "UserServices")" class="btn-admin">
+                        <i class="fas fa-list mr-2"></i> Всички резервации
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-calendar-times text-3xl text-purple-500"></i>
+                    </div>
+                    <p class="text-gray-600">Няма резервации за показване</p>
+                </div>
+            }
+        </div>
+    </div>
+</div> 

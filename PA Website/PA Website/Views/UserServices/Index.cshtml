@@ -46,10 +46,10 @@
         }
         .user-services-header {
             background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
-            border-radius: 24px;
-            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
-            padding: 2.5rem;
-            margin-bottom: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
         }
@@ -64,7 +64,7 @@
             }
         .user-services-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             -webkit-background-clip: text;
@@ -92,7 +92,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
             border: 1px solid rgba(124, 58, 237, 0.1);
-            border-radius: 24px;
+            border-radius: 20px;
             overflow: hidden;
         }
 
@@ -202,8 +202,8 @@
 
         .info-item {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: 12px;
+            padding: 1.25rem;
             border: 1px solid rgba(124, 58, 237, 0.05);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -242,6 +242,120 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
+        .modal {
+            display: none !important;
+            position: fixed !important;
+            z-index: 99999 !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: blur(5px) !important;
+        }
+
+        .modal.show {
+            display: block !important;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+            margin: 5% auto !important;
+            padding: 2.5rem !important;
+            border-radius: 24px !important;
+            width: 90% !important;
+            max-width: 550px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+            position: relative !important;
+            animation: modalSlideIn 0.3s ease-out !important;
+            border: 1px solid rgba(124, 58, 237, 0.1) !important;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 24px 24px 0 0;
+        }
+
+        @@keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #64748b;
+            float: right;
+            font-size: 32px;
+            font-weight: 300;
+            cursor: pointer;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .close:hover {
+            color: #4c1d95;
+            background: rgba(124, 58, 237, 0.1);
+            transform: scale(1.1);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #4c1d95;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            color: #1e293b;
+        }
+
+        .form-control:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+            outline: none;
+            transform: translateY(-1px);
+        }
+
+        .form-control:hover {
+            border-color: #c4b5fd;
+        }
+
         @@keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -272,9 +386,9 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white rounded-3xl shadow-soft p-8 mb-12 animate-fade-in-up animate-delay-100">
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Филтри и Сортиране</h2>
+        <div class="bg-white rounded-2xl shadow-soft p-6 mb-8 animate-fade-in-up animate-delay-100">
+            <div class="mb-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">Филтри и Сортиране</h2>
                 <p class="text-gray-600">Персонализирайте изгледа на вашите резервации</p>
             </div>
 
@@ -347,16 +461,16 @@
                 {
                     <div class="reservation-card shadow-soft border-l-4 border-purple-500 animate-fade-in-up">
                         <!-- Header -->
-                        <div class="card-header-gradient px-8 py-6 rounded-t-3xl">
+                        <div class="card-header-gradient px-6 py-4 rounded-t-2xl">
                             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                                <div class="flex items-center gap-6">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center">
-                                            <i class="fas fa-calendar-check text-white text-2xl"></i>
+                                                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-calendar-check text-white text-lg"></i>
                                         </div>
                                 </div>
                                 <div>
-                                        <h3 class="text-2xl font-bold text-gray-800 mb-2">@reservation.Service.NameService</h3>
+                                        <h3 class="text-xl font-bold text-gray-800 mb-2">@reservation.Service.NameService</h3>
                                         <div class="flex items-center gap-4">
                                             <span class="status-badge
                                                 @(reservation.Status == "Pending" ? "status-pending" : 
@@ -377,8 +491,8 @@
                         </div>
 
                         <!-- Body -->
-                        <div class="p-8">
-                            <div class="info-grid mb-8">
+                        <div class="p-6">
+                            <div class="info-grid mb-6">
                                 <div class="info-item">
                                     <div class="flex items-center gap-3 mb-2">
                                         <i class="fas fa-tag text-purple-500 text-lg"></i>
@@ -439,12 +553,12 @@
 
                             @if (!string.IsNullOrEmpty(reservation.Service.Description))
                             {
-                                <div class="mb-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-100">
+                                <div class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100">
                                     <div class="flex items-center gap-3 mb-3">
                                         <i class="fas fa-info-circle text-purple-500 text-lg"></i>
                                         <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Описание на услугата</label>
                                     </div>
-                                    <p class="text-gray-700 leading-relaxed text-lg">@reservation.Service.Description</p>
+                                    <p class="text-gray-700 leading-relaxed text-base">@reservation.Service.Description</p>
                                 </div>
                             }
 
@@ -456,19 +570,18 @@
                                     Детайли
                                 </a>
 
-                                @if (reservation.Status == "Pending")
+                                @if (reservation.Status == "Pending" || reservation.Status == "Confirmed")
                                 {
-                                    <a href="@Url.Action("Edit", "UserServices", new { id = reservation.Id })" 
-                                       class="btn-secondary px-6 py-3 rounded-xl font-semibold">
-                                        <i class="fas fa-edit mr-2"></i>
-                                        Редактирай
-                                    </a>
-
-                                    <a href="@Url.Action("Delete", "UserServices", new { id = reservation.Id })" 
-                                       class="btn-outline px-6 py-3 rounded-xl font-semibold">
-                                        <i class="fas fa-trash mr-2"></i>
-                                        Отмени
-                                    </a>
+                                    <button onclick="openRescheduleModal(@reservation.Id, @reservation.ServiceId)" class="btn-secondary px-6 py-3 rounded-xl font-semibold">
+                                        <i class="fas fa-edit mr-2"></i> Пренасрочи
+                                    </button>
+                                    <form method="post" action="@Url.Action("CancelReservation", "UserServices")" style="display: inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@reservation.Id" />
+                                        <button type="submit" class="btn-outline px-6 py-3 rounded-xl font-semibold" onclick="return confirm('Сигурни ли сте, че искате да отмените тази резервация?')">
+                                            <i class="fas fa-times mr-2"></i> Отмени
+                                        </button>
+                                    </form>
                                 }
 
                                 @if (!string.IsNullOrEmpty(reservation.AstroCardFilePath))
@@ -519,12 +632,12 @@
         {
             <!-- Empty State -->
             <div class="text-center py-20 animate-fade-in-up animate-delay-200">
-                <div class="bg-white rounded-3xl shadow-soft p-16 max-w-2xl mx-auto">
-                    <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                        <i class="fas fa-calendar-times text-4xl text-purple-500"></i>
+                <div class="bg-white rounded-2xl shadow-soft p-12 max-w-2xl mx-auto">
+                    <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-calendar-times text-3xl text-purple-500"></i>
                     </div>
-                    <h3 class="text-3xl font-bold text-gray-800 mb-4">Няма резервации</h3>
-                    <p class="text-gray-600 mb-8 text-lg leading-relaxed">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Няма резервации</h3>
+                    <p class="text-gray-600 mb-6 text-base leading-relaxed">
                         Все още нямате резервации. Разгледайте нашите услуги и запазете час за консултация.
                     </p>
                     <a href="@Url.Action("Index", "Services")" 
@@ -537,25 +650,154 @@
         }
 
         <!-- Call to Action -->
-        <div class="text-center mt-20 animate-fade-in-up animate-delay-400">
-            <div class="bg-white rounded-3xl shadow-soft p-12 max-w-3xl mx-auto">
-                <h3 class="text-3xl font-bold text-gradient mb-6">Искате ли нова резервация?</h3>
-                <p class="text-gray-600 mb-8 text-lg leading-relaxed">
+        <div class="text-center mt-16 animate-fade-in-up animate-delay-400">
+            <div class="bg-white rounded-2xl shadow-soft p-10 max-w-3xl mx-auto">
+                <h3 class="text-2xl font-bold text-gradient mb-4">Искате ли нова резервация?</h3>
+                <p class="text-gray-600 mb-6 text-base leading-relaxed">
                     Разгледайте нашите услуги и запазете час за професионална консултация.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                    <a href="@Url.Action("Index", "Services")" 
+                    <a href="@Url.Action("Dashboard", "UserServices")" 
                        class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Потребителски панел
+                    </a>
+                    <a href="@Url.Action("Index", "Services")" 
+                       class="btn-outline px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center">
                         <i class="fas fa-magic mr-3"></i>
                         Разгледай услуги
-                    </a>
-                    <a href="@Url.Action("Index", "Home")" 
-                       class="btn-outline px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center">
-                        <i class="fas fa-home mr-3"></i>
-                        Начална страница
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Reschedule Modal -->
+<div id="rescheduleModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeRescheduleModal()">&times;</span>
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-calendar-edit text-white text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2 font-playfair">Пренасрочване на резервация</h3>
+            <p class="text-gray-600 text-base">Изберете нова дата и час за вашата резервация</p>
+        </div>
+        
+        <form id="rescheduleForm" method="post" action="@Url.Action("RescheduleReservation", "UserServices")">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="reservationId" name="id" />
+            <input type="hidden" id="rescheduleServiceId" name="serviceId" />
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-calendar-alt mr-2 text-purple-500"></i>
+                    Нова дата
+                </label>
+                <input type="date" id="newDate" name="newDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-clock mr-2 text-purple-500"></i>
+                    Нов час
+                </label>
+                <select id="newTime" name="newTime" class="form-control" required>
+                    <option value="">Изберете час</option>
+                </select>
+            </div>
+            
+            <div class="flex gap-4 mt-8">
+                <button type="submit" class="btn-primary flex-1 py-4 rounded-xl font-semibold text-lg">
+                    <i class="fas fa-save mr-3"></i> Пренасрочи
+                </button>
+                <button type="button" onclick="closeRescheduleModal()" class="btn-outline flex-1 py-4 rounded-xl font-semibold text-lg">
+                    <i class="fas fa-times mr-3"></i> Отказ
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openRescheduleModal(reservationId, serviceId) {
+            // Check if elements exist
+            var modal = document.getElementById('rescheduleModal');
+            var reservationIdInput = document.getElementById('reservationId');
+            var serviceIdInput = document.getElementById('rescheduleServiceId');
+            
+            if (!modal || !reservationIdInput || !serviceIdInput) {
+                alert('Грешка: Модалният прозорец не е намерен');
+                return;
+            }
+            
+            // Set values
+            reservationIdInput.value = reservationId;
+            serviceIdInput.value = serviceId;
+            
+            // Show modal using class
+            modal.classList.add('show');
+            
+            // Store the service ID for the reschedule modal
+            window.currentRescheduleServiceId = serviceId;
+        }
+
+        function closeRescheduleModal() {
+            var modal = document.getElementById('rescheduleModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            var modal = document.getElementById('rescheduleModal');
+            if (event.target == modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Handle new date selection for rescheduling
+        document.addEventListener('DOMContentLoaded', function() {
+            var newDateInput = document.getElementById('newDate');
+            if (newDateInput) {
+                newDateInput.addEventListener('change', function() {
+                    var serviceId = window.currentRescheduleServiceId;
+                    var date = this.value;
+                    
+                    if (serviceId && date) {
+                        fetch(`/UserServices/GetAvailableTimes?serviceId=${serviceId}&date=${date}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                var timeSelect = document.getElementById('newTime');
+                                timeSelect.innerHTML = '<option value="">Изберете час</option>';
+                                
+                                if (data.success && data.availableTimes.length > 0) {
+                                    data.availableTimes.forEach(time => {
+                                        var option = document.createElement('option');
+                                        option.value = time;
+                                        option.textContent = time;
+                                        timeSelect.appendChild(option);
+                                    });
+                                } else {
+                                    var option = document.createElement('option');
+                                    option.value = "";
+                                    option.textContent = "Няма свободни часове";
+                                    option.disabled = true;
+                                    timeSelect.appendChild(option);
+                                }
+                            })
+                            .catch(error => {
+                                var timeSelect = document.getElementById('newTime');
+                                timeSelect.innerHTML = '<option value="">Грешка при зареждане</option>';
+                            });
+                    }
+                });
+            }
+        });
+    </script>
+}

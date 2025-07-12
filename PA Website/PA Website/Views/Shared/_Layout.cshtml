@@ -328,14 +328,35 @@
                             <div class="absolute right-0 mt-2 w-56 dropdown-menu-custom rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100">
                                 @if (User.IsInRole("Admin"))
                                 {
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm" asp-controller="UserServices" asp-action="IndexAdmin">
-                                        <i class="fas fa-cog mr-3 text-yellow-400"></i>Админ панел
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm" asp-controller="UserServices" asp-action="AdminDashboard">
+                                        <i class="fas fa-tachometer-alt mr-3 text-yellow-400"></i>Админ панел
+                                        </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="IndexAdmin">
+                                        <i class="fas fa-users mr-3 text-yellow-400"></i>Всички резервации
+                                        </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="Services" asp-action="Index">
+                                        <i class="fas fa-magic mr-3 text-yellow-400"></i>Управление услуги
+                                        </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="Users" asp-action="Index">
+                                        <i class="fas fa-user-cog mr-3 text-yellow-400"></i>Управление потребители
+                                        </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="Articles" asp-action="Index">
+                                        <i class="fas fa-newspaper mr-3 text-yellow-400"></i>Управление статии
+                                        </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="SendEmail">
+                                        <i class="fas fa-envelope mr-3 text-yellow-400"></i>Изпращане на имейли
                                         </a>
                                 }
                                 else
                                 {
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm" asp-controller="UserServices" asp-action="Index">
-                                        <i class="fas fa-list-alt mr-3 text-yellow-400"></i>Моите поръчки
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm" asp-controller="UserServices" asp-action="Dashboard">
+                                        <i class="fas fa-tachometer-alt mr-3 text-yellow-400"></i>Потребителски панел
+                                        </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="Index">
+                                        <i class="fas fa-list-alt mr-3 text-yellow-400"></i>Моите резервации
+                                        </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="Profile">
+                                        <i class="fas fa-user-edit mr-3 text-yellow-400"></i>Профил
                                         </a>
                                 }
                                 <hr class="border-white/10 mx-2">

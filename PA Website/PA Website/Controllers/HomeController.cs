@@ -12,7 +12,6 @@ namespace PA_Website.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
-        private readonly IEmailSender _emailSender;
 
         public HomeController(ApplicationDbContext context, ILogger<HomeController> logger)
         {
