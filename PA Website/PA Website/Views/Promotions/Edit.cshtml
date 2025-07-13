@@ -1,0 +1,247 @@
+@model PA_Website.Models.Promotion
+
+@{
+    ViewData["Title"] = "Редактирай Промоция";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .edit-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+        .edit-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+            overflow: hidden;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .edit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+        .edit-header {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .edit-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .edit-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .edit-body {
+            padding: 2rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #4c1d95;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 1rem;
+            color: #374151;
+            background: #f9fafb;
+            margin-bottom: 0.25rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #7c3aed;
+            outline: none;
+            box-shadow: 0 0 0 2px #c7d2fe;
+        }
+        .validation-message {
+            color: #dc2626;
+            font-size: 0.9rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+        }
+        @@media (max-width: 768px) {
+            .edit-container {
+                padding: 1rem 0;
+            }
+            .edit-title {
+                font-size: 1.5rem;
+            }
+            .edit-body {
+                padding: 1.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .action-buttons .btn-primary,
+            .action-buttons .btn-outline {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+}
+
+<div class="edit-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="edit-card">
+            <div class="edit-header">
+                <h1 class="edit-title">Редактирай Промоция</h1>
+                <h4 class="edit-subtitle">Промени детайлите на промоцията</h4>
+            </div>
+            <div class="edit-body">
+                <form asp-action="Edit">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="validation-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PromotionType" class="form-label"></label>
+                            <select asp-for="PromotionType" class="form-select">
+                                <option value="">Изберете тип промоция</option>
+                                <option value="FirstBooking">Първа резервация</option>
+                                <option value="Discount">Отстъпка</option>
+                                <option value="FreeService">Безплатна услуга</option>
+                                <option value="Loyalty">Лоялност</option>
+                            </select>
+                            <span asp-validation-for="PromotionType" class="validation-message"></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="DiscountPercentage" class="form-label"></label>
+                            <input asp-for="DiscountPercentage" class="form-control" />
+                            <span asp-validation-for="DiscountPercentage" class="validation-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FixedDiscount" class="form-label"></label>
+                            <input asp-for="FixedDiscount" class="form-control" />
+                            <span asp-validation-for="FixedDiscount" class="validation-message"></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="FreeServiceName" class="form-label"></label>
+                            <input asp-for="FreeServiceName" class="form-control" />
+                            <span asp-validation-for="FreeServiceName" class="validation-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="MaxUsage" class="form-label"></label>
+                            <input asp-for="MaxUsage" class="form-control" />
+                            <span asp-validation-for="MaxUsage" class="validation-message"></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="StartDate" class="form-label"></label>
+                            <input asp-for="StartDate" class="form-control" type="date" />
+                            <span asp-validation-for="StartDate" class="validation-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="EndDate" class="form-label"></label>
+                            <input asp-for="EndDate" class="form-control" type="date" />
+                            <span asp-validation-for="EndDate" class="validation-message"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Description" class="validation-message"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="IsActive" class="form-label"></label>
+                        <input asp-for="IsActive" type="checkbox" /> Активна
+                        <span asp-validation-for="IsActive" class="validation-message"></span>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Запази промените
+                        </button>
+                        <a href="@Url.Action("Index", "Promotions")" class="btn-outline">
+                            <i class="fas fa-arrow-left"></i> Назад към списъка
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+} 

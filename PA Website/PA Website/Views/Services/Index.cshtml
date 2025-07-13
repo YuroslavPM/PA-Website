@@ -19,20 +19,64 @@
 
 @section Styles {
     <style>
+        /* Debug section styles */
+        .debug-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .debug-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .debug-item {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        
+        .debug-value {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .debug-error {
+            color: #dc3545;
+        }
+
         .services-container {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: calc(100vh - 80px);
-            padding: 2rem 0;
+            padding: 1rem 0;
+        }
+
+        @@media (min-width: 768px) {
+            .services-container {
+                padding: 2rem 0;
+            }
         }
 
         .services-header {
             background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
-            padding: 2.5rem;
-            margin-bottom: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
+        }
+
+        @@media (min-width: 768px) {
+            .services-header {
+                padding: 2.5rem;
+                margin-bottom: 2rem;
+            }
         }
 
         .services-header::before {
@@ -47,31 +91,52 @@
 
         .services-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             position: relative;
+        }
+
+        @@media (min-width: 768px) {
+            .services-title {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
         }
 
         .services-title::after {
             content: '';
             position: absolute;
-            bottom: -12px;
+            bottom: -8px;
             left: 0;
-            width: 100px;
+            width: 80px;
             height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
             border-radius: 2px;
         }
 
+        @@media (min-width: 768px) {
+            .services-title::after {
+                width: 100px;
+                bottom: -12px;
+            }
+        }
+
         .services-subtitle {
             color: #64748b;
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        @@media (min-width: 768px) {
+            .services-subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
+            }
         }
 
         .btn-create {
@@ -79,15 +144,23 @@
             color: white;
             border: none;
             border-radius: 12px;
-            padding: 12px 32px;
+            padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
-            font-size: 1rem;
+            font-size: 0.875rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        @@media (min-width: 768px) {
+            .btn-create {
+                padding: 12px 32px;
+                font-size: 1rem;
+            }
         }
 
         .btn-create:hover {
@@ -99,9 +172,17 @@
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @@media (min-width: 768px) {
+            .services-grid {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 2rem;
+                margin-bottom: 2rem;
+            }
         }
 
         .service-card {
@@ -119,10 +200,16 @@
         }
 
         .service-image {
-            height: 200px;
+            height: 160px;
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             position: relative;
             overflow: hidden;
+        }
+
+        @@media (min-width: 768px) {
+            .service-image {
+                height: 200px;
+            }
         }
 
         .service-image::before {
@@ -137,79 +224,142 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: white;
             opacity: 0.9;
         }
 
+        @@media (min-width: 768px) {
+            .service-icon {
+                font-size: 3rem;
+            }
+        }
+
         .service-content {
-            padding: 1.5rem;
+            padding: 1rem;
+        }
+
+        @@media (min-width: 768px) {
+            .service-content {
+                padding: 1.5rem;
+            }
         }
 
         .service-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        @@media (min-width: 768px) {
+            .service-meta {
+                margin-bottom: 1rem;
+            }
         }
 
         .category-badge {
             background: linear-gradient(135deg, #f59e0b, #f97316);
             color: white;
             border-radius: 12px;
-            padding: 0.5rem 1rem;
+            padding: 0.375rem 0.75rem;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.375rem;
+        }
+
+       @@media (min-width: 768px) {
+            .category-badge {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                gap: 0.5rem;
+            }
         }
 
         .price-badge {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
             border-radius: 12px;
-            padding: 0.5rem 1rem;
+            padding: 0.375rem 0.75rem;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.375rem;
+        }
+
+        @@media (min-width: 768px) {
+            .price-badge {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                gap: 0.5rem;
+            }
         }
 
         .service-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             line-height: 1.4;
+        }
+
+        @@media (min-width: 768px) {
+            .service-title {
+                font-size: 1.25rem;
+                margin-bottom: 0.75rem;
+            }
         }
 
         .service-description {
             color: #6b7280;
             font-size: 0.875rem;
             line-height: 1.5;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
+        @@media (min-width: 768px) {
+            .service-description {
+                margin-bottom: 1rem;
+            }
+        }
+
         .service-date {
             color: #9ca3af;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
+            gap: 0.375rem;
+            margin-bottom: 1rem;
+        }
+
+        @@media (min-width: 768px) {
+            .service-date {
+                font-size: 0.875rem;
+                gap: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
         }
 
         .service-actions {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
+        }
+
+        @@media (min-width: 768px) {
+            .service-actions {
+                gap: 0.75rem;
+            }
         }
 
         .btn-primary {
@@ -217,14 +367,22 @@
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 0.5rem 1rem;
+            padding: 0.375rem 0.75rem;
             font-weight: 500;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.375rem;
+        }
+
+        @@media (min-width: 768px) {
+            .btn-primary {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                gap: 0.5rem;
+            }
         }
 
         .btn-primary:hover {
@@ -237,15 +395,23 @@
             border: 1px solid #4c1d95;
             color: #4c1d95;
             border-radius: 8px;
-            padding: 0.5rem 1rem;
+            padding: 0.375rem 0.75rem;
             font-weight: 500;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.375rem;
+        }
+
+        @@media (min-width: 768px) {
+            .btn-outline {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                gap: 0.5rem;
+            }
         }
 
         .btn-outline:hover {
@@ -258,15 +424,23 @@
             border: 1px solid #dc2626;
             color: #dc2626;
             border-radius: 8px;
-            padding: 0.5rem 1rem;
+            padding: 0.375rem 0.75rem;
             font-weight: 500;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.375rem;
+        }
+
+        @@media (min-width: 768px) {
+            .btn-danger {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                gap: 0.5rem;
+            }
         }
 
         .btn-danger:hover {
@@ -277,55 +451,106 @@
 
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 2rem 1rem;
             background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
             max-width: 500px;
             margin: 0 auto;
         }
 
+        @@media (min-width: 768px) {
+            .empty-state {
+                padding: 4rem 2rem;
+                border-radius: 24px;
+            }
+        }
+
         .empty-icon {
-            font-size: 4rem;
+            font-size: 3rem;
             color: #4c1d95;
             opacity: 0.5;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        @@media (min-width: 768px) {
+            .empty-icon {
+                font-size: 4rem;
+                margin-bottom: 1.5rem;
+            }
         }
 
         .empty-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        @@media (min-width: 768px) {
+            .empty-title {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
         }
 
         .empty-description {
             color: #6b7280;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        @@media (min-width: 768px) {
+            .empty-description {
+                margin-bottom: 2rem;
+                font-size: 1rem;
+            }
         }
 
         .cta-section {
             background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
-            padding: 2.5rem;
+            padding: 1.5rem;
             text-align: center;
             max-width: 600px;
             margin: 0 auto;
         }
 
+        @@media (min-width: 768px) {
+            .cta-section {
+                border-radius: 24px;
+                padding: 2.5rem;
+            }
+        }
+
         .cta-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        @@media (min-width: 768px) {
+            .cta-title {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
         }
 
         .cta-description {
             color: #6b7280;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        @@media (min-width: 768px) {
+            .cta-description {
+                margin-bottom: 1.5rem;
+                font-size: 1rem;
+            }
         }
 
         .btn-home {
@@ -333,15 +558,22 @@
             color: white;
             border: none;
             border-radius: 12px;
-            padding: 12px 32px;
+            padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
-            font-size: 1rem;
+            font-size: 0.875rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        @@media (min-width: 768px) {
+            .btn-home {
+                padding: 12px 32px;
+                font-size: 1rem;
+            }
         }
 
         .btn-home:hover {
@@ -351,29 +583,60 @@
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
         }
 
-        @@media (max-width: 768px) {
-            .services-title {
-                font-size: 2rem;
-            }
-
-            .services-header {
-                padding: 1.5rem;
-            }
-
+        /* Responsive improvements */
+        @@media (max-width: 640px) {
             .services-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1rem;
             }
 
             .service-actions {
                 flex-direction: column;
             }
+
+            .service-actions .btn-primary,
+            .service-actions .btn-outline,
+            .service-actions .btn-danger {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animation classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.animate-fade-in-up {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 }
 
 <div class="services-container">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if (isAdmin && ViewBag.DebugInfo != null)
+        {
+            <div class="debug-section">
+                <div class="debug-title">🔍 Promotion Debug Info (Admin Only)</div>
+                <div class="debug-item">User ID: <span class="debug-value">@ViewBag.DebugInfo.UserId</span></div>
+                <div class="debug-item">Has Reservations: <span class="debug-value">@ViewBag.DebugInfo.HasReservations</span></div>
+                <div class="debug-item">Found Promotion: <span class="debug-value">@ViewBag.DebugInfo.FoundPromotion</span></div>
+                @if (ViewBag.DebugInfo.FoundPromotion)
+                {
+                    <div class="debug-item">Promotion ID: <span class="debug-value">@ViewBag.DebugInfo.PromotionId</span></div>
+                    <div class="debug-item">Promotion Type: <span class="debug-value">@ViewBag.DebugInfo.PromotionType</span></div>
+                    <div class="debug-item">Is Active: <span class="debug-value">@ViewBag.DebugInfo.IsActive</span></div>
+                    <div class="debug-item">Start Date: <span class="debug-value">@ViewBag.DebugInfo.StartDate</span></div>
+                    <div class="debug-item">End Date: <span class="debug-value">@ViewBag.DebugInfo.EndDate</span></div>
+                }
+                <div class="debug-item">Is Eligible: <span class="debug-value">@ViewBag.DebugInfo.IsEligible</span></div>
+            </div>
+        }
+
         <!-- Header -->
         <div class="services-header">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -384,9 +647,10 @@
                 
                 @if (isAdmin)
                 {
-                    <a href="@Url.Action("Create", "Services")" class="btn-create">
+                    <a href="@Url.Action("Create", "Services")" class="btn-create focus-visible:focus">
                         <i class="fas fa-plus"></i>
-                        Добави услуга
+                        <span class="hidden sm:inline">Добави услуга</span>
+                        <span class="sm:hidden">Добави</span>
                     </a>
                 }
             </div>
@@ -398,15 +662,14 @@
             <div class="services-grid">
                 @foreach (var service in Model)
                 {
-                    <div class="service-card">
-                        <!-- Service Image -->
+                    <div class="service-card animate-on-scroll">
                         <div class="service-image">
                             <div class="service-icon">
-                                @if (service.CategoryOfService.ToLower().Contains("психология"))
+                                @if (service.CategoryOfService == "Психология")
                                 {
                                     <i class="fas fa-brain"></i>
                                 }
-                                else if (service.CategoryOfService.ToLower().Contains("астрология"))
+                                else if (service.CategoryOfService == "Астрология")
                                 {
                                     <i class="fas fa-star"></i>
                                 }
@@ -416,59 +679,67 @@
                                 }
                             </div>
                         </div>
-
-                        <!-- Service Content -->
                         <div class="service-content">
                             <div class="service-meta">
                                 <span class="category-badge">
                                     <i class="fas fa-tag"></i>
                                     @service.CategoryOfService
                                 </span>
-                                @if (service.Price > 0)
-                                {
-                                    <span class="price-badge">
-                                        <i class="fas fa-coins"></i>
-                                        @service.Price.ToString("0.00") лв. / @ConvertToEur(service.Price).ToString("0.00") €
-                                    </span>
-                                }
+                                <span class="price-badge">
+                                    <i class="fas fa-euro-sign"></i>
+                                    @if (ViewBag.IsEligibleForFirstBookingPromo == true && ViewBag.FirstBookingPromo != null)
+                                    {
+                                        var promo = (PA_Website.Models.Promotion)ViewBag.FirstBookingPromo;
+                                        decimal promoPrice = service.Price;
+                                        if (promo.DiscountPercentage.HasValue)
+                                        {
+                                            promoPrice = Math.Round(service.Price * (1 - (promo.DiscountPercentage.Value / 100)), 2);
+                                        }
+                                        else if (promo.FixedDiscount.HasValue)
+                                        {
+                                            promoPrice = Math.Max(0, Math.Round(service.Price - promo.FixedDiscount.Value, 2));
+                                        }
+                                        <span style="color:#ef4444;font-weight:bold;">@promoPrice лв. (@ConvertToEur(promoPrice) €)</span>
+                                        <span style="text-decoration:line-through;color:#9ca3af;margin-left:8px;">@service.Price лв.</span>
+                                        <span class="ml-2 px-2 py-1 rounded bg-yellow-400 text-xs font-bold text-white">Промоция за първа резервация!</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@service.Price лв. (@ConvertToEur(service.Price) €)</span>
+                                    }
+                                </span>
                             </div>
-
                             <h3 class="service-title">@service.NameService</h3>
-                            
-                            @if (!string.IsNullOrEmpty(service.Description))
-                            {
-                                <p class="service-description">@service.Description</p>
-                            }
-
+                            <p class="service-description">@service.Description</p>
                             <div class="service-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>Доступна от: @service.ReservationDate.ToString("dd.MM.yyyy")</span>
+                                <i class="fas fa-clock"></i>
+                                @* <span>@service.Duration минути</span> *@ <!-- Duration property does not exist in Service model -->
                             </div>
-
-                            <!-- Action Buttons -->
                             <div class="service-actions">
-                                <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-primary">
+                                <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-primary focus-visible:focus">
                                     <i class="fas fa-eye"></i>
-                                    Детайли
+                                    <span class="hidden sm:inline">Детайли</span>
+                                    <span class="sm:hidden">Детайли</span>
                                 </a>
-
                                 @if (isAdmin)
                                 {
-                                    <a href="@Url.Action("Edit", "Services", new { id = service.Id })" class="btn-outline">
+                                    <a href="@Url.Action("Edit", "Services", new { id = service.Id })" class="btn-outline focus-visible:focus">
                                         <i class="fas fa-edit"></i>
-                                        Редактирай
+                                        <span class="hidden sm:inline">Редактирай</span>
+                                        <span class="sm:hidden">Редактирай</span>
                                     </a>
-
-                                    <a href="@Url.Action("Delete", "Services", new { id = service.Id })" class="btn-danger">
+                                    <a href="@Url.Action("Delete", "Services", new { id = service.Id })" class="btn-danger focus-visible:focus">
                                         <i class="fas fa-trash"></i>
-                                        Изтрий
+                                        <span class="hidden sm:inline">Изтрий</span>
+                                        <span class="sm:hidden">Изтрий</span>
                                     </a>
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-primary">
+                                    <a href="@Url.Action("Create", "UserServices", new { serviceId = service.Id })" class="btn-outline focus-visible:focus">
                                         <i class="fas fa-calendar-plus"></i>
-                                        Запази час
+                                        <span class="hidden sm:inline">Запази час</span>
+                                        <span class="sm:hidden">Запази</span>
                                     </a>
                                 }
                             </div>
@@ -479,35 +750,26 @@
         }
         else
         {
-            <!-- Empty State -->
             <div class="empty-state">
                 <div class="empty-icon">
                     <i class="fas fa-magic"></i>
                 </div>
-                <h3 class="empty-title">Все още няма услуги</h3>
-                <p class="empty-description">
-                    В момента не са налични услуги. Моля, проверете отново по-късно.
-                </p>
-                @if (isAdmin)
-                {
-                    <a href="@Url.Action("Create", "Services")" class="btn-create">
-                        <i class="fas fa-plus"></i>
-                        Добави първата услуга
-                    </a>
-                }
+                <h2 class="empty-title">Няма налични услуги</h2>
+                <p class="empty-description">В момента няма публикувани услуги. Моля, проверете отново по-късно.</p>
+                <a href="@Url.Action("Index", "Home")" class="btn-home focus-visible:focus">
+                    <i class="fas fa-home"></i>
+                    Начало
+                </a>
             </div>
         }
 
-        <!-- Call to Action -->
-        @if (!isAdmin && Model.Any())
+        @if (Model.Any())
         {
             <div class="cta-section">
                 <h3 class="cta-title">Готови сте да започнете?</h3>
-                <p class="cta-description">
-                    Изберете услуга и запазете час за консултация. Ще се свържем с вас за потвърждение.
-                </p>
-                <a href="@Url.Action("Index", "Home")" class="btn-home">
-                    <i class="fas fa-home"></i>
+                <p class="cta-description">Изберете услуга и запазете час за консултация</p>
+                <a href="@Url.Action("Index", "Home")" class="btn-home focus-visible:focus">
+                    <i class="fas fa-arrow-left"></i>
                     Обратно към началната страница
                 </a>
             </div>
@@ -515,41 +777,26 @@
     </div>
 </div>
 
-<!-- Модал за потвърждение -->
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Потвърждение на резервация</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Сигурни ли сте, че искате да резервирате тази услуга?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отказ</button>
-                <form id="reservationForm" asp-action="Reserve" method="post" style="display: none;">
-                    <input type="hidden" id="serviceId" name="serviceId" />
-                </form>
-                <button type="button" class="btn btn-primary" onclick="submitReservation()">
-                    <i class="fas fa-check me-1"></i> Потвърди
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
     <script>
-        function prepareReservation(serviceId) {
-            document.getElementById("serviceId").value = serviceId;
-        }
+        $(document).ready(function() {
+            // Intersection Observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
 
-        function submitReservation() {
-            document.getElementById("reservationForm").submit();
-        }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for animation
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            animatedElements.forEach(el => observer.observe(el));
+        });
     </script>
 }

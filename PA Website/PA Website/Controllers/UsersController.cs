@@ -55,7 +55,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,FName,LName,Password,Zodiacal_Sign,Birth_Date,Email,UserName")] User user)
+        public async Task<IActionResult> Create([Bind("Id,FName,LName,Zodiacal_Sign,Birth_Date,Email,UserName")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +88,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,FName,LName,Password,Zodiacal_Sign,Birth_Date,Email,UserName")] User user)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,FName,LName,Zodiacal_Sign,Birth_Date,Email,UserName")] User user)
         {
             if (id != user.Id)
             {
@@ -109,7 +109,6 @@ namespace PA_Website.Controllers
                     // Обновяваме стойностите само ако те са се променили
                     userToUpdate.FName = user.FName;
                     userToUpdate.LName = user.LName;
-                    userToUpdate.Password = user.Password;
                     userToUpdate.Zodiacal_Sign = user.Zodiacal_Sign;
                     userToUpdate.Birth_Date = user.Birth_Date;
                     userToUpdate.Email = user.Email;

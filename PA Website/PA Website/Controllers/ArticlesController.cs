@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace PA_Website.Controllers
     public class ArticlesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public ArticlesController(ApplicationDbContext context)
+        public ArticlesController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         
@@ -57,6 +60,17 @@ namespace PA_Website.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            // Populate category dropdown
+            ViewData["Categories"] = new SelectList(new[]
+            {
+                "Психология",
+                "Астрология", 
+                "Личностно развитие",
+                "Медитация",
+                "Зодиакални знаци",
+                "Други"
+            });
+            
             return View();
         }
 
@@ -70,37 +84,81 @@ namespace PA_Website.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Handle image upload first
-                if (article.ImageFile != null && article.ImageFile.Length > 0)
+                try
                 {
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(article.ImageFile.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", fileName);
-
-                    // Ensure directory exists
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                    // Save file
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    // Get current user
+                    var currentUser = await _userManager.GetUserAsync(User);
+                    if (currentUser == null)
                     {
-                        await article.ImageFile.CopyToAsync(stream);
+                        ModelState.AddModelError("", "Потребителят не е намерен.");
+                        ViewData["Categories"] = new SelectList(new[]
+                        {
+                            "Психология",
+                            "Астрология", 
+                            "Личностно развитие",
+                            "Медитация",
+                            "Зодиакални знаци",
+                            "Други"
+                        });
+                        return View(article);
                     }
 
-                    // Store path in database
-                    article.ImagePath = $"/Images/articles/{fileName}";
-                }
-
-                // Set publication date to current time if not set
-                if (article.PublicationDate == default)
-                {
+                    // Set creator and publication date
+                    article.CreatorId = currentUser.Id;
                     article.PublicationDate = DateTime.Now;
+
+                    // Handle image upload first
+                    if (article.ImageFile != null && article.ImageFile.Length > 0)
+                    {
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(article.ImageFile.FileName);
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", fileName);
+
+                        // Ensure directory exists
+                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                        // Save file
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await article.ImageFile.CopyToAsync(stream);
+                        }
+
+                        // Store path in database
+                        article.ImagePath = $"/Images/articles/{fileName}";
+                    }
+
+                    // Now save the article with the image path
+                    _context.Add(article);
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Статията е създадена успешно!";
+                    return RedirectToAction(nameof(Index));
                 }
-
-                // Now save the article with the image path
-                _context.Add(article);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Възникна грешка при създаването на статията. Моля, опитайте отново.");
+                    ViewData["Categories"] = new SelectList(new[]
+                    {
+                        "Психология",
+                        "Астрология", 
+                        "Личностно развитие",
+                        "Медитация",
+                        "Зодиакални знаци",
+                        "Други"
+                    });
+                    return View(article);
+                }
             }
+            
+            // If we got this far, something failed, redisplay form
+            ViewData["Categories"] = new SelectList(new[]
+            {
+                "Психология",
+                "Астрология", 
+                "Личностно развитие",
+                "Медитация",
+                "Зодиакални знаци",
+                "Други"
+            });
             return View(article);
         }
 

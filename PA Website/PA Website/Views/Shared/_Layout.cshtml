@@ -9,6 +9,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Душевна Мозайка</title>
+    <meta name="description" content="Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа" />
+    <meta name="keywords" content="астрология, психология, хороскоп, консултации, Душевна Мозайка" />
+    <meta name="author" content="Мариела Разпопова" />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -74,6 +77,11 @@
                         'bounce-in': 'bounceIn 0.8s ease-out forwards',
                         'float': 'float 6s ease-in-out infinite',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'text-fade-in': 'textFadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'slide-down': 'slideDown 0.6s ease-out forwards',
+                        'zoom-in': 'zoomIn 0.5s ease-out forwards',
+                        'rotate-in': 'rotateIn 0.6s ease-out forwards',
                     },
                     keyframes: {
                         fadeIn: {
@@ -109,6 +117,26 @@
                         float: {
                             '0%, 100%': { transform: 'translateY(0px)' },
                             '50%': { transform: 'translateY(-10px)' }
+                        },
+                        textFadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        zoomIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.8)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        rotateIn: {
+                            '0%': { opacity: '0', transform: 'rotate(-10deg) scale(0.9)' },
+                            '100%': { opacity: '1', transform: 'rotate(0deg) scale(1)' }
                         }
                     },
                     boxShadow: {
@@ -116,6 +144,7 @@
                         'medium': '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                         'large': '0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 2px 10px -2px rgba(0, 0, 0, 0.05)',
                         'glow': '0 0 20px rgba(139, 92, 246, 0.3)',
+                        'glow-yellow': '0 0 20px rgba(251, 191, 36, 0.3)',
                     }
                 }
             }
@@ -136,9 +165,16 @@
     <style>
         /* Enhanced custom styles */
         .navbar-gradient {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+            background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-scrolled {
+            background: rgba(76, 29, 149, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
         }
         
         .footer-gradient {
@@ -173,23 +209,23 @@
         .nav-link-hover {
             position: relative;
             overflow: hidden;
-            }
+        }
 
         .nav-link-hover::before {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 50%;
-                width: 0;
-                height: 2px;
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
             background: linear-gradient(90deg, #fbbf24, #f59e0b);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                transform: translateX(-50%);
-            }
+            transform: translateX(-50%);
+        }
 
         .nav-link-hover:hover::before {
             width: 80%;
-            }
+        }
 
         .dropdown-menu-custom {
             background: rgba(30, 41, 59, 0.98);
@@ -213,7 +249,7 @@
             height: 3px;
             background: linear-gradient(90deg, #fbbf24, #f59e0b);
             border-radius: 2px;
-            }
+        }
 
         .text-gradient {
             background: linear-gradient(135deg, #7c3aed, #a855f7);
@@ -236,12 +272,22 @@
         .btn-secondary-gradient {
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
+        }
 
         .btn-secondary-gradient:hover {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
+        }
+
+        /* Mobile menu improvements */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
         }
 
         /* Smooth scrolling */
@@ -252,7 +298,7 @@
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
-            }
+        }
 
         ::-webkit-scrollbar-track {
             background: #f1f5f9;
@@ -261,7 +307,7 @@
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #7c3aed, #a855f7);
             border-radius: 4px;
-                }
+        }
 
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, #6d28d9, #9333ea);
@@ -269,134 +315,196 @@
 
         /* Loading animation */
         .loading-dots {
-                display: inline-block;
-            }
+            display: inline-block;
+        }
 
         .loading-dots::after {
-                    content: '';
+            content: '';
             animation: dots 1.5s steps(5, end) infinite;
-                }
+        }
 
         @@keyframes dots {
             0%, 20% { content: ''; }
             40% { content: '.'; }
             60% { content: '..'; }
             80%, 100% { content: '...'; }
+        }
+
+        /* Responsive improvements */
+        @@media (max-width: 768px) {
+            .mobile-nav-item {
+                opacity: 0;
+                transform: translateY(20px);
+                animation: slideInUp 0.5s ease-out forwards;
             }
+            
+            .mobile-nav-item:nth-child(1) { animation-delay: 0.1s; }
+            .mobile-nav-item:nth-child(2) { animation-delay: 0.2s; }
+            .mobile-nav-item:nth-child(3) { animation-delay: 0.3s; }
+            .mobile-nav-item:nth-child(4) { animation-delay: 0.4s; }
+            .mobile-nav-item:nth-child(5) { animation-delay: 0.5s; }
+        }
+
+        /* Focus styles for accessibility */
+        .focus-visible:focus {
+            outline: 2px solid #fbbf24;
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion for users who prefer it */
+        @@media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 
     @RenderSection("Styles", required: false)
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 min-h-screen font-inter">
     <!-- Navigation -->
-    <nav class="navbar-gradient fixed top-0 w-full z-50 shadow-large transition-all duration-300 py-6">
+    <nav class="navbar-gradient fixed top-0 w-full z-50 shadow-large transition-all duration-300 py-4 lg:py-6" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <!-- Brand -->
-                <a class="font-playfair text-2xl font-bold text-white drop-shadow-md hover:scale-105 transition-transform duration-300 flex items-center" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-star mr-2 text-yellow-400"></i>Душевна Мозайка
-            </a>
+                <a class="font-playfair text-xl lg:text-2xl font-bold text-white drop-shadow-md hover:scale-105 transition-transform duration-300 flex items-center focus-visible:focus" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-star mr-2 text-yellow-400"></i>
+                    <span class="hidden sm:inline">Душевна Мозайка</span>
+                    <span class="sm:hidden">ДМ</span>
+                </a>
 
                 <!-- Mobile menu button -->
-                <button class="md:hidden text-white hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-700 rounded-lg p-2 transition-all duration-300" id="mobile-menu-button">
+                <button class="lg:hidden text-white hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-700 rounded-lg p-2 transition-all duration-300" 
+                        id="mobile-menu-button" 
+                        aria-label="Toggle mobile menu"
+                        aria-expanded="false">
                     <i class="fas fa-bars text-xl"></i>
-            </button>
+                </button>
 
                 <!-- Desktop menu -->
-                <div class="hidden md:flex items-center space-x-6" id="desktop-menu">
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm" asp-controller="Home" asp-action="Index">
+                <div class="hidden lg:flex items-center space-x-6" id="desktop-menu">
+                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Index">
                         <i class="fas fa-home mr-2"></i>Начало
-                        </a>
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm" asp-controller="Articles" asp-action="Index">
+                    </a>
+                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Articles" asp-action="Index">
                         <i class="fas fa-newspaper mr-2"></i>Статии
-                        </a>
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm" asp-controller="Services" asp-action="Index">
+                    </a>
+                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Services" asp-action="Index">
                         <i class="fas fa-magic mr-2"></i>Услуги
-                        </a>
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm" asp-controller="Home" asp-action="Author">
+                    </a>
+                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Author">
                         <i class="fas fa-user-edit mr-2"></i>За автора
-                        </a>
+                    </a>
 
                     @if (SignInManager.IsSignedIn(User))
                     {
                         var currentUser = await UserManager.GetUserAsync(User);
                         <div class="relative group ml-4">
-                            <button class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 flex items-center font-medium text-sm border border-white/20">
-                                <i class="fas fa-user-circle mr-2 text-yellow-400"></i>Здравей, @(currentUser?.FName ?? "Потребител")
+                            <button class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 flex items-center font-medium text-sm border border-white/20 focus-visible:focus" 
+                                    aria-label="User menu"
+                                    aria-expanded="false">
+                                <i class="fas fa-user-circle mr-2 text-yellow-400"></i>
+                                <span class="hidden xl:inline">Здравей, @(currentUser?.FName ?? "Потребител")</span>
+                                <span class="xl:hidden">@(currentUser?.FName ?? "Потребител")</span>
                                 <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-300 group-hover:rotate-180"></i>
                             </button>
                             <div class="absolute right-0 mt-2 w-56 dropdown-menu-custom rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100">
                                 @if (User.IsInRole("Admin"))
                                 {
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm" asp-controller="UserServices" asp-action="AdminDashboard">
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm focus-visible:focus" asp-controller="UserServices" asp-action="AdminDashboard">
                                         <i class="fas fa-tachometer-alt mr-3 text-yellow-400"></i>Админ панел
-                                        </a>
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="IndexAdmin">
+                                    </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm focus-visible:focus" asp-controller="UserServices" asp-action="IndexAdmin">
                                         <i class="fas fa-users mr-3 text-yellow-400"></i>Всички резервации
-                                        </a>
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="Services" asp-action="Index">
+                                    </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm focus-visible:focus" asp-controller="Services" asp-action="Index">
                                         <i class="fas fa-magic mr-3 text-yellow-400"></i>Управление услуги
-                                        </a>
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="Users" asp-action="Index">
+                                    </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm focus-visible:focus" asp-controller="Users" asp-action="Index">
                                         <i class="fas fa-user-cog mr-3 text-yellow-400"></i>Управление потребители
-                                        </a>
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="Articles" asp-action="Index">
+                                    </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm focus-visible:focus" asp-controller="Articles" asp-action="Index">
                                         <i class="fas fa-newspaper mr-3 text-yellow-400"></i>Управление статии
-                                        </a>
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="SendEmail">
+                                    </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm focus-visible:focus" asp-controller="UserServices" asp-action="SendEmail">
                                         <i class="fas fa-envelope mr-3 text-yellow-400"></i>Изпращане на имейли
-                                        </a>
+                                    </a>
                                 }
                                 else
                                 {
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm" asp-controller="UserServices" asp-action="Dashboard">
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-t-xl text-sm focus-visible:focus" asp-controller="UserServices" asp-action="Dashboard">
                                         <i class="fas fa-tachometer-alt mr-3 text-yellow-400"></i>Потребителски панел
-                                        </a>
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="Index">
+                                    </a>
+                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm focus-visible:focus" asp-controller="UserServices" asp-action="Index">
                                         <i class="fas fa-list-alt mr-3 text-yellow-400"></i>Моите резервации
-                                        </a>
-                                    <a class="block px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 text-sm" asp-controller="UserServices" asp-action="Profile">
-                                        <i class="fas fa-user-edit mr-3 text-yellow-400"></i>Профил
-                                        </a>
+                                    </a>
                                 }
                                 <hr class="border-white/10 mx-2">
-                                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
-                                    <button type="submit" class="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-b-xl text-sm">
+                                <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                    <button type="submit" class="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-all duration-200 hover:translate-x-2 rounded-b-xl text-sm focus-visible:focus">
                                         <i class="fas fa-sign-out-alt mr-3 text-red-400"></i>Изход
-                                        </button>
-                                    </form>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     }
                     else
                     {
-                        <a class="font-poppins bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-2 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg font-medium text-sm ml-4" asp-area="Identity" asp-page="/Account/Login">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Вход
+                        <a class="font-poppins bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-4 lg:px-6 py-2 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg font-medium text-sm ml-4 focus-visible:focus" asp-area="Identity" asp-page="/Account/Login">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            <span class="hidden sm:inline">Вход</span>
+                            <span class="sm:hidden">Вход</span>
                         </a>
                     }
                 </div>
             </div>
 
             <!-- Mobile menu -->
-            <div class="md:hidden hidden mt-4 animate-fade-in-down" id="mobile-menu">
+            <div class="lg:hidden hidden mt-4 animate-fade-in-down" id="mobile-menu">
                 <div class="flex flex-col space-y-2 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm" asp-controller="Home" asp-action="Index">
+                    <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Index">
                         <i class="fas fa-home mr-3"></i>Начало
                     </a>
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm" asp-controller="Articles" asp-action="Index">
+                    <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Articles" asp-action="Index">
                         <i class="fas fa-newspaper mr-3"></i>Статии
                     </a>
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm" asp-controller="Services" asp-action="Index">
+                    <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Services" asp-action="Index">
                         <i class="fas fa-magic mr-3"></i>Услуги
                     </a>
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm" asp-controller="Home" asp-action="Author">
+                    <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Author">
                         <i class="fas fa-user-edit mr-3"></i>За автора
                     </a>
                     @if (!SignInManager.IsSignedIn(User))
                     {
-                        <a class="font-poppins bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-4 py-3 rounded-lg transition-all duration-300 font-medium text-sm mt-2" asp-area="Identity" asp-page="/Account/Login">
+                        <a class="mobile-nav-item font-poppins bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-4 py-3 rounded-lg transition-all duration-300 font-medium text-sm mt-2 focus-visible:focus" asp-area="Identity" asp-page="/Account/Login">
                             <i class="fas fa-sign-in-alt mr-3"></i>Вход
-                            </a>
+                        </a>
+                    }
+                    else
+                    {
+                        var currentUser = await UserManager.GetUserAsync(User);
+                        <div class="border-t border-white/20 pt-4 mt-4">
+                            <div class="text-white/80 text-sm mb-2">Здравей, @(currentUser?.FName ?? "Потребител")</div>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="mobile-nav-item block text-white hover:text-yellow-400 py-2 text-sm focus-visible:focus" asp-controller="UserServices" asp-action="AdminDashboard">
+                                    <i class="fas fa-tachometer-alt mr-3 text-yellow-400"></i>Админ панел
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="mobile-nav-item block text-white hover:text-yellow-400 py-2 text-sm focus-visible:focus" asp-controller="UserServices" asp-action="Dashboard">
+                                    <i class="fas fa-tachometer-alt mr-3 text-yellow-400"></i>Потребителски панел
+                                </a>
+                            }
+                            <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="mt-2">
+                                <button type="submit" class="mobile-nav-item w-full text-left text-white hover:text-red-400 py-2 text-sm focus-visible:focus">
+                                    <i class="fas fa-sign-out-alt mr-3 text-red-400"></i>Изход
+                                </button>
+                            </form>
+                        </div>
                     }
                 </div>
             </div>
@@ -404,63 +512,63 @@
     </nav>
 
     <!-- Main content -->
-    <div class="pt-20">
+    <div class="pt-16 lg:pt-20">
         @RenderBody()
     </div>
 
     <!-- Footer -->
     <footer class="footer-gradient text-white relative z-10 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
                 <!-- Brand section -->
                 <div class="text-center md:text-left">
-                    <h5 class="font-playfair text-2xl font-bold mb-6 relative footer-title">Душевна Мозайка</h5>
-                    <p class="text-white/80 mb-6 leading-relaxed text-lg">Вашето място за астрологични консултации и психологическа подкрепа</p>
-                    <div class="flex justify-center md:justify-start space-x-4">
-                        <a href="https://www.facebook.com/Dushevnamozaika" class="inline-flex items-center justify-center w-12 h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow" target="_blank" rel="noopener noreferrer">
-                            <i class="fab fa-facebook-f text-white text-lg"></i>
+                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Душевна Мозайка</h5>
+                    <p class="text-white/80 mb-4 lg:mb-6 leading-relaxed text-base lg:text-lg">Вашето място за астрологични консултации и психологическа подкрепа</p>
+                    <div class="flex justify-center md:justify-start space-x-3 lg:space-x-4">
+                        <a href="https://www.facebook.com/Dushevnamozaika" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                            <i class="fab fa-facebook-f text-white text-base lg:text-lg"></i>
                         </a>
-                        <a href="#" class="inline-flex items-center justify-center w-12 h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow">
-                            <i class="fab fa-instagram text-white text-lg"></i>
+                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" aria-label="Instagram">
+                            <i class="fab fa-instagram text-white text-base lg:text-lg"></i>
                         </a>
-                        <a href="#" class="inline-flex items-center justify-center w-12 h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow">
-                            <i class="fab fa-youtube text-white text-lg"></i>
+                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" aria-label="YouTube">
+                            <i class="fab fa-youtube text-white text-base lg:text-lg"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Quick links -->
                 <div class="text-center">
-                    <h5 class="font-playfair text-2xl font-bold mb-6 relative footer-title">Бързи връзки</h5>
-                    <ul class="space-y-4">
-                        <li><a href="/Home/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-lg hover:translate-x-2 inline-block">Начало</a></li>
-                        <li><a href="/Articles/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-lg hover:translate-x-2 inline-block">Статии</a></li>
-                        <li><a href="/Services/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-lg hover:translate-x-2 inline-block">Услуги</a></li>
-                        <li><a href="/Home/Privacy" class="text-white/80 hover:text-white transition-colors duration-300 text-lg hover:translate-x-2 inline-block">Политика за поверителност</a></li>
+                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Бързи връзки</h5>
+                    <ul class="space-y-3 lg:space-y-4">
+                        <li><a href="/Home/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Начало</a></li>
+                        <li><a href="/Articles/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Статии</a></li>
+                        <li><a href="/Services/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Услуги</a></li>
+                        <li><a href="/Home/Privacy" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Политика за поверителност</a></li>
                     </ul>
                 </div>
 
                 <!-- Contact info -->
                 <div class="text-center md:text-right">
-                    <h5 class="font-playfair text-2xl font-bold mb-6 relative footer-title">Контакти</h5>
-                    <div class="space-y-4 text-white/80">
-                        <p class="flex items-center justify-center md:justify-end text-lg">
-                            <i class="fas fa-map-marker-alt mr-3 text-accent-300"></i> Пловдив, България
+                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Контакти</h5>
+                    <div class="space-y-3 lg:space-y-4">
+                        <p class="flex items-center justify-center md:justify-end text-base lg:text-lg text-white/80">
+                            <i class="fas fa-map-marker-alt mr-3"></i> Пловдив, България
                         </p>
-                        <p class="flex items-center justify-center md:justify-end text-lg">
-                            <i class="fas fa-phone mr-3 text-accent-300"></i> +359 888 123 456
+                        <p class="flex items-center justify-center md:justify-end text-base lg:text-lg text-white/80">
+                            <i class="fas fa-phone mr-3 "></i> +359 888 123 456
                         </p>
-                        <p class="flex items-center justify-center md:justify-end text-lg">
-                            <i class="fas fa-envelope mr-3 text-accent-300"></i> dushevna_mozaika@abv.bg
+                        <p class="flex items-center justify-center md:justify-end text-base lg:text-lg text-white/80">
+                            <i class="fas fa-envelope mr-3 "></i> dushevna_mozaika@abv.bg
                         </p>
                     </div>
                 </div>
             </div>
 
-            <hr class="border-white/10 my-12">
+            <hr class="border-white/10 my-8 lg:my-12">
             
             <div class="text-center">
-                <p class="text-white/80 text-lg">&copy; @DateTime.Now.Year - Душевна Мозайка. Всички права запазени.</p>
+                <p class="text-white/80 text-base lg:text-lg">&copy; @DateTime.Now.Year - Душевна Мозайка. Всички права запазени.</p>
             </div>
         </div>
     </footer>
@@ -472,8 +580,10 @@
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
             const mobileMenu = document.getElementById('mobile-menu');
             const icon = this.querySelector('i');
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
             
             mobileMenu.classList.toggle('hidden');
+            this.setAttribute('aria-expanded', !isExpanded);
             
             if (mobileMenu.classList.contains('hidden')) {
                 icon.className = 'fas fa-bars text-xl';
@@ -491,6 +601,7 @@
                 mobileMenu.classList.add('hidden');
                 const icon = mobileMenuButton.querySelector('i');
                 icon.className = 'fas fa-bars text-xl';
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
             }
         });
 
@@ -508,15 +619,48 @@
             });
         });
 
-        // Add scroll effect to navbar
+        // Enhanced navbar scroll effect
         window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('nav');
+            const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) {
-                navbar.classList.add('shadow-large');
-                navbar.style.backdropFilter = 'blur(20px)';
+                navbar.classList.add('navbar-scrolled');
             } else {
-                navbar.classList.remove('shadow-large');
-                navbar.style.backdropFilter = 'blur(10px)';
+                navbar.classList.remove('navbar-scrolled');
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-up');
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            animatedElements.forEach(el => observer.observe(el));
+        });
+
+        // Keyboard navigation improvements
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const mobileMenu = document.getElementById('mobile-menu');
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.className = 'fas fa-bars text-xl';
+                    mobileMenuButton.setAttribute('aria-expanded', 'false');
+                }
             }
         });
     </script>

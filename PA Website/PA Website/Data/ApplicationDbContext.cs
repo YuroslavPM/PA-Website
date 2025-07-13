@@ -12,5 +12,26 @@ namespace PA_Website.Data
         public DbSet<Article> Articles { get; set; }
         public DbSet<PA_Website.Models.Service> Service { get; set; } = default!;
         public DbSet<UserService> userServices { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<UserPromotion> UserPromotions { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Promotion decimals
+            modelBuilder.Entity<Promotion>()
+                .Property(p => p.DiscountPercentage)
+                .HasPrecision(5, 2); // e.g. 99.99%
+
+            modelBuilder.Entity<Promotion>()
+                .Property(p => p.FixedDiscount)
+                .HasPrecision(18, 2); // e.g. 99999999.99
+
+            // Service price
+            modelBuilder.Entity<Service>()
+                .Property(s => s.Price)
+                .HasPrecision(18, 2);
+        }
     }
 }

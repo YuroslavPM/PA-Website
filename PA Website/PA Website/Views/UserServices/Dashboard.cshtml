@@ -21,15 +21,15 @@
         .dashboard-container {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: calc(100vh - 80px);
-            padding: 2rem 0;
+            padding: 1.5rem 0;
         }
 
         .dashboard-header {
             background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
-            border-radius: 20px;
-            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
             position: relative;
             overflow: hidden;
         }
@@ -40,59 +40,49 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 6px;
+            height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
         }
 
         .dashboard-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .dashboard-title::after {
-            content: '';
-            position: absolute;
-            bottom: -12px;
-            left: 0;
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(90deg, #4c1d95, #7c3aed);
-            border-radius: 2px;
+            margin-bottom: 0.5rem;
         }
 
         .dashboard-subtitle {
             color: #64748b;
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            margin-bottom: 0;
         }
 
         .tab-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .tab-navigation {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             border-bottom: 1px solid rgba(124, 58, 237, 0.1);
             display: flex;
+            flex-wrap: wrap;
         }
 
         .tab-button {
             flex: 1;
-            padding: 1.5rem 2rem;
+            min-width: 120px;
+            padding: 1rem 1.5rem;
             background: none;
             border: none;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #64748b;
             cursor: pointer;
@@ -121,7 +111,7 @@
         }
 
         .tab-content {
-            padding: 2rem;
+            padding: 1.5rem;
             display: none;
         }
 
@@ -132,7 +122,7 @@
         .profile-section {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            gap: 2rem;
+            gap: 1.5rem;
         }
 
         .profile-avatar {
@@ -140,23 +130,23 @@
         }
 
         .avatar-circle {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
+            margin: 0 auto 0.75rem;
             color: white;
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
         }
 
         .profile-info {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 12px;
+            padding: 1.5rem;
             border: 1px solid rgba(124, 58, 237, 0.05);
         }
 
@@ -164,7 +154,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
+            padding: 0.75rem 0;
             border-bottom: 1px solid rgba(124, 58, 237, 0.1);
         }
 
@@ -175,7 +165,7 @@
         .info-label {
             font-weight: 600;
             color: #4c1d95;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -187,26 +177,26 @@
 
         .reservation-card {
             background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
             border: 1px solid rgba(124, 58, 237, 0.1);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .reservation-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.1);
         }
 
         .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
         }
 
         .status-pending {
@@ -233,18 +223,18 @@
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            box-shadow: 0 2px 4px -1px rgba(124, 58, 237, 0.2);
         }
 
         .btn-primary:hover {
             background: linear-gradient(135deg, #7c3aed, #4c1d95);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px -3px rgba(124, 58, 237, 0.4);
             color: white;
         }
 
@@ -252,27 +242,27 @@
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.2);
+            box-shadow: 0 2px 4px -1px rgba(251, 191, 36, 0.2);
         }
 
         .btn-secondary:hover {
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px -3px rgba(251, 191, 36, 0.4);
             color: white;
         }
 
         .btn-outline {
             border: 2px solid #4c1d95;
             color: #4c1d95;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
@@ -281,12 +271,12 @@
         .btn-outline:hover {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px -3px rgba(124, 58, 237, 0.4);
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .form-label {
@@ -294,17 +284,17 @@
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: #4c1d95;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -328,17 +318,17 @@
         .modal-content {
             background-color: white;
             margin: 5% auto;
-            padding: 2rem;
-            border-radius: 20px;
+            padding: 1.5rem;
+            border-radius: 16px;
             width: 90%;
-            max-width: 500px;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.3);
         }
 
         .close {
             color: #aaa;
             float: right;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -349,21 +339,22 @@
 
         .schedule-section {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-top: 2rem;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
             border: 1px solid rgba(124, 58, 237, 0.05);
         }
 
         .time-slot {
             display: inline-block;
-            padding: 8px 16px;
-            margin: 4px;
+            padding: 6px 12px;
+            margin: 3px;
             background: white;
             border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.85rem;
         }
 
         .time-slot:hover {
@@ -383,6 +374,66 @@
             cursor: not-allowed;
         }
 
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4c1d95;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .compact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .compact-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .compact-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .compact-card h4 {
+            color: #4c1d95;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
         @@media (max-width: 768px) {
             .profile-section {
                 grid-template-columns: 1fr;
@@ -395,42 +446,221 @@
             .tab-button {
                 text-align: center;
             }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .compact-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 }
 
 <div class="dashboard-container">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="dashboard-header">
             <h1 class="dashboard-title">Потребителски Панел</h1>
             <p class="dashboard-subtitle">Добре дошли, @user.FName @user.LName!</p>
         </div>
 
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-number">@(recentReservations?.Count ?? 0)</div>
+                <div class="stat-label">Активни резервации</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@(availableServices?.Count ?? 0)</div>
+                <div class="stat-label">Налични услуги</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@(recentReservations?.Where(r => r.Status == "Confirmed").Count() ?? 0)</div>
+                <div class="stat-label">Потвърдени</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@(recentReservations?.Where(r => r.Status == "Pending").Count() ?? 0)</div>
+                <div class="stat-label">Чакащи</div>
+            </div>
+        </div>
+
         <div class="tab-container">
             <div class="tab-navigation">
-                <button class="tab-button active" onclick="showTab('profile')">
-                    <i class="fas fa-user mr-2"></i> Профил
+                <button class="tab-button active" onclick="showTab('overview')">
+                    <i class="fas fa-home mr-2"></i> Преглед
                 </button>
                 <button class="tab-button" onclick="showTab('reservations')">
                     <i class="fas fa-calendar-check mr-2"></i> Резервации
                 </button>
-                <button class="tab-button" onclick="showTab('schedule')">
-                    <i class="fas fa-clock mr-2"></i> Запазване на час
+                <button class="tab-button" onclick="showTab('profile')">
+                    <i class="fas fa-user mr-2"></i> Профил
                 </button>
             </div>
 
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="compact-grid">
+                    <div class="compact-card">
+                        <h4><i class="fas fa-user-circle mr-2"></i> Профилна информация</h4>
+                        <div class="info-item">
+                            <span class="info-label">Име</span>
+                            <span class="info-value">@user.FName @user.LName</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Имейл</span>
+                            <span class="info-value">@user.Email</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Телефон</span>
+                            <span class="info-value">@(user.PhoneNumber ?? "Не е посочен")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Зодия</span>
+                            <span class="info-value">@(user.Zodiacal_Sign ?? "Не е посочена")</span>
+                        </div>
+                    </div>
+
+                    <div class="compact-card">
+                        <h4><i class="fas fa-calendar-alt mr-2"></i> Последни резервации</h4>
+                        @if (recentReservations != null && recentReservations.Any())
+                        {
+                            @foreach (var reservation in recentReservations.Take(3))
+                            {
+                                <div class="reservation-card">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <h5 class="text-sm font-bold text-gray-800">@reservation.Service.NameService</h5>
+                                            <p class="text-xs text-gray-600">@reservation.ReservationDate.ToString("dd.MM.yyyy")</p>
+                                        </div>
+                                        <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
+                                                              reservation.Status == "Confirmed" ? "status-confirmed" : 
+                                                              reservation.Status == "Completed" ? "status-completed" : "status-cancelled")">
+                                            @(reservation.Status == "Pending" ? "Чакаща" : 
+                                              reservation.Status == "Confirmed" ? "Потвърдена" : 
+                                              reservation.Status == "Completed" ? "Завършена" : "Отменена")
+                                        </span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <a href="@Url.Action("Details", "UserServices", new { id = reservation.Id })" class="btn-primary">
+                                            <i class="fas fa-eye mr-1"></i> Детайли
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            <div class="text-center mt-3">
+                                <a href="@Url.Action("Index", "UserServices")" class="btn-outline">
+                                    <i class="fas fa-list mr-1"></i> Всички резервации
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-gray-600 text-sm">Няма резервации</p>
+                            <a href="@Url.Action("Index", "Services")" class="btn-primary mt-2">
+                                <i class="fas fa-magic mr-1"></i> Разгледай услуги
+                            </a>
+                        }
+                    </div>
+
+                    <div class="compact-card">
+                        <h4><i class="fas fa-info-circle mr-2"></i> Информация</h4>
+                        <p class="text-sm text-gray-600 mb-3">За да запазите час за консултация, моля посетете страницата с услугите.</p>
+                        <a href="@Url.Action("Index", "Services")" class="btn-primary w-full">
+                            <i class="fas fa-magic mr-1"></i> Разгледай услуги
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservations Tab -->
+            <div id="reservations" class="tab-content">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Моите Резервации</h3>
+                @if (recentReservations != null && recentReservations.Any())
+                {
+                    @foreach (var reservation in recentReservations)
+                    {
+                        <div class="reservation-card">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="text-base font-bold text-gray-800">@reservation.Service.NameService</h4>
+                                    <p class="text-sm text-gray-600">@reservation.Service.CategoryOfService</p>
+                                </div>
+                                <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
+                                                          reservation.Status == "Confirmed" ? "status-confirmed" : 
+                                                          reservation.Status == "Completed" ? "status-completed" : "status-cancelled")">
+                                    @(reservation.Status == "Pending" ? "Чакаща" : 
+                                      reservation.Status == "Confirmed" ? "Потвърдена" : 
+                                      reservation.Status == "Completed" ? "Завършена" : "Отменена")
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
+                                <div>
+                                    <span class="font-semibold text-gray-600">Дата:</span>
+                                    <span class="text-gray-800">@reservation.ReservationDate.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                @if (reservation.ReservationTime.HasValue)
+                                {
+                                    <div>
+                                        <span class="font-semibold text-gray-600">Час:</span>
+                                        <span class="text-gray-800">@reservation.ReservationTime.Value.ToString(@"hh\:mm")</span>
+                                    </div>
+                                }
+                                <div>
+                                    <span class="font-semibold text-gray-600">Цена:</span>
+                                    <span class="text-gray-800">@reservation.Service.Price.ToString("0.00") лв.</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="@Url.Action("Details", "UserServices", new { id = reservation.Id })" class="btn-primary">
+                                    <i class="fas fa-eye mr-1"></i> Детайли
+                                </a>
+                                @if (reservation.Status == "Pending" || reservation.Status == "Confirmed")
+                                {
+                                    <button onclick="openRescheduleModal(@reservation.Id, @reservation.ServiceId)" class="btn-secondary">
+                                        <i class="fas fa-edit mr-1"></i> Пренасрочи
+                                    </button>
+                                    <form method="post" action="@Url.Action("CancelReservation", "UserServices")" style="display: inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@reservation.Id" />
+                                        <button type="submit" class="btn-outline" onclick="return confirm('Сигурни ли сте, че искате да отмените тази резервация?')">
+                                            <i class="fas fa-times mr-1"></i> Отмени
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-times text-2xl text-purple-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Няма резервации</h3>
+                        <p class="text-gray-600 mb-4">Все още нямате резервации. Запазете час за консултация.</p>
+                        <a href="@Url.Action("Index", "Services")" class="btn-primary">
+                            <i class="fas fa-magic mr-1"></i> Разгледай услуги
+                        </a>
+                    </div>
+                }
+            </div>
+
+
+
             <!-- Profile Tab -->
-            <div id="profile" class="tab-content active">
+            <div id="profile" class="tab-content">
                 <div class="profile-section">
                     <div class="profile-avatar">
                         <div class="avatar-circle">
                             @user.FName[0]@user.LName[0]
                         </div>
-                        <h3 class="text-xl font-bold text-gray-800">@user.FName @user.LName</h3>
-                        <p class="text-gray-600">@user.Email</p>
+                        <h3 class="text-lg font-bold text-gray-800">@user.FName @user.LName</h3>
+                        <p class="text-sm text-gray-600">@user.Email</p>
                     </div>
                     <div class="profile-info">
-                        <h4 class="text-lg font-bold text-gray-800 mb-4">Информация за профила</h4>
+                        <h4 class="text-base font-bold text-gray-800 mb-3">Информация за профила</h4>
                         <div class="info-item">
                             <span class="info-label">Име</span>
                             <span class="info-value">@user.FName</span>
@@ -455,135 +685,12 @@
                             <span class="info-label">Дата на раждане</span>
                             <span class="info-value">@user.Birth_Date.ToString("dd.MM.yyyy")</span>
                         </div>
+                        <div class="text-center mt-4">
+                            <a href="@Url.Action("Profile", "UserServices")" class="btn-primary">
+                                <i class="fas fa-edit mr-1"></i> Редактирай профил
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Reservations Tab -->
-            <div id="reservations" class="tab-content">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Моите Резервации</h3>
-                @if (recentReservations != null && recentReservations.Any())
-                {
-                    @foreach (var reservation in recentReservations)
-                    {
-                        <div class="reservation-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 class="text-lg font-bold text-gray-800">@reservation.Service.NameService</h4>
-                                    <p class="text-gray-600">@reservation.Service.CategoryOfService</p>
-                                </div>
-                                <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
-                                                          reservation.Status == "Confirmed" ? "status-confirmed" : 
-                                                          reservation.Status == "Completed" ? "status-completed" : "status-cancelled")">
-                                    @(reservation.Status == "Pending" ? "Чакаща" : 
-                                      reservation.Status == "Confirmed" ? "Потвърдена" : 
-                                      reservation.Status == "Completed" ? "Завършена" : "Отменена")
-                                </span>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <span class="text-sm font-semibold text-gray-600">Дата:</span>
-                                    <span class="text-gray-800">@reservation.ReservationDate.ToString("dd.MM.yyyy")</span>
-                                </div>
-                                @if (reservation.ReservationTime.HasValue)
-                                {
-                                    <div>
-                                        <span class="text-sm font-semibold text-gray-600">Час:</span>
-                                        <span class="text-gray-800">@reservation.ReservationTime.Value.ToString(@"hh\:mm")</span>
-                                    </div>
-                                }
-                                <div>
-                                    <span class="text-sm font-semibold text-gray-600">Цена:</span>
-                                    <span class="text-gray-800">@reservation.Service.Price.ToString("0.00") лв. / @ConvertToEur(reservation.Service.Price).ToString("0.00") €</span>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap gap-2">
-                                <a href="@Url.Action("Details", "UserServices", new { id = reservation.Id })" class="btn-primary">
-                                    <i class="fas fa-eye mr-2"></i> Детайли
-                                </a>
-                                @if (reservation.Status == "Pending" || reservation.Status == "Confirmed")
-                                {
-                                    <button onclick="openRescheduleModal(@reservation.Id, @reservation.ServiceId)" class="btn-secondary">
-                                        <i class="fas fa-edit mr-2"></i> Пренасрочи
-                                    </button>
-                                    <form method="post" action="@Url.Action("CancelReservation", "UserServices")" style="display: inline;">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@reservation.Id" />
-                                        <button type="submit" class="btn-outline" onclick="return confirm('Сигурни ли сте, че искате да отмените тази резервация?')">
-                                            <i class="fas fa-times mr-2"></i> Отмени
-                                        </button>
-                                    </form>
-                                }
-                            </div>
-                        </div>
-                    }
-                    <div class="text-center mt-6">
-                        <a href="@Url.Action("Index", "UserServices")" class="btn-primary">
-                            <i class="fas fa-list mr-2"></i> Всички резервации
-                        </a>
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center py-12">
-                        <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-calendar-times text-3xl text-purple-500"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Няма резервации</h3>
-                        <p class="text-gray-600 mb-6">Все още нямате резервации. Запазете час за консултация.</p>
-                        <a href="@Url.Action("Index", "Services")" class="btn-primary">
-                            <i class="fas fa-magic mr-2"></i> Разгледай услуги
-                        </a>
-                    </div>
-                }
-            </div>
-
-            <!-- Schedule Tab -->
-            <div id="schedule" class="tab-content">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Запазване на час</h3>
-                <div class="schedule-section">
-                    <form id="scheduleForm" method="post" action="@Url.Action("CreateReservation", "Services")">
-                        <input type="hidden" name="ServiceId" id="serviceIdInput" />
-                        <input type="hidden" name="reservationDate" id="reservationDateInput" />
-                        <input type="hidden" name="reservationTime" id="reservationTimeInput" />
-                        <input type="hidden" name="astrologicalDate" value="" />
-                        <input type="hidden" name="birthCity" value="" />
-                        @Html.AntiForgeryToken()
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="form-group">
-                                <label class="form-label">Услуга</label>
-                                <select id="serviceSelect" class="form-control" required>
-                                    <option value="">Изберете услуга</option>
-                                    @if (availableServices != null)
-                                    {
-                                        @foreach (var service in availableServices)
-                                        {
-                                            <option value="@service.Id" data-price="@service.Price">@service.NameService - @service.Price.ToString("0.00") лв.</option>
-                                        }
-                                    }
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Дата</label>
-                                <input type="date" id="reservationDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Час</label>
-                                <select id="reservationTime" class="form-control" required>
-                                    <option value="">Изберете час</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Цена</label>
-                                <div id="priceDisplay" class="text-lg font-bold text-purple-600">-</div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-6">
-                            <button type="submit" class="btn-primary px-8 py-3">
-                                <i class="fas fa-calendar-plus mr-2"></i> Запази час
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -594,27 +701,27 @@
 <div id="rescheduleModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeRescheduleModal()">&times;</span>
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Пренасрочване на резервация</h3>
-                            <form id="rescheduleForm" method="post" action="@Url.Action("RescheduleReservation", "UserServices")">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" id="reservationId" name="id" />
-                        <input type="hidden" id="rescheduleServiceId" name="serviceId" />
-                        <div class="form-group">
-                            <label class="form-label">Нова дата</label>
-                            <input type="date" id="newDate" name="newDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Нов час</label>
-                            <select id="newTime" name="newTime" class="form-control" required>
-                                <option value="">Изберете час</option>
-                            </select>
-                        </div>
-            <div class="flex gap-4 mt-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Пренасрочване на резервация</h3>
+        <form id="rescheduleForm" method="post" action="@Url.Action("RescheduleReservation", "UserServices")">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="reservationId" name="id" />
+            <input type="hidden" id="rescheduleServiceId" name="serviceId" />
+            <div class="form-group">
+                <label class="form-label">Нова дата</label>
+                <input type="date" id="newDate" name="newDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Нов час</label>
+                <select id="newTime" name="newTime" class="form-control" required>
+                    <option value="">Изберете час</option>
+                </select>
+            </div>
+            <div class="flex gap-3 mt-4">
                 <button type="submit" class="btn-primary flex-1">
-                    <i class="fas fa-save mr-2"></i> Пренасрочи
+                    <i class="fas fa-save mr-1"></i> Пренасрочи
                 </button>
                 <button type="button" onclick="closeRescheduleModal()" class="btn-outline flex-1">
-                    <i class="fas fa-times mr-2"></i> Отказ
+                    <i class="fas fa-times mr-1"></i> Отказ
                 </button>
             </div>
         </form>
@@ -663,75 +770,6 @@
                 modal.style.display = 'none';
             }
         }
-
-        // Handle service selection for scheduling
-        document.getElementById('serviceSelect').addEventListener('change', function() {
-            var selectedOption = this.options[this.selectedIndex];
-            var price = selectedOption.getAttribute('data-price');
-            var priceDisplay = document.getElementById('priceDisplay');
-            
-            if (price) {
-                var priceEur = (parseFloat(price) / 1.95583).toFixed(2);
-                priceDisplay.textContent = price + ' лв. / ' + priceEur + ' €';
-                document.getElementById('serviceIdInput').value = this.value;
-            } else {
-                priceDisplay.textContent = '-';
-                document.getElementById('serviceIdInput').value = '';
-            }
-        });
-
-        // Handle form submission
-        document.getElementById('scheduleForm').addEventListener('submit', function(e) {
-            var serviceId = document.getElementById('serviceSelect').value;
-            var reservationDate = document.getElementById('reservationDate').value;
-            var reservationTime = document.getElementById('reservationTime').value;
-            
-            if (!serviceId || !reservationDate || !reservationTime) {
-                e.preventDefault();
-                alert('Моля, попълнете всички полета.');
-                return;
-            }
-            
-            // Set hidden form values
-            document.getElementById('serviceIdInput').value = serviceId;
-            document.getElementById('reservationDateInput').value = reservationDate;
-            document.getElementById('reservationTimeInput').value = reservationTime;
-        });
-
-        // Handle date selection for available times
-        document.getElementById('reservationDate').addEventListener('change', function() {
-            var serviceId = document.getElementById('serviceSelect').value;
-            var date = this.value;
-            
-            if (serviceId && date) {
-                fetch(`/UserServices/GetAvailableTimes?serviceId=${serviceId}&date=${date}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        var timeSelect = document.getElementById('reservationTime');
-                        timeSelect.innerHTML = '<option value="">Изберете час</option>';
-                        
-                        if (data.success && data.availableTimes.length > 0) {
-                            data.availableTimes.forEach(time => {
-                                var option = document.createElement('option');
-                                option.value = time;
-                                option.textContent = time;
-                                timeSelect.appendChild(option);
-                            });
-                        } else {
-                            var option = document.createElement('option');
-                            option.value = "";
-                            option.textContent = "Няма свободни часове";
-                            option.disabled = true;
-                            timeSelect.appendChild(option);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        var timeSelect = document.getElementById('reservationTime');
-                        timeSelect.innerHTML = '<option value="">Грешка при зареждане</option>';
-                    });
-            }
-        });
 
         // Handle new date selection for rescheduling
         document.getElementById('newDate').addEventListener('change', function() {

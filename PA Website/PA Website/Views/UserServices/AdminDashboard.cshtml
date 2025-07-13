@@ -429,11 +429,17 @@
                         <i class="fas fa-users mr-2"></i> Масови
                     </a>
                 </div>
-                <div class="mt-2">
-                    <a href="@Url.Action("EmailDiagnostics", "UserServices")" class="btn-admin w-full mt-2">
-                        <i class="fas fa-stethoscope mr-2"></i> Email Diagnostics
-                    </a>
+            </div>
+
+            <div class="admin-action-card">
+                <div class="admin-action-icon">
+                    <i class="fas fa-gift"></i>
                 </div>
+                <h3 class="admin-action-title">Управление на промоции</h3>
+                <p class="admin-action-description">Създавайте и управлявайте специални оферти за клиентите</p>
+                <a href="@Url.Action("Index", "Promotions")" class="btn-admin">
+                    <i class="fas fa-arrow-right mr-2"></i> Управлявай промоции
+                </a>
             </div>
         </div>
 

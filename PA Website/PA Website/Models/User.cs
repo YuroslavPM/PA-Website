@@ -13,9 +13,7 @@ namespace PA_Website.Models
         [StringLength(50)]
         public string LName { get; set; }
 
-        [Required]
-        [StringLength(30)]
-        public string Password { get; set; }
+
         public string Zodiacal_Sign { get; set; }
         [Required]
         public DateTime Birth_Date { get; set; }

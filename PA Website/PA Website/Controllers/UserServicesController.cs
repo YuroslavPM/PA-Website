@@ -34,7 +34,7 @@ namespace PA_Website.Controllers
         }
 
         // GET: UserServices
-        public async Task<IActionResult> Index(string sortOrder, string categoryFilter, string statusFilter, int pageNumber = 1, int pageSize = 12)
+        public async Task<IActionResult> Index(string sortOrder, string categoryFilter, string statusFilter, DateTime? startDate, DateTime? endDate, int pageNumber = 1, int pageSize = 12)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -54,11 +54,24 @@ namespace PA_Website.Controllers
                 reservations = reservations.Where(r => r.Service.CategoryOfService.ToLower() == categoryFilter.ToLower());
             }
 
+            // Приложете филтър за дата
+            if (startDate.HasValue)
+            {
+                reservations = reservations.Where(r => r.ReservationDate >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                reservations = reservations.Where(r => r.ReservationDate <= endDate.Value);
+            }
+
             // Приложете сортиране
             reservations = sortOrder switch
             {
                 "date_desc" => reservations.OrderByDescending(r => r.ReservationDate),
                 "date_asc" => reservations.OrderBy(r => r.ReservationDate),
+                "service" => reservations.OrderBy(r => r.Service.NameService),
+                "status" => reservations.OrderBy(r => r.Status),
                 _ => reservations.OrderByDescending(r => r.ReservationDate)
             };
 
@@ -101,6 +114,8 @@ namespace PA_Website.Controllers
             ViewData["SortOrder"] = sortOrder;
             ViewData["CategoryFilter"] = categoryFilter;
             ViewData["StatusFilter"] = statusFilter;
+            ViewData["StartDate"] = startDate?.ToString("yyyy-MM-dd");
+            ViewData["EndDate"] = endDate?.ToString("yyyy-MM-dd");
 
             return View(pagedReservations);
         }
@@ -764,13 +779,17 @@ namespace PA_Website.Controllers
         // POST: UserServices/UpdateProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateProfile([Bind("Id,FName,LName,Email,PhoneNumber,Zodiacal_Sign,Birth_Date")] User user)
+        public async Task<IActionResult> UpdateProfile([Bind("Id,FName,LName,Email,PhoneNumber,Birth_Date")] User user)
         {
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
             {
                 return Challenge();
             }
+
+            // Clear validation errors for fields we're not updating
+            ModelState.Remove("Password");
+            ModelState.Remove("Zodiacal_Sign");
 
             if (ModelState.IsValid)
             {
@@ -780,19 +799,85 @@ namespace PA_Website.Controllers
                     currentUser.LName = user.LName;
                     currentUser.Email = user.Email;
                     currentUser.PhoneNumber = user.PhoneNumber;
-                    currentUser.Zodiacal_Sign = user.Zodiacal_Sign;
                     currentUser.Birth_Date = user.Birth_Date;
+                    
+                    // Automatically recalculate zodiac sign based on birth date
+                    currentUser.Zodiacal_Sign = CalculateZodiacSign(user.Birth_Date);
 
-                    await _userManager.UpdateAsync(currentUser);
-                    TempData["SuccessMessage"] = "Профилът е обновен успешно!";
+                    var result = await _userManager.UpdateAsync(currentUser);
+                    
+                    if (result.Succeeded)
+                    {
+                        TempData["SuccessMessage"] = "Профилът е обновен успешно!";
+                        return RedirectToAction(nameof(Dashboard));
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Грешка при обновяване на профила: " + string.Join(", ", result.Errors.Select(e => e.Description));
+                    }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    TempData["ErrorMessage"] = "Грешка при обновяване на профила.";
+                    TempData["ErrorMessage"] = "Грешка при обновяване на профила: " + ex.Message;
                 }
+            }
+            else
+            {
+                // Log validation errors for debugging
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                TempData["ErrorMessage"] = "Грешка при валидация: " + string.Join(", ", errors);
             }
 
             return RedirectToAction(nameof(Profile));
+        }
+
+        // Utility method to calculate zodiac sign based on birth date
+        private string CalculateZodiacSign(DateTime birthDate)
+        {
+            string zodiac;
+            switch (birthDate.Month)
+            {
+                case 1:
+                    zodiac = birthDate.Day <= 19 ? "Козирог" : "Водолей";
+                    break;
+                case 2:
+                    zodiac = birthDate.Day <= 18 ? "Водолей" : "Риби";
+                    break;
+                case 3:
+                    zodiac = birthDate.Day <= 20 ? "Риби" : "Овен";
+                    break;
+                case 4:
+                    zodiac = birthDate.Day <= 19 ? "Овен" : "Телец";
+                    break;
+                case 5:
+                    zodiac = birthDate.Day <= 20 ? "Телец" : "Близнаци";
+                    break;
+                case 6:
+                    zodiac = birthDate.Day <= 20 ? "Близнаци" : "Рак";
+                    break;
+                case 7:
+                    zodiac = birthDate.Day <= 22 ? "Рак" : "Лъв";
+                    break;
+                case 8:
+                    zodiac = birthDate.Day <= 22 ? "Лъв" : "Дева";
+                    break;
+                case 9:
+                    zodiac = birthDate.Day <= 22 ? "Дева" : "Везни";
+                    break;
+                case 10:
+                    zodiac = birthDate.Day <= 22 ? "Везни" : "Скорпион";
+                    break;
+                case 11:
+                    zodiac = birthDate.Day <= 21 ? "Скорпион" : "Стрелец";
+                    break;
+                case 12:
+                    zodiac = birthDate.Day <= 21 ? "Стрелец" : "Козирог";
+                    break;
+                default:
+                    zodiac = "Неизвестна зодия";
+                    break;
+            }
+            return zodiac;
         }
 
         // POST: UserServices/CancelReservation
@@ -1692,58 +1777,6 @@ namespace PA_Website.Controllers
                 </div>";
         }
 
-        // GET: UserServices/EmailDiagnostics
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> EmailDiagnostics()
-        {
-            var diagnostics = new Dictionary<string, object>();
-            
-            try
-            {
-                // Check configuration
-                diagnostics["SmtpServer"] = _configuration["EmailSettings:SmtpServer"] ?? "Not configured";
-                diagnostics["SmtpPort"] = _configuration["EmailSettings:SmtpPort"] ?? "Not configured";
-                diagnostics["FromEmail"] = _configuration["EmailSettings:FromEmail"] ?? "Not configured";
-                diagnostics["FromName"] = _configuration["EmailSettings:FromName"] ?? "Not configured";
-                diagnostics["EnableSsl"] = _configuration["EmailSettings:EnableSsl"] ?? "Not configured";
-                diagnostics["AdminEmail"] = _configuration["EmailSettings:AdminEmail"] ?? "Not configured";
-                
-                // Check if password is configured (don't show the actual password)
-                var password = _configuration["EmailSettings:Password"];
-                diagnostics["PasswordConfigured"] = !string.IsNullOrEmpty(password) && password != "your_abv_password_here";
-                
-                // Test SMTP connection
-                try
-                {
-                    using var client = new System.Net.Mail.SmtpClient(
-                        _configuration["EmailSettings:SmtpServer"],
-                        int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587")
-                    );
-                    client.EnableSsl = bool.Parse(_configuration["EmailSettings:EnableSsl"] ?? "true");
-                    client.UseDefaultCredentials = false;
-                    client.Credentials = new System.Net.NetworkCredential(
-                        _configuration["EmailSettings:FromEmail"],
-                        _configuration["EmailSettings:Password"]
-                    );
-                    client.Timeout = 5000; // 5 seconds timeout for diagnostics
-                    
-                    diagnostics["SmtpConnectionTest"] = "Success";
-                }
-                catch (Exception ex)
-                {
-                    diagnostics["SmtpConnectionTest"] = $"Failed: {ex.Message}";
-                }
-                
-                ViewBag.Diagnostics = diagnostics;
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during email diagnostics");
-                diagnostics["Error"] = ex.Message;
-                ViewBag.Diagnostics = diagnostics;
-                return View();
-            }
-        }
+
     }
 }

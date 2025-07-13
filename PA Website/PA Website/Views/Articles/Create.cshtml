@@ -260,6 +260,17 @@
                         </div>
 
                     <div class="form-group">
+                        <label asp-for="Category" class="form-label">Категория</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                            <select asp-for="Category" class="form-control" asp-items="ViewBag.Categories">
+                                <option value="">Изберете категория</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
                             <label asp-for="Description" class="form-label">Съдържание</label>
                         <textarea asp-for="Description" id="editor" class="form-control"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>

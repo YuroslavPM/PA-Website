@@ -18,17 +18,59 @@ namespace PA_Website.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender;
+        private readonly UserManager<User> _userManager;
 
-        public ServicesController(ApplicationDbContext context, IEmailSender emailSender)
+        public ServicesController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
             _context = context;
             _emailSender = emailSender;
+            _userManager = userManager;
         }
 
         // GET: Services
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Service.ToListAsync());
+            var services = await _context.Service.ToListAsync();
+
+            // Default: no promo
+            Promotion? firstBookingPromo = null;
+            bool isEligibleForFirstBookingPromo = false;
+
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    // Check if user has any reservations
+                    bool hasReservations = await _context.userServices.AnyAsync(us => us.UserId == user.Id);
+                    
+                    // Check for active first reservation promotion
+                    firstBookingPromo = await _context.Promotions
+                        .Where(p => p.IsActive && p.PromotionType == "FirstBooking" && p.StartDate <= DateTime.Now && p.EndDate >= DateTime.Now)
+                        .OrderByDescending(p => p.CreatedAt)
+                        .FirstOrDefaultAsync();
+                    
+                    isEligibleForFirstBookingPromo = !hasReservations && firstBookingPromo != null;
+                    
+                    // Debug information
+                    ViewBag.DebugInfo = new
+                    {
+                        UserId = user.Id,
+                        HasReservations = hasReservations,
+                        FoundPromotion = firstBookingPromo != null,
+                        PromotionId = firstBookingPromo?.Id,
+                        PromotionType = firstBookingPromo?.PromotionType,
+                        IsActive = firstBookingPromo?.IsActive,
+                        StartDate = firstBookingPromo?.StartDate,
+                        EndDate = firstBookingPromo?.EndDate,
+                        IsEligible = isEligibleForFirstBookingPromo
+                    };
+                }
+            }
+
+            ViewBag.FirstBookingPromo = firstBookingPromo;
+            ViewBag.IsEligibleForFirstBookingPromo = isEligibleForFirstBookingPromo;
+            return View(services);
         }
 
         // GET: Services/Details/5
@@ -166,13 +208,16 @@ namespace PA_Website.Controllers
             }
             else
             {
-                var lastReservationUser = await _context.userServices.
-                    Where(u => u.UserId == user.Id).OrderByDescending(u=> u.ReservationDate)
+                // Get the last active reservation (not cancelled) for this user
+                var lastActiveReservation = await _context.userServices
+                    .Where(u => u.UserId == user.Id && u.Status != "Cancelled")
+                    .OrderByDescending(u => u.ReservationDate)
                     .FirstOrDefaultAsync();
+                
                 //The client cant reserve more than one consultation in a week
-                if (lastReservationUser != null)
+                if (lastActiveReservation != null)
                 {
-                    DateTime lastReservationDate = lastReservationUser.ReservationDate;
+                    DateTime lastReservationDate = lastActiveReservation.ReservationDate;
 
                     if (reservationDateTime <= lastReservationDate)
                     {
@@ -189,7 +234,6 @@ namespace PA_Website.Controllers
                         TempData["ErrorMessage"] = "Не можете да резервирате две консултации в една и съща седмица. Моля, изберете дата за следващата седмица.";
                         return RedirectToAction("Details", new { id = ServiceId });
                     }
-
                 }
 
                 TimeSpan selectedTime = TimeSpan.Parse(reservationTime);
@@ -285,9 +329,12 @@ namespace PA_Website.Controllers
                     return Json(new { success = false, message = "Невалиден ден." });
             }
 
-            // Взимаме вече резервираните часове
+            // Взимаме вече резервираните часове (исключваме отменените)
             var reservedTimes = await _context.userServices
-                .Where(r => r.ServiceId == serviceId && r.ReservationTime.HasValue && r.ReservationDate.Date == date.Date)
+                .Where(r => r.ServiceId == serviceId && 
+                           r.ReservationTime.HasValue && 
+                           r.ReservationDate.Date == date.Date &&
+                           r.Status != "Cancelled")
                 .Select(r => r.ReservationTime!.Value)
                 .ToListAsync();
 

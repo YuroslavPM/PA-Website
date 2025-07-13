@@ -1,0 +1,392 @@
+@model IEnumerable<PA_Website.Models.Promotion>
+
+@{
+    ViewData["Title"] = "Управление на промоции";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .promotions-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .promotions-header {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .promotions-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .promotions-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .promotions-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .promotions-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .promotion-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid;
+            margin-bottom: 1rem;
+        }
+
+        .promotion-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        .promotion-card.active {
+            border-left-color: #10b981;
+        }
+
+        .promotion-card.inactive {
+            border-left-color: #6b7280;
+        }
+
+        .promotion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .promotion-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .promotion-type {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .promotion-description {
+            color: #64748b;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .promotion-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .promotion-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .promotion-detail i {
+            color: #4c1d95;
+            width: 16px;
+        }
+
+        .promotion-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-promotion {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #4c1d95;
+            border: 2px solid #4c1d95;
+        }
+
+        .btn-outline:hover {
+            background: #4c1d95;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-inactive {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: #4c1d95;
+        }
+
+        @@media (max-width: 768px) {
+            .promotion-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .promotion-actions {
+                flex-direction: column;
+            }
+
+            .btn-promotion {
+                text-align: center;
+            }
+        }
+    </style>
+}
+
+<div class="promotions-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="promotions-header">
+            <h1 class="promotions-title">Управление на промоции</h1>
+            <p class="promotions-subtitle">Създавайте и управлявайте специални оферти за вашите клиенти</p>
+            <a href="@Url.Action("Create", "Promotions")" class="btn-promotion btn-primary">
+                <i class="fas fa-plus mr-2"></i> Създай нова промоция
+            </a>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <i class="fas fa-check-circle mr-2"></i>
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (Model.Any())
+        {
+            <div class="space-y-4">
+                @foreach (var promotion in Model)
+                {
+                    <div class="promotion-card @(promotion.IsActive ? "active" : "inactive")">
+                        <div class="promotion-header">
+                            <div>
+                                <h3 class="promotion-title">@promotion.Title</h3>
+                                <span class="promotion-type">@GetPromotionTypeText(promotion.PromotionType)</span>
+                            </div>
+                            <span class="status-badge @(promotion.IsActive ? "status-active" : "status-inactive")">
+                                @(promotion.IsActive ? "Активна" : "Неактивна")
+                            </span>
+                        </div>
+
+                        <p class="promotion-description">@promotion.Description</p>
+
+                        <div class="promotion-details">
+                            <div class="promotion-detail">
+                                <i class="fas fa-calendar"></i>
+                                <span>@promotion.StartDate.ToString("dd.MM.yyyy") - @promotion.EndDate.ToString("dd.MM.yyyy")</span>
+                            </div>
+
+                            @if (promotion.DiscountPercentage.HasValue)
+                            {
+                                <div class="promotion-detail">
+                                    <i class="fas fa-percent"></i>
+                                    <span>@promotion.DiscountPercentage% отстъпка</span>
+                                </div>
+                            }
+
+                            @if (promotion.FixedDiscount.HasValue)
+                            {
+                                <div class="promotion-detail">
+                                    <i class="fas fa-coins"></i>
+                                    <span>@promotion.FixedDiscount лв. отстъпка</span>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(promotion.FreeServiceName))
+                            {
+                                <div class="promotion-detail">
+                                    <i class="fas fa-gift"></i>
+                                    <span>@promotion.FreeServiceName</span>
+                                </div>
+                            }
+
+                            <div class="promotion-detail">
+                                <i class="fas fa-users"></i>
+                                <span>@promotion.UsedCount използвания</span>
+                            </div>
+
+                            @if (promotion.MaxUsage.HasValue)
+                            {
+                                <div class="promotion-detail">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Макс: @promotion.MaxUsage</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="promotion-actions">
+                            <a href="@Url.Action("Details", "Promotions", new { id = promotion.Id })" class="btn-promotion btn-outline">
+                                <i class="fas fa-eye mr-2"></i> Детайли
+                            </a>
+                            <a href="@Url.Action("Edit", "Promotions", new { id = promotion.Id })" class="btn-promotion btn-secondary">
+                                <i class="fas fa-edit mr-2"></i> Редактирай
+                            </a>
+                            <form method="post" action="@Url.Action("ToggleActive", "Promotions", new { id = promotion.Id })" style="display: inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-promotion @(promotion.IsActive ? "btn-danger" : "btn-primary")">
+                                    <i class="fas @(promotion.IsActive ? "fa-pause" : "fa-play") mr-2"></i>
+                                    @(promotion.IsActive ? "Деактивирай" : "Активирай")
+                                </button>
+                            </form>
+                            <a href="@Url.Action("Delete", "Promotions", new { id = promotion.Id })" class="btn-promotion btn-danger" 
+                               onclick="return confirm('Сигурни ли сте, че искате да изтриете тази промоция?')">
+                                <i class="fas fa-trash mr-2"></i> Изтрий
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Няма създадени промоции</h3>
+                <p class="text-gray-600 mb-4">Създайте първата промоция, за да започнете да предлагате специални оферти на вашите клиенти.</p>
+                <a href="@Url.Action("Create", "Promotions")" class="btn-promotion btn-primary">
+                    <i class="fas fa-plus mr-2"></i> Създай първата промоция
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    public string GetPromotionTypeText(string promotionType)
+    {
+        return promotionType switch
+        {
+            "FirstBooking" => "Първа резервация",
+            "Discount" => "Отстъпка",
+            "FreeService" => "Безплатна услуга",
+            "Loyalty" => "Лоялност",
+            _ => promotionType
+        };
+    }
+} 

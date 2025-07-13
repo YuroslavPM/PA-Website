@@ -19,7 +19,8 @@
         new { Value = "Pending", Text = "Чакаща" },
         new { Value = "Confirmed", Text = "Потвърдена" },
         new { Value = "Completed", Text = "Завършена" },
-        new { Value = "Cancelled", Text = "Отменена" }
+        new { Value = "Cancelled", Text = "Отменена" },
+        new { Value = "Expired", Text = "Изтекла" }
     };
     var selectedStatus = ViewData["StatusFilter"]?.ToString();
     var sortOrders = new[] {
@@ -394,8 +395,17 @@
 
             <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">Категория</label>
+                    <select name="categoryFilter" class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="">Всички категории</option>
+                        <option value="Психология" @@(ViewData["CategoryFilter"]?.ToString() == "Психология" ? "selected" : "")>Психология</option>
+                        <option value="Астрология" @@(ViewData["CategoryFilter"]?.ToString() == "Астрология" ? "selected" : "")>Астрология</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700">Статус</label>
-                    <select name="status" class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    <select name="statusFilter" class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                         @foreach (var status in statuses)
                         {
                             if (status.Value == selectedStatus)
@@ -439,7 +449,7 @@
                            class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 </div>
 
-                <div class="md:col-span-2 lg:col-span-4 flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <div class="md:col-span-2 lg:col-span-5 flex flex-col sm:flex-row gap-4 justify-center pt-4">
                     <button type="submit" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg">
                         <i class="fas fa-filter mr-3"></i>
                         Филтрирай
