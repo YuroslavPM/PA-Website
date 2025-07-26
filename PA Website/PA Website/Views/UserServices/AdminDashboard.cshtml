@@ -326,6 +326,55 @@
             <p class="admin-dashboard-subtitle">Добре дошли, @user.FName @user.LName! Управлявайте вашия сайт от тук.</p>
         </div>
 
+        <!-- Financial Dashboard -->
+        <div class="mb-8" id="financial-dashboard">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6">
+                <div>
+                    <h2 class="text-xl font-bold mb-2" style="color: #4c1d95;">Финансов преглед</h2>
+                    <div class="text-gray-600">Общ приход от завършени резервации за избрания период</div>
+                </div>
+                <div class="flex gap-4">
+                    <div>
+                        <label for="yearSelect" class="form-label">Година:</label>
+                        <select id="yearSelect" class="form-select"></select>
+                    </div>
+                    <div>
+                        <label for="monthSelect" class="form-label">Месец:</label>
+                        <select id="monthSelect" class="form-select">
+                            <option value="">Всички</option>
+                            <option value="1">Януари</option>
+                            <option value="2">Февруари</option>
+                            <option value="3">Март</option>
+                            <option value="4">Април</option>
+                            <option value="5">Май</option>
+                            <option value="6">Юни</option>
+                            <option value="7">Юли</option>
+                            <option value="8">Август</option>
+                            <option value="9">Септември</option>
+                            <option value="10">Октомври</option>
+                            <option value="11">Ноември</option>
+                            <option value="12">Декември</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1">
+                    <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="text-3xl font-bold" id="totalEarnings" style="color: #10b981;">0.00 лв.</div>
+                            <div id="percentChange" class="text-lg font-semibold"></div>
+                        </div>
+                        <div class="text-gray-500">Общ приход</div>
+                    </div>
+                </div>
+                <div class="flex-1 w-full">
+                    <canvas id="earningsChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- End Financial Dashboard -->
+
         <!-- Statistics -->
         <div class="stats-grid">
             <div class="stat-card total">
@@ -452,7 +501,16 @@
                 {
                     <div class="reservation-item">
                         <div class="reservation-info">
-                            <div class="reservation-user">@reservation.User.FName @reservation.User.LName</div>
+                            <div class="reservation-user">
+                                @if (reservation.User != null)
+                                {
+                                    @reservation.User.FName @reservation.User.LName
+                                }
+                                else
+                                {
+                                    <span class="text-gray-500 italic">Изтрит потребител</span>
+                                }
+                            </div>
                             <div class="reservation-service">@reservation.Service.NameService</div>
                             <div class="reservation-date">
                                 @reservation.ReservationDate.ToString("dd.MM.yyyy")
@@ -494,3 +552,94 @@
         </div>
     </div>
 </div> 
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Helper: get years from 2023 to current
+        function populateYearSelect() {
+            var yearSelect = document.getElementById('yearSelect');
+            var currentYear = new Date().getFullYear();
+            for (var y = currentYear; y >= 2023; y--) {
+                var opt = document.createElement('option');
+                opt.value = y;
+                opt.text = y;
+                yearSelect.appendChild(opt);
+            }
+            yearSelect.value = currentYear;
+        }
+
+        // Chart.js instance
+        var earningsChart;
+
+        function fetchFinancials() {
+            var year = $('#yearSelect').val();
+            var month = $('#monthSelect').val();
+            $.ajax({
+                url: '/UserServices/GetFinancials',
+                type: 'GET',
+                data: { year: year, month: month },
+                success: function (data) {
+                    // Update total earnings
+                    $('#totalEarnings').text(data.totalEarnings.toFixed(2) + ' лв.');
+
+                    // Show percent change
+                    var percent = data.percentChange;
+                    var percentText = '';
+                    if (percent > 0) {
+                        percentText = '<span style="color:#10b981;">▲ ' + percent.toFixed(1) + '%</span>';
+                    } else if (percent < 0) {
+                        percentText = '<span style="color:#ef4444;">▼ ' + percent.toFixed(1) + '%</span>';
+                    } else {
+                        percentText = '<span style="color:#64748b;">0%</span>';
+                    }
+                    $('#percentChange').html(percentText);
+
+                    // Prepare chart data
+                    var labels = [];
+                    var values = [];
+                    for (var i = 1; i <= 12; i++) {
+                        var found = data.monthlyData.find(m => m.Month === i);
+                        labels.push([
+                            'Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'
+                        ][i-1]);
+                        values.push(found ? found.Earnings : 0);
+                    }
+                    if (earningsChart) earningsChart.destroy();
+                    var ctx = document.getElementById('earningsChart').getContext('2d');
+                    earningsChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Приходи (лв.)',
+                                data: values,
+                                backgroundColor: 'rgba(76,29,149,0.7)',
+                                borderRadius: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: false }
+                            },
+                            scales: {
+                                y: { beginAtZero: true }
+                            }
+                        }
+                    });
+                },
+                error: function () {
+                    $('#totalEarnings').text('Грешка');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            populateYearSelect();
+            fetchFinancials();
+            $('#yearSelect, #monthSelect').change(fetchFinancials);
+        });
+    </script>
+} 

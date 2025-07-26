@@ -238,8 +238,26 @@
                         <div class="reservation-card cursor-pointer" onclick="selectReservation(@reservation.Id)">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h3 class="font-semibold text-gray-800">@reservation.User.FName @reservation.User.LName</h3>
-                                    <p class="text-gray-600 text-sm">@reservation.User.Email</p>
+                                    <h3 class="font-semibold text-gray-800">
+                                        @if (reservation.User != null)
+                                        {
+                                            @reservation.User.FName @reservation.User.LName
+                                        }
+                                        else
+                                        {
+                                            <span class="text-gray-500 italic">Изтрит потребител</span>
+                                        }
+                                    </h3>
+                                    <p class="text-gray-600 text-sm">
+                                        @if (reservation.User != null)
+                                        {
+                                            @reservation.User.Email
+                                        }
+                                        else
+                                        {
+                                            <span class="text-gray-500 italic">Няма имейл</span>
+                                        }
+                                    </p>
                                     <p class="text-gray-700 mt-2">
                                         <strong>Услуга:</strong> @reservation.Service.NameService<br>
                                         <strong>Дата:</strong> 

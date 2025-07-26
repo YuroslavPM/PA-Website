@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PA_Website.Models
 {
@@ -63,8 +64,9 @@ namespace PA_Website.Models
     {
         public int Id { get; set; }
         
-        public string UserId { get; set; }
-        public virtual User User { get; set; }
+        [ForeignKey("UserId")]
+        public string? UserId { get; set; }
+        public virtual User? User { get; set; }
         
         public int PromotionId { get; set; }
         public virtual Promotion Promotion { get; set; }

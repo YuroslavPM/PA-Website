@@ -32,6 +32,19 @@ namespace PA_Website.Data
             modelBuilder.Entity<Service>()
                 .Property(s => s.Price)
                 .HasPrecision(18, 2);
+
+            // Prevent cascade delete for UserService and UserPromotion
+            modelBuilder.Entity<UserService>()
+                .HasOne(us => us.User)
+                .WithMany()
+                .HasForeignKey(us => us.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<UserPromotion>()
+                .HasOne(up => up.User)
+                .WithMany()
+                .HasForeignKey(up => up.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

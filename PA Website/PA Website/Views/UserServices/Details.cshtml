@@ -396,7 +396,16 @@
 
                     <div class="details-item">
                         <div class="details-label">Потребител</div>
-                        <div class="details-value">@Html.DisplayFor(model => model.User.Email)</div>
+                        <div class="details-value">
+                            @if (Model.User != null)
+                            {
+                                @Html.DisplayFor(model => model.User.Email)
+                            }
+                            else
+                            {
+                                <span class="text-gray-500 italic">Изтрит потребител</span>
+                            }
+                        </div>
                     </div>
 
                     <div class="details-item">

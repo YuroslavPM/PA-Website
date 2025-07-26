@@ -48,6 +48,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IPromotionService, PromotionService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

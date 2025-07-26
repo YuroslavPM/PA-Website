@@ -217,12 +217,12 @@
             </div>
 
             <div class="create-body">
-                <form asp-action="Create">
+                <form asp-action="Create" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="alert-danger"></div>
 
                     <div class="form-group">
                         <label asp-for="NameService" class="form-label">Име на услугата</label>
-                        <div class="input-group">
+                        <div class="input-group px-2">
                             <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
                             <input asp-for="NameService" class="form-control" placeholder="Въведете име на услугата" />
                         </div>
@@ -245,7 +245,7 @@
 
                     <div class="form-group">
                         <label asp-for="Price" class="form-label">Цена (лв.) - ще се покаже в лв. и €</label>
-                        <div class="input-group">
+                        <div class="input-group px-2">
                             <span class="input-group-text"><i class="fas fa-coins"></i></span>
                             <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
                         </div>
@@ -254,7 +254,7 @@
 
                     <div class="form-group">
                         <label asp-for="ReservationDate" class="form-label">Дата за резервация</label>
-                        <div class="input-group">
+                        <div class="input-group px-2">
                             <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                             <input asp-for="ReservationDate" type="date" class="form-control" />
                         </div>
@@ -263,11 +263,24 @@
 
                     <div class="form-group">
                         <label asp-for="Description" class="form-label">Описание</label>
-                        <div class="input-group">
+                        <div class="input-group px-2">
                             <span class="input-group-text"><i class="fas fa-align-left"></i></span>
                             <textarea asp-for="Description" class="form-control" rows="5" placeholder="Въведете описание на услугата"></textarea>
                         </div>
                         <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageFile" class="form-label">Снимка на услугата</label>
+                        <div class="input-group px-2">
+                            <span class="input-group-text"><i class="fas fa-image"></i></span>
+                            <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" />
+                        </div>
+                        <small class="text-muted">Разрешени формати: JPG, JPEG, PNG, GIF. Максимален размер: 5MB</small>
+                        @if (ViewData.ModelState["imageFile"]?.Errors.Count > 0)
+                        {
+                            <span class="text-danger">@ViewData.ModelState["imageFile"].Errors.First().ErrorMessage</span>
+                        }
                     </div>
 
                     <div class="action-buttons">

@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using PA_Website.Services;
 
 namespace PA_Website.Controllers
 {
@@ -19,12 +20,14 @@ namespace PA_Website.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender;
         private readonly UserManager<User> _userManager;
+        private readonly IPromotionService _promotionService;
 
-        public ServicesController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
+        public ServicesController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager, IPromotionService promotionService)
         {
             _context = context;
             _emailSender = emailSender;
             _userManager = userManager;
+            _promotionService = promotionService;
         }
 
         // GET: Services
@@ -117,10 +120,43 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price")] Service service)
+        public async Task<IActionResult> Create([Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price")] Service service, IFormFile? imageFile)
         {
             if (ModelState.IsValid)
             {
+                // Handle image upload
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    // Validate file type
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                    var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+                    
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        ModelState.AddModelError("imageFile", "Само JPG, JPEG, PNG и GIF файлове са разрешени.");
+                        return View(service);
+                    }
+
+                    // Validate file size (max 5MB)
+                    if (imageFile.Length > 5 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("imageFile", "Файлът не може да бъде по-голям от 5MB.");
+                        return View(service);
+                    }
+
+                    // Generate unique filename
+                    var fileName = Guid.NewGuid().ToString() + fileExtension;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services", fileName);
+
+                    // Save file
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    service.ImagePath = "/Images/services/" + fileName;
+                }
+
                 _context.Add(service);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -192,9 +228,9 @@ namespace PA_Website.Controllers
                 return RedirectToAction("Details", new { id = ServiceId });
             }
 
-            // Проверка дали услугата е астрология или психология
             if (service.CategoryOfService.ToLower() == "астрология")
             {
+                var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
                 var astroReservation = new UserService
                 {
                     UserId = user.Id,
@@ -202,56 +238,76 @@ namespace PA_Website.Controllers
                     AstrologicalDate = reservationDateTime,
                     ReservationTime = null,
                     AstrologicalPlaceOfBirth = birthCity,
-                    Status = "Pending"
+                    Status = "Pending",
+                    PricePaid = pricePaid
                 };
                 _context.userServices.Add(astroReservation);
+                await _context.SaveChangesAsync();
+                foreach (var promotion in usedPromotions)
+                {
+                    var userPromotion = new UserPromotion
+                    {
+                        UserId = user.Id,
+                        PromotionId = promotion.Id,
+                        UsedAt = DateTime.Now,
+                        UserServiceId = astroReservation.Id
+                    };
+                    _context.UserPromotions.Add(userPromotion);
+                    promotion.UsedCount++;
+                }
+                await _context.SaveChangesAsync();
             }
             else
             {
-                // Get the last active reservation (not cancelled) for this user
                 var lastActiveReservation = await _context.userServices
                     .Where(u => u.UserId == user.Id && u.Status != "Cancelled")
                     .OrderByDescending(u => u.ReservationDate)
                     .FirstOrDefaultAsync();
-                
-                //The client cant reserve more than one consultation in a week
                 if (lastActiveReservation != null)
                 {
                     DateTime lastReservationDate = lastActiveReservation.ReservationDate;
-
                     if (reservationDateTime <= lastReservationDate)
                     {
                         TempData["ErrorMessage"] = "Не можете да резервирате за дата преди последната ви резервация.";
                         return RedirectToAction("Details", new { id = ServiceId });
                     }
-
                     var currentCulture = CultureInfo.CurrentCulture;
                     var lastWeekReservation = currentCulture.Calendar.GetWeekOfYear(lastReservationDate, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
                     var newReservationWeek = currentCulture.Calendar.GetWeekOfYear(reservationDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-
                     if (lastReservationDate.Year == reservationDateTime.Year && lastWeekReservation == newReservationWeek)
                     {
                         TempData["ErrorMessage"] = "Не можете да резервирате две консултации в една и съща седмица. Моля, изберете дата за следващата седмица.";
                         return RedirectToAction("Details", new { id = ServiceId });
                     }
                 }
-
                 TimeSpan selectedTime = TimeSpan.Parse(reservationTime);
-
+                var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
                 var reservation = new UserService
                 {
                     UserId = user.Id,
                     ServiceId = ServiceId,
                     ReservationDate = reservationDateTime,
                     ReservationTime = selectedTime,
-                    AstrologicalPlaceOfBirth = "", 
-                    Status = "Pending"
+                    AstrologicalPlaceOfBirth = "",
+                    Status = "Pending",
+                    PricePaid = pricePaid
                 };
-
                 _context.userServices.Add(reservation);
+                await _context.SaveChangesAsync();
+                foreach (var promotion in usedPromotions)
+                {
+                    var userPromotion = new UserPromotion
+                    {
+                        UserId = user.Id,
+                        PromotionId = promotion.Id,
+                        UsedAt = DateTime.Now,
+                        UserServiceId = reservation.Id
+                    };
+                    _context.UserPromotions.Add(userPromotion);
+                    promotion.UsedCount++;
+                }
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
 
             // Send confirmation email
             if (!string.IsNullOrEmpty(user.Email))
@@ -357,7 +413,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,NameService,CategoryOfService,ReservationDate,Description, Price")] Service service)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price,ImagePath")] Service service, IFormFile? imageFile)
         {
             if (id != service.Id)
             {
@@ -368,7 +424,63 @@ namespace PA_Website.Controllers
             {
                 try
                 {
-                    _context.Update(service);
+                    // Get the existing service from the database
+                    var existingService = await _context.Service.FindAsync(id);
+                    if (existingService == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Handle image upload
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        // Validate file type
+                        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                        var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+                        
+                        if (!allowedExtensions.Contains(fileExtension))
+                        {
+                            ModelState.AddModelError("imageFile", "Само JPG, JPEG, PNG и GIF файлове са разрешени.");
+                            return View(service);
+                        }
+
+                        // Validate file size (max 5MB)
+                        if (imageFile.Length > 5 * 1024 * 1024)
+                        {
+                            ModelState.AddModelError("imageFile", "Файлът не може да бъде по-голям от 5MB.");
+                            return View(service);
+                        }
+
+                        // Delete old image if exists
+                        if (!string.IsNullOrEmpty(existingService.ImagePath))
+                        {
+                            var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingService.ImagePath.TrimStart('/'));
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
+                        }
+
+                        // Generate unique filename
+                        var fileName = Guid.NewGuid().ToString() + fileExtension;
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services", fileName);
+
+                        // Save file
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(stream);
+                        }
+
+                        existingService.ImagePath = "/Images/services/" + fileName;
+                    }
+
+                    // Update the existing service with new values
+                    existingService.NameService = service.NameService;
+                    existingService.CategoryOfService = service.CategoryOfService;
+                    existingService.ReservationDate = service.ReservationDate;
+                    existingService.Description = service.Description;
+                    existingService.Price = service.Price;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

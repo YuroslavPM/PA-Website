@@ -396,7 +396,16 @@
                                 <div class="reservation-meta">
                                     <div class="reservation-meta-item">
                                         <div class="reservation-meta-label">Потребител</div>
-                                        <div class="reservation-meta-value">@item.User.Email</div>
+                                        <div class="reservation-meta-value">
+                                            @if (item.User != null)
+                                            {
+                                                @item.User.Email
+                                            }
+                                            else
+                                            {
+                                                <span class="text-gray-500 italic">Изтрит потребител</span>
+                                            }
+                                        </div>
                                     </div>
                                     <div class="reservation-meta-item">
                                         <div class="reservation-meta-label">Услуга</div>

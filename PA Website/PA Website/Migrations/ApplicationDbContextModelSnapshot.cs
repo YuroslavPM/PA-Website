@@ -266,6 +266,9 @@ namespace PA_Website.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NameService")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -379,7 +382,6 @@ namespace PA_Website.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("UserServiceId")
@@ -426,6 +428,9 @@ namespace PA_Website.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("PricePaid")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
 
@@ -440,7 +445,6 @@ namespace PA_Website.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -523,8 +527,7 @@ namespace PA_Website.Migrations
                     b.HasOne("PA_Website.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("PA_Website.Models.UserService", "UserService")
                         .WithMany()
@@ -548,8 +551,7 @@ namespace PA_Website.Migrations
                     b.HasOne("PA_Website.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Service");
 

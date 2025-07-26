@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using PA_Website.Services;
 
 namespace PA_Website.Controllers
 {
@@ -23,14 +24,16 @@ namespace PA_Website.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger<UserServicesController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IPromotionService _promotionService;
 
-        public UserServicesController(ApplicationDbContext context, UserManager<User> userService, IEmailSender emailSender, ILogger<UserServicesController> logger, IConfiguration configuration)
+        public UserServicesController(ApplicationDbContext context, UserManager<User> userService, IEmailSender emailSender, ILogger<UserServicesController> logger, IConfiguration configuration, IPromotionService promotionService)
         {
             _context = context;
             _userManager = userService;
             _emailSender = emailSender;
             _logger = logger;
             _configuration = configuration;
+            _promotionService = promotionService;
         }
 
         // GET: UserServices
@@ -266,8 +269,29 @@ namespace PA_Website.Controllers
 
             if (ModelState.IsValid)
             {
+                // Calculate price paid (with promotion logic) and track used promotions
+                var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(userService.UserId, service);
+                userService.PricePaid = pricePaid;
                 _context.Add(userService);
                 await _context.SaveChangesAsync();
+
+                // Record promotion usage
+                foreach (var promotion in usedPromotions)
+                {
+                    var userPromotion = new UserPromotion
+                    {
+                        UserId = userService.UserId,
+                        PromotionId = promotion.Id,
+                        UsedAt = DateTime.Now,
+                        UserServiceId = userService.Id
+                    };
+                    _context.UserPromotions.Add(userPromotion);
+                    
+                    // Update promotion usage count
+                    promotion.UsedCount++;
+                }
+                await _context.SaveChangesAsync();
+
                 TempData["SuccessMessage"] = "Успешно резервирахте услуга!";
                 return RedirectToAction(nameof(Index));
             }
@@ -447,6 +471,11 @@ namespace PA_Website.Controllers
 
             var oldStatus = reservation.Status;
             reservation.Status = newStatus;
+            // Only set PricePaid if it's zero (legacy data)
+            if (newStatus == "Completed" && reservation.PricePaid == 0)
+            {
+                reservation.PricePaid = await _promotionService.CalculatePricePaid(reservation.UserId, reservation.Service);
+            }
             _context.Update(reservation);
             await _context.SaveChangesAsync();
 
@@ -1306,6 +1335,9 @@ namespace PA_Website.Controllers
                 }
             }
 
+            // Calculate price paid (with promotion logic) and track used promotions
+            var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
+
             // Create new reservation
             var newReservation = new UserService
             {
@@ -1315,10 +1347,28 @@ namespace PA_Website.Controllers
                 ReservationTime = service.CategoryOfService.ToLower() == "астрология" ? null : reservationTime,
                 AstrologicalDate = service.CategoryOfService.ToLower() == "астрология" ? astrologicalDate : DateTime.MinValue,
                 AstrologicalPlaceOfBirth = astrologicalPlaceOfBirth,
-                Status = "Pending"
+                Status = "Pending",
+                PricePaid = pricePaid
             };
 
             _context.userServices.Add(newReservation);
+            await _context.SaveChangesAsync();
+
+            // Record promotion usage
+            foreach (var promotion in usedPromotions)
+            {
+                var userPromotion = new UserPromotion
+                {
+                    UserId = user.Id,
+                    PromotionId = promotion.Id,
+                    UsedAt = DateTime.Now,
+                    UserServiceId = newReservation.Id
+                };
+                _context.UserPromotions.Add(userPromotion);
+                
+                // Update promotion usage count
+                promotion.UsedCount++;
+            }
             await _context.SaveChangesAsync();
 
             // Send email notifications
@@ -1776,6 +1826,96 @@ namespace PA_Website.Controllers
                     </div>
                 </div>";
         }
+
+        // GET: UserServices/GetFinancials
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult GetFinancials(int? year, int? month)
+        {
+            var completedStatuses = new[] { "Completed" };
+            var reservations = _context.userServices
+                .Include(u => u.Service)
+                .Where(r => completedStatuses.Contains(r.Status));
+
+            if (year.HasValue)
+            {
+                reservations = reservations.Where(r => r.ReservationDate.Year == year.Value);
+            }
+            if (month.HasValue)
+            {
+                reservations = reservations.Where(r => r.ReservationDate.Month == month.Value);
+            }
+
+            // Total earnings for the filter
+            var totalEarnings = reservations.Sum(r => r.PricePaid);
+
+            // Calculate previous period
+            decimal previousEarnings = 0;
+            if (year.HasValue && month.HasValue)
+            {
+                // Previous month (handle January)
+                int prevMonth = month.Value == 1 ? 12 : month.Value - 1;
+                int prevYear = month.Value == 1 ? year.Value - 1 : year.Value;
+                previousEarnings = _context.userServices
+                    .Where(r => completedStatuses.Contains(r.Status)
+                        && r.ReservationDate.Year == prevYear
+                        && r.ReservationDate.Month == prevMonth)
+                    .Sum(r => r.PricePaid);
+            }
+            else if (year.HasValue && !month.HasValue)
+            {
+                // Previous year
+                int prevYear = year.Value - 1;
+                previousEarnings = _context.userServices
+                    .Where(r => completedStatuses.Contains(r.Status)
+                        && r.ReservationDate.Year == prevYear)
+                    .Sum(r => r.PricePaid);
+            }
+            // else: no filter, or only month (shouldn't happen)
+
+            // Calculate percent change
+            decimal percentChange = 0;
+            if (previousEarnings > 0)
+            {
+                percentChange = ((totalEarnings - previousEarnings) / previousEarnings) * 100;
+            }
+            else if (totalEarnings > 0)
+            {
+                percentChange = 100; // 100% increase from 0
+            }
+            // else: both zero, percentChange stays 0
+
+            // Earnings per month for the selected year
+            var earningsByMonth = _context.userServices
+                .Include(u => u.Service)
+                .Where(r => completedStatuses.Contains(r.Status));
+            if (year.HasValue)
+            {
+                earningsByMonth = earningsByMonth.Where(r => r.ReservationDate.Year == year.Value);
+            }
+            var monthlyData = earningsByMonth
+                .GroupBy(r => r.ReservationDate.Month)
+                .Select(g => new { Month = g.Key, Earnings = g.Sum(r => r.PricePaid) })
+                .OrderBy(x => x.Month)
+                .ToList();
+
+            // Earnings by service (for pie chart, optional)
+            var earningsByService = reservations
+                .GroupBy(r => r.Service.NameService)
+                .Select(g => new { Service = g.Key, Earnings = g.Sum(r => r.PricePaid) })
+                .OrderByDescending(x => x.Earnings)
+                .ToList();
+
+            return Json(new
+            {
+                totalEarnings,
+                previousEarnings,
+                percentChange,
+                monthlyData,
+                earningsByService
+            });
+        }
+
 
 
     }

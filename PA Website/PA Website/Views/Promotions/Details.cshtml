@@ -372,8 +372,26 @@
                             {
                                 <div class="user-item">
                                     <div class="user-info">
-                                        <div class="user-name">@userPromotion.User.FName @userPromotion.User.LName</div>
-                                        <div class="user-email">@userPromotion.User.Email</div>
+                                        <div class="user-name">
+                                            @if (userPromotion.User != null)
+                                            {
+                                                @userPromotion.User.FName @userPromotion.User.LName
+                                            }
+                                            else
+                                            {
+                                                <span class="text-gray-500 italic">Изтрит потребител</span>
+                                            }
+                                        </div>
+                                        <div class="user-email">
+                                            @if (userPromotion.User != null)
+                                            {
+                                                @userPromotion.User.Email
+                                            }
+                                            else
+                                            {
+                                                <span class="text-gray-500 italic">Няма имейл</span>
+                                            }
+                                        </div>
                                     </div>
                                     <div class="usage-date">
                                         @userPromotion.UsedAt.ToString("dd.MM.yyyy HH:mm")

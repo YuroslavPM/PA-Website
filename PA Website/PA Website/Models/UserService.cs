@@ -7,7 +7,8 @@ namespace PA_Website.Models
     public class UserService
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        public string? UserId { get; set; }
         public int ServiceId { get; set; }
         public DateTime? AstrologicalDate { get; set; } // Add this property
         public DateTime ReservationDate { get; set; }
@@ -22,6 +23,8 @@ namespace PA_Website.Models
         public long? AstroCardFileSize { get; set; }
         public string? AstroCardContentType { get; set; }
         public DateTime? AstroCardUploadDate { get; set; }
+
+        public decimal PricePaid { get; set; }
 
         // Navigation properties
         public User User { get; set; }

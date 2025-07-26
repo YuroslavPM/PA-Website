@@ -398,8 +398,22 @@
                     <label class="block text-sm font-semibold text-gray-700">Категория</label>
                     <select name="categoryFilter" class="w-full form-input focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                         <option value="">Всички категории</option>
-                        <option value="Психология" @@(ViewData["CategoryFilter"]?.ToString() == "Психология" ? "selected" : "")>Психология</option>
-                        <option value="Астрология" @@(ViewData["CategoryFilter"]?.ToString() == "Астрология" ? "selected" : "")>Астрология</option>
+                        @if (ViewData["CategoryFilter"]?.ToString() == "Психология")
+                        {
+                            @:<option value="Психология" selected>Психология</option>
+                        }
+                        else
+                        {
+                            @:<option value="Психология">Психология</option>
+                        }
+                        @if (ViewData["CategoryFilter"]?.ToString() == "Астрология")
+                        {
+                            @:<option value="Астрология" selected>Астрология</option>
+                        }
+                        else
+                        {
+                            @:<option value="Астрология">Астрология</option>
+                        }
                     </select>
                 </div>
 
