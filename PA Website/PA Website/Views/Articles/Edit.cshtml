@@ -251,7 +251,7 @@
                     <div class="form-group">
                             <label asp-for="Title" class="form-label">Заглавие</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                            <span class="input-group-text px-2"><i class="fas fa-heading"></i></span>
                             <input asp-for="Title" class="form-control" placeholder="Въведете заглавие на статията" />
                         </div>
                             <span asp-validation-for="Title" class="text-danger"></span>
@@ -260,7 +260,7 @@
                     <div class="form-group">
                             <label asp-for="Description" class="form-label">Кратко описание</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                            <span class="input-group-text px-2"><i class="fas fa-align-left"></i></span>
                             <textarea asp-for="Description" class="form-control" rows="3" placeholder="Въведете кратко описание"></textarea>
                         </div>
                         <span asp-validation-for="Description" class="text-danger"></span>
@@ -275,7 +275,7 @@
                     <div class="form-group">
                         <label asp-for="ImageFile" class="form-label">Снимка</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-image"></i></span>
+                                <span class="input-group-text px-2"><i class="fas fa-image"></i></span>
                             <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
                         </div>
                         <span asp-validation-for="ImageFile" class="text-danger"></span>
@@ -297,15 +297,31 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-    <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
+    <script src="https://cdn.tiny.cloud/1/@ViewBag.TinyMceApiKey/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', '|', 'blockQuote', 'insertTable', 'undo', 'redo'],
-                language: 'bg'
-            })
-            .catch(error => {
-                console.error(error);
+        tinymce.init({
+            selector: '#editor',
+            language: 'bg',
+            height: 500,
+            plugins: 'lists link image table code help wordcount',
+            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | image | help',
+            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            images_upload_handler: function (blobInfo, progress, failure) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                        resolve(reader.result);
+                    };
+                    reader.onerror = function () {
+                        reject('Image upload failed');
+                    };
+                    reader.readAsDataURL(blobInfo.blob());
+                });
+                },
+            image_advtab: true,
+            image_dimensions: true
         });
     </script>
 }

@@ -16,14 +16,17 @@ namespace PA_Website.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public ArticlesController(ApplicationDbContext context, UserManager<User> userManager)
+
+        public ArticlesController(ApplicationDbContext context, UserManager<User> userManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
-        
+
         public async Task<IActionResult> Index(int pageNumber=1, int pageSize=9)
         {
             var articles = _context.Articles
@@ -60,6 +63,10 @@ namespace PA_Website.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+
+            var tinyMceApiKey = _configuration["TinyMCE:ApiKey"];
+            ViewBag.TinyMceApiKey = tinyMceApiKey;
+
             // Populate category dropdown
             ViewData["Categories"] = new SelectList(new[]
             {
@@ -165,6 +172,9 @@ namespace PA_Website.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
+
+            var tinyMceApiKey = _configuration["TinyMCE:ApiKey"];
+            ViewBag.TinyMceApiKey = tinyMceApiKey;
             if (id == null)
             {
                 return NotFound();
