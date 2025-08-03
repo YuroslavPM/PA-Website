@@ -3,6 +3,8 @@
 @inject UserManager<User> UserManager
 @inject SignInManager<User> SignInManager
 @inject RoleManager<IdentityRole> RoleManager
+@inject IConfiguration Configuration
+
 <!DOCTYPE html>
 <html lang="bg">
 <head>
@@ -12,6 +14,9 @@
     <meta name="description" content="Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа" />
     <meta name="keywords" content="астрология, психология, хороскоп, консултации, Душевна Мозайка" />
     <meta name="author" content="Мариела Разпопова" />
+    @{
+        ViewBag.TinyMceApiKey = Configuration["TinyMCE:ApiKey"];
+    }
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>

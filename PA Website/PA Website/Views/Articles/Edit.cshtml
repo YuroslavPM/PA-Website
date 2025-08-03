@@ -258,19 +258,21 @@
                         </div>
 
                     <div class="form-group">
-                            <label asp-for="Description" class="form-label">Кратко описание</label>
+                        <label asp-for="Category" class="form-label">Категория</label>
                         <div class="input-group">
-                            <span class="input-group-text px-2"><i class="fas fa-align-left"></i></span>
-                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Въведете кратко описание"></textarea>
+                            <span class="input-group-text px-2"><i class="fas fa-tag"></i></span>
+                            <select asp-for="Category" class="form-control" asp-items="ViewBag.Categories">
+                                <option value="">Изберете категория</option>
+                            </select>
                         </div>
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
 
                     <div class="form-group">
                         <label asp-for="Description" class="form-label">Съдържание</label>
-                        <textarea asp-for="Description" id="editor" class="form-control"></textarea>
+                        <textarea class="form-control tinymce-editor" asp-for="Description"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
+                    </div>
 
                     <div class="form-group">
                         <label asp-for="ImageFile" class="form-label">Снимка</label>
@@ -297,11 +299,11 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-    <script src="https://cdn.tiny.cloud/1/@ViewBag.TinyMceApiKey/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+     <script src="@($"https://cdn.tiny.cloud/1/{ViewBag.TinyMceApiKey}/tinymce/6/tinymce.min.js")" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
-            selector: '#editor',
-            language: 'bg',
+            selector: '.tinymce-editor',
+            language: 'en',
             height: 500,
             plugins: 'lists link image table code help wordcount',
             toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | image | help',

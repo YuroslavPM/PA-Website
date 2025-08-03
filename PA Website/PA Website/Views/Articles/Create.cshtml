@@ -301,11 +301,11 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-    <script src="https://cdn.tiny.cloud/1/@ViewBag.TinyMceApiKey/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="@($"https://cdn.tiny.cloud/1/{ViewBag.TinyMceApiKey}/tinymce/6/tinymce.min.js")" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
             selector: '#editor',
-            language: 'bg',
+            language: 'en',
             height: 500,
             plugins: 'lists link image table code help wordcount',
             toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | image | help',

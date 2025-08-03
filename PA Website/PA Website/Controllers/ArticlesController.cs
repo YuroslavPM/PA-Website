@@ -185,6 +185,15 @@ namespace PA_Website.Controllers
             {
                 return NotFound();
             }
+            ViewData["Categories"] = new SelectList(new[]
+           {
+                "Психология",
+                "Астрология",
+                "Личностно развитие",
+                "Медитация",
+                "Зодиакални знаци",
+                "Други"
+            }, article.Category);
             return View(article);
         }
 
@@ -194,7 +203,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CreatorId,PublicationDate,Category,Description,ImageFile")] Article article)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CreatorId,PublicationDate,Category,Description,ImageFile, ImagePath")] Article article)
         {
             if (id != article.Id)
             {
@@ -205,12 +214,21 @@ namespace PA_Website.Controllers
             {
                 try
                 {
-                    _context.Update(article);
                     var existingArticle = await _context.Articles.FindAsync(id);
+                    if (existingArticle == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Update editable fields
+                    existingArticle.Title = article.Title;
+                    existingArticle.Description = article.Description;
+                    existingArticle.Category = article.Category;
+                    existingArticle.PublicationDate = DateTime.Now;
 
                     if (article.ImageFile != null && article.ImageFile.Length > 0)
                     {
-                        // Delete old image if exists
+                        // Delete old image
                         if (!string.IsNullOrEmpty(existingArticle.ImagePath))
                         {
                             var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingArticle.ImagePath.TrimStart('/'));
@@ -220,7 +238,6 @@ namespace PA_Website.Controllers
                             }
                         }
 
-                        // Upload new image
                         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(article.ImageFile.FileName);
                         var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", fileName);
 
@@ -230,13 +247,11 @@ namespace PA_Website.Controllers
                         }
 
                         existingArticle.ImagePath = $"/Images/articles/{fileName}";
-                        existingArticle.Title = article.Title;
-                        existingArticle.Description = article.Description;
-                        existingArticle.Category = article.Category;
-
-                        _context.Update(existingArticle);
-                        await _context.SaveChangesAsync();
                     }
+
+                    _context.Update(existingArticle);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -249,10 +264,24 @@ namespace PA_Website.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
+            // Ако ModelState не е валиден, трябва да подадеш ViewData с категориите отново
+            ViewData["Categories"] = new SelectList(new[]
+            {
+                "Психология",
+                "Астрология",
+                "Личностно развитие",
+                "Медитация",
+                "Зодиакални знаци",
+                "Други"
+            }, article.Category);  // подчертавам избраната категория
+
+            // Подай отново модела към изгледа
             return View(article);
         }
+
+
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
