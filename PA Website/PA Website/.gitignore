@@ -381,3 +381,6 @@ FodyWeavers.xsd
 # Sensitive configuration files
 appsettings.Development.json
 appsettings.Production.json 
+
+.env
+mysql/

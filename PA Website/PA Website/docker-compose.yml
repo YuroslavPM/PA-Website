@@ -1,0 +1,31 @@
+services:
+  db:
+    image: mysql:8.3
+    container_name: pawebsite-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - pawebsite-default
+
+  phpMyAdmin:
+    image: phpmyadmin
+    container_name: pawebsite-phpmyadmin
+    restart: always
+    environment:
+      - PMA_ARBITRARY=1
+      - UPLOAD_LIMIT=300M
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - pawebsite-default
+
+networks:
+  pawebsite-default:
+    external: true

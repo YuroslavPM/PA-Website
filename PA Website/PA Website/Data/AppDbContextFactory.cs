@@ -19,7 +19,7 @@ namespace PA_Website.Data
 
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseMySQL(connectionString);
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }
