@@ -379,8 +379,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Sensitive configuration files
-appsettings.Development.json
-appsettings.Production.json 
+appsettings.json
 
 .env
 mysql/
