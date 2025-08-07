@@ -146,15 +146,17 @@ namespace PA_Website.Controllers
 
                     // Generate unique filename
                     var fileName = Guid.NewGuid().ToString() + fileExtension;
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services", fileName);
+                    var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services");
+                    Directory.CreateDirectory(directoryPath); 
+                    var filePath = Path.Combine(directoryPath, fileName);
 
-                    // Save file
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await imageFile.CopyToAsync(stream);
                     }
 
                     service.ImagePath = "/Images/services/" + fileName;
+
                 }
 
                 _context.Add(service);
