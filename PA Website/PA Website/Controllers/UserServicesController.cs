@@ -1677,6 +1677,7 @@ namespace PA_Website.Controllers
         public async Task<IActionResult> SendBulkEmail()
         {
             var users = await _userManager.Users
+                .Where(u => u.EmailSend)
                 .OrderBy(u => u.FName)
                 .ThenBy(u => u.LName)
                 .ToListAsync();

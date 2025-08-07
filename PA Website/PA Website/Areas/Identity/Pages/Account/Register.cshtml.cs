@@ -118,6 +118,9 @@ namespace PA_Website.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            
+            public bool EmailSend { get; set; }
+
         }
 
 
@@ -141,6 +144,7 @@ namespace PA_Website.Areas.Identity.Pages.Account
                 user.FName = Input.FName;
                 user.LName = Input.LName;
                 user.Birth_Date = DateTime.Parse(Input.Birth_Date);
+                user.EmailSend = Input.EmailSend;
 
                 string zodiac;
                 switch (user.Birth_Date.Month)
@@ -186,6 +190,7 @@ namespace PA_Website.Areas.Identity.Pages.Account
                         break;
                 }
                 user.Zodiacal_Sign = zodiac;
+                
 
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
