@@ -449,6 +449,16 @@
                                         </div>
                                     </div>
                                 }
+                                @foreach (var subscriber in ViewBag.NewsletterSubscribers)
+                                {
+                                    <div class="user-item" onclick="toggleUserSelection(this)">
+                                        <input type="checkbox" name="selectedUserIds" value="@subscriber.Id" class="user-checkbox user-select-checkbox">
+                                        <div class="user-info">
+                                            <div class="user-name">@subscriber.FName @subscriber.LName</div>
+                                            <div class="user-email">@subscriber.Email</div>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

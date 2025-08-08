@@ -14,6 +14,8 @@ namespace PA_Website.Data
         public DbSet<UserService> userServices { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<UserPromotion> UserPromotions { get; set; }
+        public DbSet<NewsletterSubscription> NewsletterSubscribers { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

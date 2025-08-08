@@ -188,9 +188,9 @@ namespace PA_Website.Controllers
         public async Task<IActionResult> SortReservations(string sortOrder)
         {
             var reservations = _context.userServices
-        .Include(u => u.Service)
-        .Include(u => u.User)
-        .AsQueryable();
+                .Include(u => u.Service)
+                .Include(u => u.User)
+                .AsQueryable();
 
             switch (sortOrder)
             {
@@ -995,10 +995,10 @@ namespace PA_Website.Controllers
             // Check if new date/time is available
             var conflictingReservation = await _context.userServices
                 .Where(r => r.ServiceId == serviceId && 
-                           r.ReservationDate == newDate.Date && 
-                           r.ReservationTime == newTime &&
-                           r.Status != "Cancelled" &&
-                           r.Id != id)
+                            r.ReservationDate == newDate.Date && 
+                            r.ReservationTime == newTime &&
+                            r.Status != "Cancelled" &&
+                            r.Id != id)
                 .FirstOrDefaultAsync();
 
             if (conflictingReservation != null)
@@ -1323,9 +1323,9 @@ namespace PA_Website.Controllers
                 // Check for conflicts
                 var conflictingReservation = await _context.userServices
                     .Where(r => r.ServiceId == serviceId && 
-                               r.ReservationDate == reservationDate.Date && 
-                               r.ReservationTime == reservationTime &&
-                               r.Status != "Cancelled")
+                                r.ReservationDate == reservationDate.Date && 
+                                r.ReservationTime == reservationTime &&
+                                r.Status != "Cancelled")
                     .FirstOrDefaultAsync();
 
                 if (conflictingReservation != null)
@@ -1657,9 +1657,9 @@ namespace PA_Website.Controllers
             // Get already reserved times
             var reservedTimes = await _context.userServices
                 .Where(r => r.ServiceId == serviceId && 
-                           r.ReservationTime.HasValue && 
-                           r.ReservationDate.Date == date.Date &&
-                           r.Status != "Cancelled")
+                            r.ReservationTime.HasValue && 
+                            r.ReservationDate.Date == date.Date &&
+                            r.Status != "Cancelled")
                 .Select(r => r.ReservationTime!.Value)
                 .ToListAsync();
 
@@ -1680,11 +1680,33 @@ namespace PA_Website.Controllers
                 .Where(u => u.EmailSend)
                 .OrderBy(u => u.FName)
                 .ThenBy(u => u.LName)
+                .Select(u => new
+                {
+                    Id = u.Id,
+                    FName = u.FName,
+                    LName = u.LName,
+                    Email = u.Email
+                })
                 .ToListAsync();
 
+            var newsletterSubscribers = await _context.NewsletterSubscribers
+                .OrderBy(n => n.Email)
+                .Select(n => new
+                {
+                    Id = "newsletter_" + n.Id.ToString(),
+                    FName = "Newsletter",
+                    LName = "Subscriber", 
+                    Email = n.Email
+                })
+                .ToListAsync();
+
+            // Pass both collections separately
             ViewBag.Users = users;
+            ViewBag.NewsletterSubscribers = newsletterSubscribers;
+
             return View();
         }
+
 
         // POST: UserServices/SendBulkEmail
         [HttpPost]
@@ -1708,16 +1730,59 @@ namespace PA_Website.Controllers
                 return RedirectToAction(nameof(SendBulkEmail));
             }
 
-            var users = await _userManager.Users
-                .Where(u => selectedUserIds.Contains(u.Id))
-                .Where(u => !string.IsNullOrEmpty(u.Email)) // Only users with valid email addresses
-                .ToListAsync();
+            // Separate regular user IDs from newsletter subscriber IDs
+            var regularUserIds = selectedUserIds.Where(id => !id.StartsWith("newsletter_")).ToList();
+            var newsletterIds = selectedUserIds.Where(id => id.StartsWith("newsletter_"))
+                .Select(id => int.Parse(id.Replace("newsletter_", "")))
+                .ToList();
 
-            _logger.LogInformation($"Found {users.Count} users to send emails to");
+            _logger.LogInformation($"Regular users: {regularUserIds.Count}, Newsletter subscribers: {newsletterIds.Count}");
 
-            if (!users.Any())
+            var recipients = new List<dynamic>();
+
+            // Get regular users
+            if (regularUserIds.Any())
             {
-                _logger.LogWarning("No users with valid email addresses found");
+                var users = await _userManager.Users
+                    .Where(u => regularUserIds.Contains(u.Id))
+                    .Where(u => !string.IsNullOrEmpty(u.Email))
+                    .ToListAsync();
+
+                foreach (var user in users)
+                {
+                    recipients.Add(new { 
+                        FName = user.FName, 
+                        LName = user.LName, 
+                        Email = user.Email,
+                        IsUser = true
+                    });
+                }
+            }
+
+            // Get newsletter subscribers
+            if (newsletterIds.Any())
+            {
+                var newsletterSubscribers = await _context.NewsletterSubscribers
+                    .Where(n => newsletterIds.Contains(n.Id))
+                    .Where(n => !string.IsNullOrEmpty(n.Email))
+                    .ToListAsync();
+
+                foreach (var subscriber in newsletterSubscribers)
+                {
+                    recipients.Add(new { 
+                        FName = "Newsletter", 
+                        LName = "Subscriber", 
+                        Email = subscriber.Email,
+                        IsUser = false
+                    });
+                }
+            }
+
+            _logger.LogInformation($"Found {recipients.Count} recipients to send emails to");
+
+            if (!recipients.Any())
+            {
+                _logger.LogWarning("No recipients with valid email addresses found");
                 TempData["ErrorMessage"] = "Не са намерени потребители с валидни имейл адреси.";
                 return RedirectToAction(nameof(SendBulkEmail));
             }
@@ -1726,31 +1791,43 @@ namespace PA_Website.Controllers
             int failureCount = 0;
             var failedEmails = new List<string>();
 
-            foreach (var user in users)
+            foreach (var recipient in recipients)
             {
                 try
                 {
-                    _logger.LogInformation($"Attempting to send email to {user.Email}");
-                    
-                    // Validate user email
-                    if (string.IsNullOrEmpty(user.Email))
+                    _logger.LogInformation($"Attempting to send email to {recipient.Email}");
+            
+                    // Validate email
+                    if (string.IsNullOrEmpty(recipient.Email))
                     {
-                        _logger.LogWarning($"User {user.FName} {user.LName} has no email address");
+                        _logger.LogWarning($"Recipient {recipient.FName} {recipient.LName} has no email address");
                         failureCount++;
-                        failedEmails.Add($"{user.FName} {user.LName} (no email)");
+                        failedEmails.Add($"{recipient.FName} {recipient.LName} (no email)");
                         continue;
                     }
 
-                    string emailHtml = CreateBulkEmailTemplate(user, message, emailType);
-                    await _emailSender.SendEmailAsync(user.Email, subject, emailHtml);
+                    string emailHtml;
+                    if (recipient.IsUser)
+                    {
+                        // Create a user-like object for the template
+                        var userObj = new { FName = recipient.FName, LName = recipient.LName, Email = recipient.Email };
+                        emailHtml = CreateBulkEmailTemplateForUser(userObj, message, emailType);
+                    }
+                    else
+                    {
+                        // For newsletter subscribers, use a simpler template
+                        emailHtml = CreateBulkEmailTemplateForSubscriber(recipient.Email, message, emailType);
+                    }
+            
+                    await _emailSender.SendEmailAsync(recipient.Email, subject, emailHtml);
                     successCount++;
-                    _logger.LogInformation($"Successfully sent email to {user.Email}");
+                    _logger.LogInformation($"Successfully sent email to {recipient.Email}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Failed to send bulk email to user {user.Email}");
+                    _logger.LogError(ex, $"Failed to send bulk email to recipient {recipient.Email}");
                     failureCount++;
-                    failedEmails.Add($"{user.FName} {user.LName} ({user.Email})");
+                    failedEmails.Add($"{recipient.FName} {recipient.LName} ({recipient.Email})");
                 }
             }
 
@@ -1776,8 +1853,8 @@ namespace PA_Website.Controllers
             return RedirectToAction(nameof(SendBulkEmail));
         }
 
-        // Email template for bulk emails
-        private string CreateBulkEmailTemplate(User user, string message, string emailType)
+        // Updated email template method for users
+        private string CreateBulkEmailTemplateForUser(dynamic user, string message, string emailType)
         {
             var headerColor = emailType switch
             {
@@ -1800,32 +1877,84 @@ namespace PA_Website.Controllers
             var servicesUrl = $"{baseUrl}/Services";
 
             return $@"
-                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
-                    <div style='background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
-                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{headerText}</p>
-                    </div>
-                    
-                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
-                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
-                        
-                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
-                            <div style='color: #374151; line-height: 1.6; white-space: pre-wrap;'>{message}</div>
-                        </div>
-                        
-                        <div style='text-align: center; margin-top: 30px;'>
-                            <a href='{servicesUrl}' 
-                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
-                                Разгледай услуги
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
-                        <p>Този имейл е изпратен от администратор.</p>
-                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
-                    </div>
-                </div>";
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+            <div style='background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{headerText}</p>
+            </div>
+            
+            <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                
+                <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                    <div style='color: #374151; line-height: 1.6; white-space: pre-wrap;'>{message}</div>
+                </div>
+                
+                <div style='text-align: center; margin-top: 30px;'>
+                    <a href='{servicesUrl}' 
+                       style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                        Разгледай услуги
+                    </a>
+                </div>
+            </div>
+            
+            <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                <p>Този имейл е изпратен от администратор.</p>
+                <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+            </div>
+        </div>";
+        }
+
+// New email template method for newsletter subscribers
+        private string CreateBulkEmailTemplateForSubscriber(string email, string message, string emailType)
+        {
+            var headerColor = emailType switch
+            {
+                "announcement" => "linear-gradient(135deg, #4c1d95, #7c3aed)",
+                "newsletter" => "linear-gradient(135deg, #10b981, #059669)",
+                "promotion" => "linear-gradient(135deg, #f59e0b, #d97706)",
+                _ => "linear-gradient(135deg, #4c1d95, #7c3aed)"
+            };
+
+            var headerText = emailType switch
+            {
+                "announcement" => "Важно съобщение",
+                "newsletter" => "Новини и обновления",
+                "promotion" => "Специална оферта",
+                _ => "Съобщение от Душевна Мозайка"
+            };
+
+            // Generate the base URL for the website
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var servicesUrl = $"{baseUrl}/Services";
+
+            return $@"
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+            <div style='background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
+                <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{headerText}</p>
+            </div>
+            
+            <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте!</h2>
+                
+                <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                    <div style='color: #374151; line-height: 1.6; white-space: pre-wrap;'>{message}</div>
+                </div>
+                
+                <div style='text-align: center; margin-top: 30px;'>
+                    <a href='{servicesUrl}' 
+                       style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                        Разгледай услуги
+                    </a>
+                </div>
+            </div>
+            
+            <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                <p>Този имейл е изпратен от администратор.</p>
+                <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+            </div>
+        </div>";
         }
 
         // GET: UserServices/GetFinancials
@@ -1859,8 +1988,8 @@ namespace PA_Website.Controllers
                 int prevYear = month.Value == 1 ? year.Value - 1 : year.Value;
                 previousEarnings = _context.userServices
                     .Where(r => completedStatuses.Contains(r.Status)
-                        && r.ReservationDate.Year == prevYear
-                        && r.ReservationDate.Month == prevMonth)
+                                && r.ReservationDate.Year == prevYear
+                                && r.ReservationDate.Month == prevMonth)
                     .Sum(r => r.PricePaid);
             }
             else if (year.HasValue && !month.HasValue)
@@ -1869,7 +1998,7 @@ namespace PA_Website.Controllers
                 int prevYear = year.Value - 1;
                 previousEarnings = _context.userServices
                     .Where(r => completedStatuses.Contains(r.Status)
-                        && r.ReservationDate.Year == prevYear)
+                                && r.ReservationDate.Year == prevYear)
                     .Sum(r => r.PricePaid);
             }
             // else: no filter, or only month (shouldn't happen)
