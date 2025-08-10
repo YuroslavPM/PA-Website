@@ -401,8 +401,15 @@
                 }
                 else
                 {
-                    <div class="alert alert-info text-center mt-4">
-                        <p>За да резервирате услуга, моля <a asp-area="Identity" asp-page="/Account/Login" class="alert-link">влезте</a> в профила си.</p>
+                    <div class="alert alert-info text-center mt-4" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <div class="d-flex flex-column align-items-center">
+                            <p class="mb-3 text-white">За да резервирате услуга, моля влезте в профила си.</p>
+                            <a asp-area="Identity" asp-page="/Account/Login" 
+                               class="btn px-4 py-2 fw-bold text-white" 
+                               style="border-radius: 25px;">
+                                <i class="fas fa-sign-in-alt me-2"></i> Вход
+                            </a>
+                        </div>
                     </div>
                 }
 

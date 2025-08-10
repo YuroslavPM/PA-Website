@@ -1,4 +1,5 @@
-﻿@model PA_Website.Models.UserService
+﻿@using PA_Website.Helpers
+@model PA_Website.Models.UserService
 @inject UserManager<User> UserManager
 @inject SignInManager<User> SignInManager
 @inject RoleManager<IdentityRole> RoleManager
@@ -410,7 +411,9 @@
 
                     <div class="details-item">
                         <div class="details-label">Описание на услугата</div>
-                        <div class="details-value">@Html.DisplayFor(model => model.Service.Description)</div>
+                        <div class="details-value">
+                            @Html.Raw(Model.Service.Description?.TruncateHtml(70) ?? "Няма описание")
+                        </div>
                     </div>
                 </div>
 
