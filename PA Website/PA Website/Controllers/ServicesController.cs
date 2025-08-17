@@ -32,7 +32,6 @@ namespace PA_Website.Controllers
             _userManager = userManager;
             _promotionService = promotionService;
             _configuration = configuration;
-
         }
 
         // GET: Services
@@ -51,15 +50,16 @@ namespace PA_Website.Controllers
                 {
                     // Check if user has any reservations
                     bool hasReservations = await _context.userServices.AnyAsync(us => us.UserId == user.Id);
-                    
+
                     // Check for active first reservation promotion
                     firstBookingPromo = await _context.Promotions
-                        .Where(p => p.IsActive && p.PromotionType == "FirstBooking" && p.StartDate <= DateTime.Now && p.EndDate >= DateTime.Now)
+                        .Where(p => p.IsActive && p.PromotionType == "FirstBooking" && p.StartDate <= DateTime.Now &&
+                                    p.EndDate >= DateTime.Now)
                         .OrderByDescending(p => p.CreatedAt)
                         .FirstOrDefaultAsync();
-                    
+
                     isEligibleForFirstBookingPromo = !hasReservations && firstBookingPromo != null;
-                    
+
                     // Debug information
                     ViewBag.DebugInfo = new
                     {
@@ -97,11 +97,11 @@ namespace PA_Website.Controllers
             }
 
             var reservedTimes = await _context.userServices
-            .Where(r => r.ServiceId == id)
-            .Select(r => r.ReservationTime)
-            .Where(rt => rt.HasValue)
-            .Select(rt => rt!.Value.ToString(@"hh\:mm"))
-            .ToListAsync();
+                .Where(r => r.ServiceId == id)
+                .Select(r => r.ReservationTime)
+                .Where(rt => rt.HasValue)
+                .Select(rt => rt!.Value.ToString(@"hh\:mm"))
+                .ToListAsync();
 
             ViewData["ReservedTimes"] = reservedTimes;
             ViewData["SelectedDate"] = selectedDate;
@@ -109,7 +109,6 @@ namespace PA_Website.Controllers
 
             return View(service);
         }
-
 
 
         // GET: Services/Create
@@ -127,7 +126,9 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price")] Service service, IFormFile? imageFile)
+        public async Task<IActionResult> Create(
+            [Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price")] Service service,
+            IFormFile? imageFile)
         {
             if (ModelState.IsValid)
             {
@@ -137,7 +138,7 @@ namespace PA_Website.Controllers
                     // Validate file type
                     var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
                     var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-                    
+
                     if (!allowedExtensions.Contains(fileExtension))
                     {
                         ModelState.AddModelError("imageFile", "Само JPG, JPEG, PNG и GIF файлове са разрешени.");
@@ -154,7 +155,7 @@ namespace PA_Website.Controllers
                     // Generate unique filename
                     var fileName = Guid.NewGuid().ToString() + fileExtension;
                     var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services");
-                    Directory.CreateDirectory(directoryPath); 
+                    Directory.CreateDirectory(directoryPath);
                     var filePath = Path.Combine(directoryPath, fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -163,13 +164,13 @@ namespace PA_Website.Controllers
                     }
 
                     service.ImagePath = "/Images/services/" + fileName;
-
                 }
 
                 _context.Add(service);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(service);
         }
 
@@ -190,12 +191,14 @@ namespace PA_Website.Controllers
             {
                 return NotFound();
             }
+
             return View(service);
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateReservation(int ServiceId, string reservationDate, string reservationTime, string astrologicalDate, string birthCity)
+        public async Task<IActionResult> CreateReservation(int ServiceId, string reservationDate,
+            string reservationTime, string astrologicalDate, string birthCity)
         {
             if (User.Identity?.Name == null)
             {
@@ -216,7 +219,8 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
 
-            if ((string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime)) && string.IsNullOrEmpty(astrologicalDate))
+            if ((string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime)) &&
+                string.IsNullOrEmpty(astrologicalDate))
             {
                 TempData["ErrorMessage"] = "Трябва да изберете дата и час за консултация.";
                 return RedirectToAction("Details", new { id = ServiceId });
@@ -227,11 +231,13 @@ namespace PA_Website.Controllers
             {
                 if (service.CategoryOfService.ToLower() == "астрология")
                 {
-                    reservationDateTime = DateTime.ParseExact(astrologicalDate, "yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture);
+                    reservationDateTime = DateTime.ParseExact(astrologicalDate, "yyyy-MM-ddTHH:mm",
+                        CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    reservationDateTime = DateTime.ParseExact($"{reservationDate} {reservationTime}", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                    reservationDateTime = DateTime.ParseExact($"{reservationDate} {reservationTime}",
+                        "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
                 }
             }
             catch
@@ -242,7 +248,8 @@ namespace PA_Website.Controllers
 
             if (service.CategoryOfService.ToLower() == "астрология")
             {
-                var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
+                var (pricePaid, usedPromotions) =
+                    await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
                 var astroReservation = new UserService
                 {
                     UserId = user.Id,
@@ -267,6 +274,7 @@ namespace PA_Website.Controllers
                     _context.UserPromotions.Add(userPromotion);
                     promotion.UsedCount++;
                 }
+
                 await _context.SaveChangesAsync();
             }
             else
@@ -283,17 +291,24 @@ namespace PA_Website.Controllers
                         TempData["ErrorMessage"] = "Не можете да резервирате за дата преди последната ви резервация.";
                         return RedirectToAction("Details", new { id = ServiceId });
                     }
+
                     var currentCulture = CultureInfo.CurrentCulture;
-                    var lastWeekReservation = currentCulture.Calendar.GetWeekOfYear(lastReservationDate, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-                    var newReservationWeek = currentCulture.Calendar.GetWeekOfYear(reservationDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-                    if (lastReservationDate.Year == reservationDateTime.Year && lastWeekReservation == newReservationWeek)
+                    var lastWeekReservation = currentCulture.Calendar.GetWeekOfYear(lastReservationDate,
+                        CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+                    var newReservationWeek = currentCulture.Calendar.GetWeekOfYear(reservationDateTime,
+                        CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+                    if (lastReservationDate.Year == reservationDateTime.Year &&
+                        lastWeekReservation == newReservationWeek)
                     {
-                        TempData["ErrorMessage"] = "Не можете да резервирате две консултации в една и съща седмица. Моля, изберете дата за следващата седмица.";
+                        TempData["ErrorMessage"] =
+                            "Не можете да резервирате две консултации в една и съща седмица. Моля, изберете дата за следващата седмица.";
                         return RedirectToAction("Details", new { id = ServiceId });
                     }
                 }
+
                 TimeSpan selectedTime = TimeSpan.Parse(reservationTime);
-                var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
+                var (pricePaid, usedPromotions) =
+                    await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
                 var reservation = new UserService
                 {
                     UserId = user.Id,
@@ -318,6 +333,7 @@ namespace PA_Website.Controllers
                     _context.UserPromotions.Add(userPromotion);
                     promotion.UsedCount++;
                 }
+
                 await _context.SaveChangesAsync();
             }
 
@@ -325,13 +341,14 @@ namespace PA_Website.Controllers
             if (!string.IsNullOrEmpty(user.Email))
             {
                 var subject = "Потвърждение на резервация";
-                var iban = "BG00XXXX00000000000000"; // Replace with your real IBAN
+                var iban = "BG89CECB979010G3001000";
                 string dateInfo = service.CategoryOfService.ToLower() == "астрология"
                     ? $"<li>Дата за астрологичен анализ: {reservationDateTime:dd.MM.yyyy HH:mm}</li>"
                     : $"<li>Дата на консултация: {reservationDateTime:dd.MM.yyyy HH:mm}</li>";
-                string birthCityInfo = service.CategoryOfService.ToLower() == "астрология" && !string.IsNullOrEmpty(birthCity)
-                    ? $"<li>Място на раждане: {birthCity}</li>"
-                    : string.Empty;
+                string birthCityInfo =
+                    service.CategoryOfService.ToLower() == "астрология" && !string.IsNullOrEmpty(birthCity)
+                        ? $"<li>Място на раждане: {birthCity}</li>"
+                        : string.Empty;
                 var htmlMessage = $@"
 <h3>Уважаеми/а {user.FName},</h3>
 <p>Благодарим Ви, че избрахте нашите услуги!</p>
@@ -350,7 +367,7 @@ namespace PA_Website.Controllers
 <ol>
     <li>Сума за плащане: {service.Price} лв.</li>
     <li>Банкова сметка (IBAN): <strong>{iban}</strong></li>
-    <li>Титуляр на сметката: PA Website</li>
+    <li>Титуляр на сметката: Мариела Разпопова</li>
     <li>В основание на плащането моля посочете: Резервация {service.NameService}</li>
 </ol>
 <p>След получаване на плащането, ще получите потвърждение за активиране на резервацията.</p>
@@ -386,12 +403,14 @@ namespace PA_Website.Controllers
                     {
                         allowedTimes.Add(new TimeSpan(hour, 0, 0));
                     }
+
                     break;
                 case DayOfWeek.Sunday:
                     for (int hour = 9; hour <= 13; hour++)
                     {
                         allowedTimes.Add(new TimeSpan(hour, 0, 0));
                     }
+
                     break;
                 default:
                     return Json(new { success = false, message = "Невалиден ден." });
@@ -399,10 +418,10 @@ namespace PA_Website.Controllers
 
             // Взимаме вече резервираните часове (исключваме отменените)
             var reservedTimes = await _context.userServices
-                .Where(r => r.ServiceId == serviceId && 
-                           r.ReservationTime.HasValue && 
-                           r.ReservationDate.Date == date.Date &&
-                           r.Status != "Cancelled")
+                .Where(r => r.ServiceId == serviceId &&
+                            r.ReservationTime.HasValue &&
+                            r.ReservationDate.Date == date.Date &&
+                            r.Status != "Cancelled")
                 .Select(r => r.ReservationTime!.Value)
                 .ToListAsync();
 
@@ -416,16 +435,15 @@ namespace PA_Website.Controllers
         }
 
 
-
-
-
         // POST: Services/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price,ImagePath")] Service service, IFormFile? imageFile)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,NameService,CategoryOfService,ReservationDate,Description,Price,ImagePath")] Service service,
+            IFormFile? imageFile)
         {
             if (id != service.Id)
             {
@@ -449,7 +467,7 @@ namespace PA_Website.Controllers
                         // Validate file type
                         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
                         var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-                        
+
                         if (!allowedExtensions.Contains(fileExtension))
                         {
                             ModelState.AddModelError("imageFile", "Само JPG, JPEG, PNG и GIF файлове са разрешени.");
@@ -466,7 +484,8 @@ namespace PA_Website.Controllers
                         // Delete old image if exists
                         if (!string.IsNullOrEmpty(existingService.ImagePath))
                         {
-                            var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingService.ImagePath.TrimStart('/'));
+                            var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
+                                existingService.ImagePath.TrimStart('/'));
                             if (System.IO.File.Exists(oldImagePath))
                             {
                                 System.IO.File.Delete(oldImagePath);
@@ -475,7 +494,8 @@ namespace PA_Website.Controllers
 
                         // Generate unique filename
                         var fileName = Guid.NewGuid().ToString() + fileExtension;
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services", fileName);
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services",
+                            fileName);
 
                         // Save file
                         using (var stream = new FileStream(filePath, FileMode.Create))
@@ -506,8 +526,10 @@ namespace PA_Website.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(service);
         }
 

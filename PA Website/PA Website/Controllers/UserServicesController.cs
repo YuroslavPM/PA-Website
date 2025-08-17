@@ -1498,6 +1498,12 @@ namespace PA_Website.Controllers
                 }
 
                 await _emailSender.SendEmailAsync(reservation.User.Email, emailSubject, emailHtml);
+                if (emailType == "confirmation")
+                {
+                    reservation.Status = "Confirmed";
+                    _context.Update(reservation);
+                    await _context.SaveChangesAsync();
+                }
                 TempData["SuccessMessage"] = "Имейлът е изпратен успешно!";
             }
             catch (Exception ex)
