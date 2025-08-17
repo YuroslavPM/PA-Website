@@ -8,47 +8,265 @@
 
 @section Styles {
     <style>
+        
         .hero-bg {
-            background: linear-gradient(rgba(74, 14, 120, 0.85), rgba(106, 48, 147, 0.85)), url('../Images/psy.png') no-repeat center center;
-            background-size: cover;
-            background-attachment: fixed;
+            position: relative;
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #4a0e78 0%, #6a3093 50%, #7c3aed 100%);
         }
 
-        .clip-path-hero {
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            /* Background image overlay */
+            .hero-bg::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: url('../Images/therapy.png') no-repeat center 20%;
+                background-size: cover;
+                background-attachment: fixed;
+                opacity: 0.3;
+                z-index: 1;
+            }
+
+            /* Gradient overlay for better text readability */
+            .hero-bg::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    135deg,
+                    rgba(74, 14, 120, 0.8) 0%,
+                    rgba(106, 48, 147, 0.7) 50%,
+                    rgba(124, 58, 237, 0.6) 100%
+                );
+                z-index: 2;
+            }
+
+            /* Content positioning */
+            .hero-content-wrapper {
+                position: relative;
+                z-index: 3;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 2rem 0;
+            }
+
+            /* Animated background pattern */
+            .hero-pattern {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+                z-index: 2;
+                animation: patternMove 20s ease-in-out infinite alternate;
+            }
+
+            @@keyframes patternMove {
+                0% {
+                    transform: translateX(0) translateY(0);
+                }
+                100% {
+                    transform: translateX(20px) translateY(-20px);
+                }
+            }
+
+            /* Mobile optimizations - Remove fixed background on mobile */
+            @@media (max-width: 1024px) {
+            .hero-bg::before {
+                background-attachment: scroll;
+                background-position: center 20%;
+                background-size: cover;
+                opacity: 0.25;
+            }
         }
 
-        @@media (max-width: 768px) {
+            @@media (max-width: 768px) {
+            .hero-bg {
+                min-height: 100vh;
+            }
+
+            .hero-bg::before {
+                background-attachment: scroll;
+                background-position: center 10%;
+                background-size: auto 130%;
+                background-repeat: no-repeat;
+                opacity: 0.2;
+            }
+
+            .hero-content-wrapper {
+                padding: 1.5rem 0;
+                min-height: 100vh;
+            }
+        }
+
+            @@media (max-width: 480px) {
+            .hero-bg {
+                min-height: 100vh;
+            }
+
+            .hero-bg::before {
+                background-position: 24% 18%;
+                background-size: auto 150%;
+                background-repeat: no-repeat;
+                opacity: 0.15;
+            }
+
+            .hero-content-wrapper {
+                min-height: 100vh;
+                padding: 2rem 0;
+            }
+        }
+
+            /* Extra small mobile devices */
+            @@media (max-width: 375px) {
+            .hero-bg {
+                min-height: 100vh;
+            }
+
+            .hero-bg::before {
+                background-position: center top;
+                background-size: auto 180%;
+                background-repeat: no-repeat;
+                opacity: 0.12;
+            }
+
+            .hero-content-wrapper {
+                min-height: 100vh;
+            }
+        }
+
+            /* Landscape mobile optimization */
+            @@media (max-height: 600px) and (orientation: landscape) {
+            .hero-bg {
+                min-height: 100vh;
+            }
+
+            .hero-content-wrapper {
+                min-height: 100vh;
+                padding: 1rem 0;
+            }
+        }
+
+            /* Clip path improvements */
+            .clip-path-hero {
+                clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            }
+
+            @@media (max-width: 1024px) {
             .clip-path-hero {
                 clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
             }
         }
 
-        .star {
-            position: absolute;
-            background: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            animation: float 7s infinite linear;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            @@media (max-width: 768px) {
+            .clip-path-hero {
+                clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+            }
         }
 
-        @@keyframes float {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 0;
+            @@media (max-width: 480px) {
+            .clip-path-hero {
+                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+            }
+        }
+
+            /* Enhanced floating stars animation */
+            .star {
+                position: absolute;
+                background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
+                border-radius: 50%;
+                animation: float 8s infinite ease-in-out;
+                box-shadow: 0 0 15px rgba(255,255,255,0.6), 0 0 30px rgba(255,255,255,0.3);
+                z-index: 3;
             }
 
-            10% {
-                opacity: 1;
+            @@keyframes float {
+                0% {
+                    transform: translateY(100vh) rotate(0deg) scale(0);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-20vh) rotate(360deg) scale(0.5);
+                    opacity: 0;
+                }
             }
 
-            90% {
-                opacity: 1;
+            /* Improved text shadows for better readability */
+            .hero-text-shadow {
+                text-shadow:
+                    0 2px 4px rgba(0,0,0,0.3),
+                    0 4px 8px rgba(0,0,0,0.2),
+                    0 8px 16px rgba(0,0,0,0.1);
             }
 
-            100% {
-                transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
+            /* Enhanced button styles */
+            .hero-cta-button {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            }
+
+            .hero-cta-button:hover {
+                background: rgba(255, 255, 255, 1);
+                transform: translateY(-4px) scale(1.05);
+                box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+                border-color: rgba(255, 255, 255, 0.5);
+            }
+
+            /* Responsive text sizing improvements */
+            @@media (max-width: 640px) {
+            .hero-title-responsive {
+                font-size: 2rem !important;
+                line-height: 1.1 !important;
+            }
+
+            .hero-subtitle-responsive {
+                font-size: 1rem !important;
+                line-height: 1.4 !important;
+            }
+
+            .hero-description-responsive {
+                font-size: 0.9rem !important;
+                line-height: 1.5 !important;
+            }
+        }
+
+            @@media (max-width: 375px) {
+            .hero-title-responsive {
+                font-size: 1.8rem !important;
+            }
+        }
+
+            /* Additional mobile fixes */
+            @@media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .hero-bg {
+                width: 100%;
+                position: relative;
             }
         }
 
@@ -325,22 +543,29 @@
 
 <main>
     <!-- Hero Section -->
-    <section class="hero-bg min-h-screen flex items-center justify-center relative clip-path-hero">
-        <!-- Floating elements -->
+    <section class="hero-bg clip-path-hero">
+        <div class="hero-pattern"></div>
         <div class="absolute inset-0 overflow-hidden pointer-events-none" id="floating-elements"></div>
-
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center text-white hero-content">
-                <h1 class="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 lg:mb-6 leading-tight animate-text-fade-in">
-                    Душевна Мозайка
-                </h1>
-                <p class="text-lg sm:text-xl md:text-2xl mb-8 lg:mb-10 animate-text-fade-in text-white/80" style="animation-delay: 0.3s;">
-                    Вашето място за хороскопи и психологически консултации
-                </p>
-                <a href="#services" class="inline-flex items-center bg-white text-purple-700 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium btn-hover-effect uppercase tracking-wider focus-visible:focus">
-                    <i class="fas fa-star mr-2 sm:mr-3 text-purple-500"></i>
-                    Запази час
-                </a>
+        <div class="hero-content-wrapper">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center text-white hero-content">
+                    <h1 class="font-playfair hero-title-responsive text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 lg:mb-6 leading-tight animate-text-fade-in">
+                        Душевна Мозайка
+                    </h1>
+                    <p class="hero-subtitle-responsive text-lg sm:text-xl md:text-2xl mb-4 lg:mb-6 animate-text-fade-in text-white/90 " style="animation-delay: 0.2s;">
+                        Психологически и астрологични консултации
+                    </p>
+                    <p class="hero-description-responsive text-base sm:text-lg md:text-xl mb-8 lg:mb-10 animate-text-fade-in text-white/80 " style="animation-delay: 0.4s;">
+                        Пространство за споделяне и преоткриване
+                    </p>
+                    <div class="animate-text-fade-in" style="animation-delay: 0.6s;">
+                        <a href="#services" 
+                           class="hero-cta-button inline-flex items-center text-purple-700 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium uppercase tracking-wider focus-visible:focus">
+                            <i class="fas fa-star mr-2 sm:mr-3 text-purple-500"></i>
+                            Запази час
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -474,40 +699,45 @@
 
     <!-- Author Section -->
     <section class="py-12 sm:py-16 md:py-24 bg-white relative overflow-hidden">
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\" 60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236a3093\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-        </div>
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\" 60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236a3093\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    </div>
 
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center author-content">
-                <div class="text-center lg:text-left">
-                    <img src="https://scontent.fsof9-1.fna.fbcdn.net/v/t39.30808-6/492612847_24008185045446073_5271774732973390534_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=C71oWXBn2hkQ7kNvwHkAIpg&_nc_oc=Adluh3beudM-vZFa3m8pPUcPw8_jCEk5Vj7set30DjB7XTbedS-cwjc5wU2Rn-CT8lIblg9vj39DTRo93xvw9ela&_nc_zt=23&_nc_ht=scontent.fsof9-1.fna&_nc_gid=iaFzEh6PhryaK9qOn3s-nw&oh=00_AfQEUAKw8uy0htsCIyyL2FFmcp9MbdLrOelDk_k3xheWoQ&oe=687953AA"
-                         alt="Авторът"
-                         class="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full object-cover border-8 border-white shadow-2xl mx-auto lg:mx-0 hover:scale-105 transition-transform duration-600 author-image">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center author-content">
+            <div class="text-center lg:text-left">
+                <img src="https://scontent.fsof9-1.fna.fbcdn.net/v/t39.30808-6/492612847_24008185045446073_5271774732973390534_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=C71oWXBn2hkQ7kNvwHkAIpg&_nc_oc=Adluh3beudM-vZFa3m8pPUcPw8_jCEk5Vj7set30DjB7XTbedS-cwjc5wU2Rn-CT8lIblg9vj39DTRo93xvw9ela&_nc_zt=23&_nc_ht=scontent.fsof9-1.fna&_nc_gid=iaFzEh6PhryaK9qOn3s-nw&oh=00_AfQEUAKw8uy0htsCIyyL2FFmcp9MbdLrOelDk_k3xheWoQ&oe=687953AA"
+                     alt="Авторът"
+                     class="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full object-cover border-8 border-white shadow-2xl mx-auto lg:mx-0 hover:scale-105 transition-transform duration-600 author-image">
+            </div>
+            <div class="text-center lg:text-left">
+                <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6 sm:mb-8 relative inline-block gradient-text">
+                    За автора
+                    <div class="absolute bottom-0 left-0 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                </h2>
+                <div class="space-y-4 sm:space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
+                    <p>
+                        Аз съм <strong>Мариела Разпопова</strong> – създател на „Душевна Мозайка“. 
+                        Пътят ми към психологията започна през 2019 г. с астропсихологията – ключ, 
+                        който отвори врата към ново разбиране за човека и душата. Тя ме доведе до 
+                        моето истинско призвание – психологията.
+                    </p>
+                    <p>
+                        Днес, с магистратура по Приложна психология и обучение по Позитивна психотерапия, 
+                        съм тук, за да те подкрепя в твоя път към осъзнаване, промяна и вътрешна хармония.
+                    </p>
                 </div>
-                <div class="text-center lg:text-left">
-                    <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6 sm:mb-8 relative inline-block gradient-text">
-                        За автора
-                        <div class="absolute bottom-0 left-0 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-                    </h2>
-                    <div class="space-y-4 sm:space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
-                        <p>
-                            Аз съм Мариела Разпопова и съм създател на Душевна Мозайка. Пътят ми започна с астропсихологията през 2019-та година – тя отвори врата към ново разбиране за човека и душата. Именно тя ме отведе и към психологията, където припознах своето истинско призвание.
-                        </p>
-                        <p>
-                            Завърших магистратура по Приложна психология и базов курс по Позитивна психотерапия, а днес съм тук – за да бъда с теб в процеса на осъзнаване, промяна и вътрешна хармония.
-                        </p>
-                    </div>
-                    <div class="mt-6 sm:mt-8 p-6 sm:p-8 bg-white rounded-2xl shadow-lg relative">
-                        <div class="absolute -top-4 left-8 text-4xl sm:text-6xl text-primary/20 font-serif">"</div>
-                        <p class="text-lg sm:text-xl italic text-primary font-medium leading-relaxed relative z-10">
-                            Вашата душа е уникална мозайка – нека я подредим заедно.
-                        </p>
-                    </div>
+                <div class="mt-6 sm:mt-8 p-6 sm:p-8 bg-white rounded-2xl shadow-lg relative">
+                    <div class="absolute -top-4 left-8 text-4xl sm:text-6xl text-primary/20 font-serif">"</div>
+                    <p class="text-lg sm:text-xl italic text-primary font-medium leading-relaxed relative z-10">
+                        „Който гледа навън, сънува; който гледа навътре, се събужда.” – К. Г. Юнг
+                    </p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
 
     <!-- Testimonials Section -->
     <section class="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-purple-50 to-indigo-50">
@@ -532,7 +762,7 @@
                                 <i class="fas fa-star text-yellow-400"></i>
                             </div>
                             <p class="testimonial-text">
-                                Благодаря на Душевна Музайка за невероятната психологическа подкрепа.
+                                Благодаря на Мариела Разпопова за невероятната психологическа подкрепа.
                             </p>
                             <div class="testimonial-author">Мария Иванова</div>
                             <div class="testimonial-role">Учител</div>
@@ -720,7 +950,7 @@
             });
 
             // Auto-advance slides
-            setInterval(nextSlide, 5000);
+            setInterval(nextSlide, 7000);
 
             // Generate random stars
             function createStars() {

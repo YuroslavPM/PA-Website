@@ -25,14 +25,14 @@
         }
 
         .auth-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 6px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-            }
+        }
 
         .auth-header {
             padding: 2.5rem 2.5rem 1.5rem;
@@ -54,16 +54,16 @@
         }
 
         .auth-title::after {
-                content: '';
-                position: absolute;
+            content: '';
+            position: absolute;
             bottom: -12px;
-                left: 50%;
-                transform: translateX(-50%);
+            left: 50%;
+            transform: translateX(-50%);
             width: 100px;
-                height: 4px;
+            height: 4px;
             background: linear-gradient(90deg, #4c1d95, #7c3aed);
-                border-radius: 2px;
-            }
+            border-radius: 2px;
+        }
 
         .auth-subtitle {
             color: #64748b;
@@ -124,7 +124,7 @@
             color: #4c1d95;
             font-weight: 500;
             margin-left: 0.5rem;
-            }
+        }
 
         .btn-primary {
             background: linear-gradient(135deg, #4c1d95, #7c3aed);
@@ -142,9 +142,9 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #7c3aed, #4c1d95);
             color: white;
-                transform: translateY(-2px);
+            transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-            }
+        }
 
         .auth-links {
             margin-top: 2rem;
@@ -153,17 +153,17 @@
 
         .auth-links a {
             color: #7c3aed;
-                text-decoration: none;
+            text-decoration: none;
             transition: all 0.3s;
-                display: inline-block;
+            display: inline-block;
             margin: 0 1rem;
             font-weight: 500;
-            }
+        }
 
         .auth-links a:hover {
             color: #4c1d95;
-                    transform: translateY(-1px);
-                }
+            transform: translateY(-1px);
+        }
 
         .divider {
             display: flex;
@@ -172,10 +172,10 @@
         }
 
         .divider::before, .divider::after {
-                content: '';
-                flex: 1;
+            content: '';
+            flex: 1;
             border-bottom: 1px solid #e2e8f0;
-            }
+        }
 
         .divider-text {
             padding: 0 1rem;
@@ -256,18 +256,54 @@
 
                             <div class="form-group">
                                 <label asp-for="Input.Email" class="form-label">Имейл адрес</label>
-                                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                <input asp-for="Input.Email" class="form-control" autocomplete="username"
+                                       aria-required="true" placeholder="name@example.com"/>
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">
                                 <label asp-for="Input.Password" class="form-label">Парола</label>
-                                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Парола" />
+                                <div class="relative">
+                                    <input asp-for="Input.Password"
+                                           id="passwordInput"
+                                           type="password"
+                                           class="form-control pr-10"
+                                           autocomplete="current-password"
+                                           aria-required="true"
+                                           placeholder="Парола"/>
+
+                                    <button type="button"
+                                            id="togglePassword"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-purple-600 hover:text-purple-800">
+                                        <!-- Eye (default) -->
+                                        <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+
+                                        <!-- Eye with slash (hidden by default) -->
+                                        <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden"
+                                             fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7
+                         a9.956 9.956 0 012.642-4.362m3.06-2.398A9.956 9.956 0 0112 5
+                         c4.478 0 8.268 2.943 9.542 7a9.958 9.958 0 01-4.38 5.568M15 12a3 3 0 11-6 0
+                         3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M3 3l18 18"/>
+                                        </svg>
+                                    </button>
+                                </div>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
 
+
                             <div class="form-check">
-                                <input class="form-check-input" asp-for="Input.RememberMe" />
+                                <input class="form-check-input" asp-for="Input.RememberMe"/>
                                 <label class="form-check-label" asp-for="Input.RememberMe">Запомни ме</label>
                             </div>
 
@@ -286,32 +322,36 @@
                         </div>
 
                         <section>
-                            <h3 class="text-center mb-3" style="color: #4c1d95; font-weight: 600;">Вход чрез външни услуги</h3>
-                        @{
-                            if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                            {
+                            <h3 class="text-center mb-3" style="color: #4c1d95; font-weight: 600;">Вход чрез външни
+                                услуги</h3>
+                            @{
+                                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                {
                                     <div class="text-center">
                                         <p style="color: #64748b;">
                                             В момента няма конфигурирани външни услуги за автентикация.
                                         </p>
-                                </div>
-                            }
-                            else
-                            {
-                                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <form id="external-account" asp-page="./ExternalLogin"
+                                          asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                                         <div class="external-login">
                                             <p class="mb-3" style="color: #64748b;">
-                                        @foreach (var provider in Model.ExternalLogins!)
-                                        {
-                                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Вход чрез вашия @provider.DisplayName акаунт">
+                                                @foreach (var provider in Model.ExternalLogins!)
+                                                {
+                                                    <button type="submit" class="btn btn-primary" name="provider"
+                                                            value="@provider.Name"
+                                                            title="Вход чрез вашия @provider.DisplayName акаунт">
                                                         @provider.DisplayName
-                                            </button>
-                                        }
+                                                    </button>
+                                                }
                                             </p>
-                                    </div>
-                                </form>
+                                        </div>
+                                    </form>
+                                }
                             }
-                        }
                         </section>
                     </div>
                 </div>
@@ -322,4 +362,22 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function () {
+            const input = document.getElementById("passwordInput");
+            const eyeOpen = document.getElementById("eyeOpen");
+            const eyeClosed = document.getElementById("eyeClosed");
+
+            if (input.type === "password") {
+                input.type = "text";
+                eyeOpen.classList.add("hidden");
+                eyeClosed.classList.remove("hidden");
+            } else {
+                input.type = "password";
+                eyeClosed.classList.add("hidden");
+                eyeOpen.classList.remove("hidden");
+            }
+        });
+    </script>
 }
+

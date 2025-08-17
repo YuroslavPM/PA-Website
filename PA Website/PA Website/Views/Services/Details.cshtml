@@ -131,31 +131,6 @@
             letter-spacing: 0.5px;
         }
 
-        .service-meta {
-            font-family: 'Playfair Display', serif;
-        }
-
-        .price-badge, .date-badge {
-            background: rgba(124, 58, 237, 0.1);
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            border: 1px solid rgba(124, 58, 237, 0.2);
-        }
-
-        .price-badge {
-            color: #4c1d95;
-        }
-
-        .date-badge {
-            color: #7c3aed;
-        }
-
-        .text-purple {
-            color: #4c1d95 !important;
-        }
 
         .reservation-section {
             background: rgba(124, 58, 237, 0.05);
@@ -254,42 +229,158 @@
             color: white;
         }
 
+
+        .service-image-container {
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .service-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            border-radius: 16px;
+        }
+
+        .service-image:hover {
+            transform: scale(1.02);
+            filter: brightness(1.05);
+        }
+
+        /* Responsive breakpoints for the image */
+        @@media (max-width: 1200px) {
+        .service-image {
+            max-height: 350px;
+        }
+}
+
+        @@media (max-width: 992px) {
+        .service-image {
+            max-height: 320px;
+        }
+
+        .service-image-container {
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .service-image {
+            border-radius: 12px;
+        }
+}
+
         @@media (max-width: 768px) {
-            .service-detail-dl {
-                grid-template-columns: 1fr;
+        .service-image {
+            max-height: 280px;
+        }
+
+        .service-image-container {
+            margin: 0 -1.5rem 1.5rem -1.5rem; /* Full width on mobile */
+            border-radius: 0;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1);
+        }
+
+        .service-image {
+            border-radius: 0;
+            max-height: 250px;
+        }
+}
+
+        @@media (max-width: 576px) {
+        .service-image {
+            max-height: 220px;
+        }
+
+        .service-image-container {
+            margin-bottom: 1rem;
+        }
+}
+
+        @@media (max-width: 480px) {
+            .service-image {
+                max-height: 200px;
             }
+
+            /* Loading placeholder for when image is loading */
+            .service-image-container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: -1;
+            }
+
+            /* Image error fallback */
+            .service-image-error {
+                width: 100%;
+                height: 200px;
+                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #64748b;
+                font-size: 1rem;
+                border-radius: 16px;
+                border: 2px dashed #cbd5e1;
+            }
+
+            .service-image-error i {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+                opacity: 0.5;
+            }
+
+            @@media (max-width: 768px) {
+                .service-detail-dl {
+                    grid-template-columns: 1fr;
+                }
 
                 .service-detail-dl dt,
                 .service-detail-dl dd {
                     padding: 0.3rem 0;
                 }
 
-            .service-detail-title {
-                font-size: 1.8rem;
+                .service-detail-title {
+                    font-size: 1.8rem;
+                }
+
+                .service-detail-container {
+                    padding: 1rem 0;
+                }
+
+                .service-detail-card {
+                    margin: 0 1rem;
+                    border-radius: 16px;
+                }
+
+                .service-detail-header {
+                    padding: 2rem 1.5rem 1rem;
+                }
+
+                .service-detail-body {
+                    padding: 0 1.5rem 1.5rem;
+                }
             }
 
-            .service-detail-container {
-                padding: 1rem 0;
-            }
-
-            .service-detail-card {
-                margin: 0 1rem;
-                border-radius: 16px;
-            }
-
-            .service-detail-header {
-                padding: 2rem 1.5rem 1rem;
-            }
-
-            .service-detail-body {
-                padding: 0 1.5rem 1.5rem;
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .service-meta {
-                flex-direction: column;
-                gap: 8px !important;
+            @@media (max-width: 576px) {
+                .service-meta {
+                    flex-direction: column;
+                    gap: 8px !important;
+                }
             }
         }
     </style>
@@ -330,6 +421,16 @@
             </div>
 
             <div class="service-detail-body">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <div class="service-image-container">
+                        <img src="@Model.ImagePath" 
+                             alt="@Model.NameService" 
+                             class="service-image"
+                             onerror="this.parentElement.innerHTML='<div class=&quot;service-image-error&quot;><div class=&quot;text-center&quot;><i class=&quot;fas fa-image&quot;></i><br>Изображението не може да бъде заредено</div></div>'">
+                    </div>
+                }
+
                 <dl class="service-detail-dl">
                     <dt>Име на услугата:</dt>
                     <dd>@Html.DisplayFor(model => model.NameService)</dd>
@@ -346,7 +447,7 @@
                     </dd>
 
                     <dt>Описание:</dt>
-                    <dd>@Html.DisplayFor(model => model.Description)</dd>
+                    <dd>@Html.Raw(Model.Description)</dd>
                 </dl>
 
                 @if (user != null)
@@ -356,14 +457,14 @@
                         {
                             <h3 class="reservation-title">Резервация за астрологична консултация</h3>
                             <form id="reservationForm" method="post" action="/Services/CreateReservation">
-                                <input type="hidden" name="ServiceId" value="@Model.Id" />
+                                <input type="hidden" name="ServiceId" value="@Model.Id"/>
                                 <div class="mb-3">
                                     <label for="astrologicalDate" class="form-label">Дата и час на раждане</label>
-                                    <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" required />
+                                    <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" required/>
                                 </div>
                                 <div class="mb-3">
                                     <label for="birthCity" class="form-label">Град на раждане</label>
-                                    <input type="text" id="birthCity" name="birthCity" class="form-control" required placeholder="Въведете града, в който сте родени" />
+                                    <input type="text" id="birthCity" name="birthCity" class="form-control" required placeholder="Въведете града, в който сте родени"/>
                                 </div>
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-service">
@@ -389,9 +490,9 @@
                             <div id="errorMessage" class="alert alert-danger text-center d-none mt-3"></div>
 
                             <form id="timeReservationForm" method="post" action="/Services/CreateReservation" class="d-none text-center">
-                                <input type="hidden" name="ServiceId" value="@Model.Id" />
-                                <input type="hidden" id="selectedReservationDate" name="reservationDate" />
-                                <input type="hidden" id="selectedReservationTime" name="reservationTime" />
+                                <input type="hidden" name="ServiceId" value="@Model.Id"/>
+                                <input type="hidden" id="selectedReservationDate" name="reservationDate"/>
+                                <input type="hidden" id="selectedReservationTime" name="reservationTime"/>
                                 <button type="submit" id="confirmReservationBtn" class="btn btn-service">
                                     <i class="fas fa-calendar-check me-2"></i> Потвърди резервация
                                 </button>
@@ -404,8 +505,8 @@
                     <div class="alert alert-info text-center mt-4" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                         <div class="d-flex flex-column align-items-center">
                             <p class="mb-3 text-white">За да резервирате услуга, моля влезте в профила си.</p>
-                            <a asp-area="Identity" asp-page="/Account/Login" 
-                               class="btn px-4 py-2 fw-bold text-white" 
+                            <a asp-area="Identity" asp-page="/Account/Login"
+                               class="btn px-4 py-2 fw-bold text-white"
                                style="border-radius: 25px;">
                                 <i class="fas fa-sign-in-alt me-2"></i> Вход
                             </a>

@@ -26,7 +26,9 @@ namespace PA_Website.Controllers
         private readonly IConfiguration _configuration;
         private readonly IPromotionService _promotionService;
 
-        public UserServicesController(ApplicationDbContext context, UserManager<User> userService, IEmailSender emailSender, ILogger<UserServicesController> logger, IConfiguration configuration, IPromotionService promotionService)
+        public UserServicesController(ApplicationDbContext context, UserManager<User> userService,
+            IEmailSender emailSender, ILogger<UserServicesController> logger, IConfiguration configuration,
+            IPromotionService promotionService)
         {
             _context = context;
             _userManager = userService;
@@ -37,7 +39,8 @@ namespace PA_Website.Controllers
         }
 
         // GET: UserServices
-        public async Task<IActionResult> Index(string sortOrder, string categoryFilter, string statusFilter, DateTime? startDate, DateTime? endDate, int pageNumber = 1, int pageSize = 12)
+        public async Task<IActionResult> Index(string sortOrder, string categoryFilter, string statusFilter,
+            DateTime? startDate, DateTime? endDate, int pageNumber = 1, int pageSize = 12)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -54,7 +57,8 @@ namespace PA_Website.Controllers
             // Приложете филтър за категория
             if (!string.IsNullOrEmpty(categoryFilter))
             {
-                reservations = reservations.Where(r => r.Service.CategoryOfService.ToLower() == categoryFilter.ToLower());
+                reservations =
+                    reservations.Where(r => r.Service.CategoryOfService.ToLower() == categoryFilter.ToLower());
             }
 
             // Приложете филтър за дата
@@ -87,7 +91,8 @@ namespace PA_Website.Controllers
                 if (reservation.Service.CategoryOfService.ToLower() == "психология" &&
                     reservation.Status != "Completed" &&
                     reservation.Status != "Cancelled" &&
-                    reservation.ReservationDate.Add(reservation.ReservationTime ?? TimeSpan.Zero).AddHours(1) < DateTime.Now)
+                    reservation.ReservationDate.Add(reservation.ReservationTime ?? TimeSpan.Zero).AddHours(1) <
+                    DateTime.Now)
                 {
                     reservation.Status = "Expired";
                 }
@@ -124,7 +129,8 @@ namespace PA_Website.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> IndexAdmin(string sortOrder, string statusFilter, int pageNumber = 1, int pageSize = 12)
+        public async Task<IActionResult> IndexAdmin(string sortOrder, string statusFilter, int pageNumber = 1,
+            int pageSize = 12)
         {
             // Първо заредете всички резервации с необходимите включвания
             var query = _context.userServices
@@ -149,7 +155,8 @@ namespace PA_Website.Controllers
                 if (reservation.Service.CategoryOfService.ToLower() == "психология" &&
                     reservation.Status != "Completed" &&
                     reservation.Status != "Cancelled" &&
-                    reservation.ReservationDate.Add(reservation.ReservationTime ?? TimeSpan.Zero).AddHours(1) < DateTime.Now)
+                    reservation.ReservationDate.Add(reservation.ReservationTime ?? TimeSpan.Zero).AddHours(1) <
+                    DateTime.Now)
                 {
                     reservation.Status = "Expired";
                 }
@@ -233,7 +240,8 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,UserId,ServiceId,AstrologicalDate,ReservationDate,ReservationTime")] UserService userService)
+        public async Task<IActionResult> Create(
+            [Bind("Id,UserId,ServiceId,AstrologicalDate,ReservationDate,ReservationTime")] UserService userService)
         {
             var service = await _context.Service.FindAsync(userService.ServiceId);
             if (service == null)
@@ -246,9 +254,11 @@ namespace PA_Website.Controllers
             {
                 if (userService.AstrologicalDate == DateTime.MinValue)
                 {
-                    ModelState.AddModelError("AstrologicalDate", "Моля, въведете валидна дата за астрологичната услуга.");
+                    ModelState.AddModelError("AstrologicalDate",
+                        "Моля, въведете валидна дата за астрологичната услуга.");
                     return View(userService);
                 }
+
                 userService.ReservationDate = DateTime.MinValue;
                 userService.ReservationTime = null;
             }
@@ -259,18 +269,21 @@ namespace PA_Website.Controllers
                     ModelState.AddModelError("ReservationDate", "Моля, изберете бъдеща дата.");
                     return View(userService);
                 }
+
                 if (userService.ReservationTime == null)
                 {
                     ModelState.AddModelError("ReservationTime", "Моля, изберете час за среща.");
                     return View(userService);
                 }
+
                 userService.AstrologicalDate = DateTime.MinValue;
             }
 
             if (ModelState.IsValid)
             {
                 // Calculate price paid (with promotion logic) and track used promotions
-                var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(userService.UserId, service);
+                var (pricePaid, usedPromotions) =
+                    await _promotionService.CalculatePricePaidWithTracking(userService.UserId, service);
                 userService.PricePaid = pricePaid;
                 _context.Add(userService);
                 await _context.SaveChangesAsync();
@@ -286,10 +299,11 @@ namespace PA_Website.Controllers
                         UserServiceId = userService.Id
                     };
                     _context.UserPromotions.Add(userPromotion);
-                    
+
                     // Update promotion usage count
                     promotion.UsedCount++;
                 }
+
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Успешно резервирахте услуга!";
@@ -325,7 +339,8 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,ServiceId,AstrologicalDate,ReservationDate,ReservationTime")] UserService userService)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,UserId,ServiceId,AstrologicalDate,ReservationDate,ReservationTime")] UserService userService)
         {
             if (id != userService.Id)
             {
@@ -367,6 +382,7 @@ namespace PA_Website.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -401,7 +417,6 @@ namespace PA_Website.Controllers
 
             return View(userService);
         }
-
 
 
         // GET: UserServices/Delete/5
@@ -455,7 +470,7 @@ namespace PA_Website.Controllers
                 .Include(r => r.User)
                 .Include(r => r.Service)
                 .FirstOrDefaultAsync(r => r.Id == id);
-                
+
             if (reservation == null)
             {
                 return NotFound();
@@ -474,8 +489,10 @@ namespace PA_Website.Controllers
             // Only set PricePaid if it's zero (legacy data)
             if (newStatus == "Completed" && reservation.PricePaid == 0)
             {
-                reservation.PricePaid = await _promotionService.CalculatePricePaid(reservation.UserId, reservation.Service);
+                reservation.PricePaid =
+                    await _promotionService.CalculatePricePaid(reservation.UserId, reservation.Service);
             }
+
             _context.Update(reservation);
             await _context.SaveChangesAsync();
 
@@ -483,12 +500,13 @@ namespace PA_Website.Controllers
             if (newStatus == "Confirmed" && oldStatus != "Confirmed" && !string.IsNullOrEmpty(reservation.User?.Email))
             {
                 var subject = "Потвърждение на плащането - Резервацията е активирана";
-                
+
                 string dateInfo = reservation.Service.CategoryOfService.ToLower() == "астрология"
                     ? $"<li>Дата за астрологичен анализ: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>"
                     : $"<li>Дата на консултация: {reservation.ReservationDate:dd.MM.yyyy HH:mm}</li>";
-                    
-                string birthCityInfo = reservation.Service.CategoryOfService.ToLower() == "астрология" && !string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth)
+
+                string birthCityInfo = reservation.Service.CategoryOfService.ToLower() == "астрология" &&
+                                       !string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth)
                     ? $"<li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>"
                     : string.Empty;
 
@@ -519,12 +537,12 @@ namespace PA_Website.Controllers
             }
 
             // Send completion email when status is changed to "Completed" for astrology services
-            if (newStatus == "Completed" && oldStatus != "Completed" && 
-                reservation.Service.CategoryOfService.ToLower() == "астрология" && 
+            if (newStatus == "Completed" && oldStatus != "Completed" &&
+                reservation.Service.CategoryOfService.ToLower() == "астрология" &&
                 !string.IsNullOrEmpty(reservation.User?.Email))
             {
                 var subject = "Вашата астрологична услуга е завършена";
-                
+
                 // Generate the URL for the user service details
                 var baseUrl = $"{Request.Scheme}://{Request.Host}";
                 var userServiceUrl = $"{baseUrl}/UserServices/Details/{reservation.Id}";
@@ -644,12 +662,12 @@ namespace PA_Website.Controllers
             await _context.SaveChangesAsync();
 
             // Send completion email when status is changed to "Completed" for astrology services
-            if (reservation.Status == "Completed" && oldStatus != "Completed" && 
-                reservation.Service.CategoryOfService.ToLower() == "астрология" && 
+            if (reservation.Status == "Completed" && oldStatus != "Completed" &&
+                reservation.Service.CategoryOfService.ToLower() == "астрология" &&
                 !string.IsNullOrEmpty(reservation.User?.Email))
             {
                 var subject = "Вашата астрологична услуга е завършена";
-                
+
                 // Generate the URL for the user service details
                 var baseUrl = $"{Request.Scheme}://{Request.Host}";
                 var userServiceUrl = $"{baseUrl}/UserServices/Details/{reservation.Id}";
@@ -707,7 +725,8 @@ namespace PA_Website.Controllers
 
             if (!string.IsNullOrEmpty(reservation.AstroCardFilePath))
             {
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", reservation.AstroCardFilePath.TrimStart('/'));
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
+                    reservation.AstroCardFilePath.TrimStart('/'));
                 if (System.IO.File.Exists(filePath))
                 {
                     System.IO.File.Delete(filePath);
@@ -736,7 +755,8 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", reservation.AstroCardFilePath.TrimStart('/'));
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
+                reservation.AstroCardFilePath.TrimStart('/'));
             if (!System.IO.File.Exists(path))
             {
                 return NotFound();
@@ -747,6 +767,7 @@ namespace PA_Website.Controllers
             {
                 await stream.CopyToAsync(memory);
             }
+
             memory.Position = 0;
 
             return File(memory, reservation.AstroCardContentType, reservation.AstroCardFileName);
@@ -829,12 +850,12 @@ namespace PA_Website.Controllers
                     currentUser.Email = user.Email;
                     currentUser.PhoneNumber = user.PhoneNumber;
                     currentUser.Birth_Date = user.Birth_Date;
-                    
+
                     // Automatically recalculate zodiac sign based on birth date
                     currentUser.Zodiacal_Sign = CalculateZodiacSign(user.Birth_Date);
 
                     var result = await _userManager.UpdateAsync(currentUser);
-                    
+
                     if (result.Succeeded)
                     {
                         TempData["SuccessMessage"] = "Профилът е обновен успешно!";
@@ -842,7 +863,8 @@ namespace PA_Website.Controllers
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Грешка при обновяване на профила: " + string.Join(", ", result.Errors.Select(e => e.Description));
+                        TempData["ErrorMessage"] = "Грешка при обновяване на профила: " +
+                                                   string.Join(", ", result.Errors.Select(e => e.Description));
                     }
                 }
                 catch (Exception ex)
@@ -906,6 +928,7 @@ namespace PA_Website.Controllers
                     zodiac = "Неизвестна зодия";
                     break;
             }
+
             return zodiac;
         }
 
@@ -950,10 +973,12 @@ namespace PA_Website.Controllers
             {
                 _logger.LogError(ex, "Failed to send user cancellation email");
             }
+
             try
             {
                 // Send email to admin
-                var adminEmailHtml = AdminNotificationEmailTemplate(user, reservation, reservation.Service, "cancelled");
+                var adminEmailHtml =
+                    AdminNotificationEmailTemplate(user, reservation, reservation.Service, "cancelled");
                 var adminEmail = _configuration["EmailSettings:AdminEmail"] ?? "dushevna_mozaika@abv.bg";
                 await _emailSender.SendEmailAsync(adminEmail, "Отменена резервация - Известие", adminEmailHtml);
             }
@@ -969,7 +994,8 @@ namespace PA_Website.Controllers
         // POST: UserServices/RescheduleReservation
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RescheduleReservation(int id, DateTime newDate, TimeSpan newTime, int serviceId)
+        public async Task<IActionResult> RescheduleReservation(int id, DateTime newDate, TimeSpan newTime,
+            int serviceId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -994,8 +1020,8 @@ namespace PA_Website.Controllers
 
             // Check if new date/time is available
             var conflictingReservation = await _context.userServices
-                .Where(r => r.ServiceId == serviceId && 
-                            r.ReservationDate == newDate.Date && 
+                .Where(r => r.ServiceId == serviceId &&
+                            r.ReservationDate == newDate.Date &&
                             r.ReservationTime == newTime &&
                             r.Status != "Cancelled" &&
                             r.Id != id)
@@ -1035,17 +1061,21 @@ namespace PA_Website.Controllers
             try
             {
                 // Send email to user
-                var userEmailHtml = RescheduleReservationEmailTemplate(user, reservation, newReservation, reservation.Service);
-                await _emailSender.SendEmailAsync(user.Email, "Резервация пренасрочена - Душевна Мозайка", userEmailHtml);
+                var userEmailHtml =
+                    RescheduleReservationEmailTemplate(user, reservation, newReservation, reservation.Service);
+                await _emailSender.SendEmailAsync(user.Email, "Резервация пренасрочена - Душевна Мозайка",
+                    userEmailHtml);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to send user reschedule email");
             }
+
             try
             {
                 // Send email to admin
-                var adminEmailHtml = AdminNotificationEmailTemplate(user, newReservation, reservation.Service, "rescheduled");
+                var adminEmailHtml =
+                    AdminNotificationEmailTemplate(user, newReservation, reservation.Service, "rescheduled");
                 var adminEmail = _configuration["EmailSettings:AdminEmail"] ?? "dushevna_mozaika@abv.bg";
                 await _emailSender.SendEmailAsync(adminEmail, "Пренасрочена резервация - Известие", adminEmailHtml);
             }
@@ -1061,9 +1091,9 @@ namespace PA_Website.Controllers
         // Email template methods
         private string CreateReservationEmailTemplate(User user, UserService reservation, Service service)
         {
-            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : reservation.ReservationTime.HasValue 
+            var dateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : reservation.ReservationTime.HasValue
                     ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
                     : $"{reservation.ReservationDate:dd.MM.yyyy}";
 
@@ -1109,17 +1139,18 @@ namespace PA_Website.Controllers
                 </div>";
         }
 
-        private string RescheduleReservationEmailTemplate(User user, UserService oldReservation, UserService newReservation, Service service)
+        private string RescheduleReservationEmailTemplate(User user, UserService oldReservation,
+            UserService newReservation, Service service)
         {
-            var oldDateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? oldReservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : oldReservation.ReservationTime.HasValue 
+            var oldDateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? oldReservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : oldReservation.ReservationTime.HasValue
                     ? $"{oldReservation.ReservationDate:dd.MM.yyyy} в {oldReservation.ReservationTime.Value:hh\\:mm}"
                     : $"{oldReservation.ReservationDate:dd.MM.yyyy}";
 
-            var newDateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? newReservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : newReservation.ReservationTime.HasValue 
+            var newDateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? newReservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : newReservation.ReservationTime.HasValue
                     ? $"{newReservation.ReservationDate:dd.MM.yyyy} в {newReservation.ReservationTime.Value:hh\\:mm}"
                     : $"{newReservation.ReservationDate:dd.MM.yyyy}";
 
@@ -1167,9 +1198,9 @@ namespace PA_Website.Controllers
 
         private string CancelReservationEmailTemplate(User user, UserService reservation, Service service)
         {
-            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : reservation.ReservationTime.HasValue 
+            var dateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : reservation.ReservationTime.HasValue
                     ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
                     : $"{reservation.ReservationDate:dd.MM.yyyy}";
 
@@ -1215,11 +1246,12 @@ namespace PA_Website.Controllers
                 </div>";
         }
 
-        private string AdminNotificationEmailTemplate(User user, UserService reservation, Service service, string action)
+        private string AdminNotificationEmailTemplate(User user, UserService reservation, Service service,
+            string action)
         {
-            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : reservation.ReservationTime.HasValue 
+            var dateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : reservation.ReservationTime.HasValue
                     ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
                     : $"{reservation.ReservationDate:dd.MM.yyyy}";
 
@@ -1283,7 +1315,8 @@ namespace PA_Website.Controllers
         // POST: UserServices/CreateReservation
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateReservation(int serviceId, DateTime reservationDate, TimeSpan? reservationTime, DateTime? astrologicalDate, string? astrologicalPlaceOfBirth)
+        public async Task<IActionResult> CreateReservation(int serviceId, DateTime reservationDate,
+            TimeSpan? reservationTime, DateTime? astrologicalDate, string? astrologicalPlaceOfBirth)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -1314,6 +1347,7 @@ namespace PA_Website.Controllers
                     TempData["ErrorMessage"] = "Моля, изберете бъдеща дата.";
                     return RedirectToAction(nameof(Dashboard));
                 }
+
                 if (!reservationTime.HasValue)
                 {
                     TempData["ErrorMessage"] = "Моля, изберете час за среща.";
@@ -1322,8 +1356,8 @@ namespace PA_Website.Controllers
 
                 // Check for conflicts
                 var conflictingReservation = await _context.userServices
-                    .Where(r => r.ServiceId == serviceId && 
-                                r.ReservationDate == reservationDate.Date && 
+                    .Where(r => r.ServiceId == serviceId &&
+                                r.ReservationDate == reservationDate.Date &&
                                 r.ReservationTime == reservationTime &&
                                 r.Status != "Cancelled")
                     .FirstOrDefaultAsync();
@@ -1343,9 +1377,13 @@ namespace PA_Website.Controllers
             {
                 UserId = user.Id,
                 ServiceId = serviceId,
-                ReservationDate = service.CategoryOfService.ToLower() == "астрология" ? DateTime.MinValue : reservationDate.Date,
+                ReservationDate = service.CategoryOfService.ToLower() == "астрология"
+                    ? DateTime.MinValue
+                    : reservationDate.Date,
                 ReservationTime = service.CategoryOfService.ToLower() == "астрология" ? null : reservationTime,
-                AstrologicalDate = service.CategoryOfService.ToLower() == "астрология" ? astrologicalDate : DateTime.MinValue,
+                AstrologicalDate = service.CategoryOfService.ToLower() == "астрология"
+                    ? astrologicalDate
+                    : DateTime.MinValue,
                 AstrologicalPlaceOfBirth = astrologicalPlaceOfBirth,
                 Status = "Pending",
                 PricePaid = pricePaid
@@ -1365,10 +1403,11 @@ namespace PA_Website.Controllers
                     UserServiceId = newReservation.Id
                 };
                 _context.UserPromotions.Add(userPromotion);
-                
+
                 // Update promotion usage count
                 promotion.UsedCount++;
             }
+
             await _context.SaveChangesAsync();
 
             // Send email notifications
@@ -1382,6 +1421,7 @@ namespace PA_Website.Controllers
             {
                 _logger.LogError(ex, "Failed to send user creation email");
             }
+
             try
             {
                 // Send email to admin
@@ -1448,7 +1488,8 @@ namespace PA_Website.Controllers
                         emailSubject = "Напомняне за резервация - Душевна Мозайка";
                         break;
                     case "custom":
-                        emailHtml = CreateCustomEmailTemplate(reservation.User, reservation, reservation.Service, message);
+                        emailHtml = CreateCustomEmailTemplate(reservation.User, reservation, reservation.Service,
+                            message);
                         emailSubject = subject;
                         break;
                     default:
@@ -1471,9 +1512,9 @@ namespace PA_Website.Controllers
         // Email template for confirmation
         private string CreateConfirmationEmailTemplate(User user, UserService reservation, Service service)
         {
-            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : reservation.ReservationTime.HasValue 
+            var dateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : reservation.ReservationTime.HasValue
                     ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
                     : $"{reservation.ReservationDate:dd.MM.yyyy}";
 
@@ -1522,9 +1563,9 @@ namespace PA_Website.Controllers
         // Email template for reminder
         private string CreateReminderEmailTemplate(User user, UserService reservation, Service service)
         {
-            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : reservation.ReservationTime.HasValue 
+            var dateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : reservation.ReservationTime.HasValue
                     ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
                     : $"{reservation.ReservationDate:dd.MM.yyyy}";
 
@@ -1571,11 +1612,12 @@ namespace PA_Website.Controllers
         }
 
         // Email template for custom message
-        private string CreateCustomEmailTemplate(User user, UserService reservation, Service service, string customMessage)
+        private string CreateCustomEmailTemplate(User user, UserService reservation, Service service,
+            string customMessage)
         {
-            var dateTime = service.CategoryOfService.ToLower() == "астрология" 
-                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy") 
-                : reservation.ReservationTime.HasValue 
+            var dateTime = service.CategoryOfService.ToLower() == "астрология"
+                ? reservation.AstrologicalDate?.ToString("dd.MM.yyyy")
+                : reservation.ReservationTime.HasValue
                     ? $"{reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}"
                     : $"{reservation.ReservationDate:dd.MM.yyyy}";
 
@@ -1643,12 +1685,14 @@ namespace PA_Website.Controllers
                     {
                         allowedTimes.Add(new TimeSpan(hour, 0, 0));
                     }
+
                     break;
                 case DayOfWeek.Sunday:
                     for (int hour = 9; hour <= 13; hour++)
                     {
                         allowedTimes.Add(new TimeSpan(hour, 0, 0));
                     }
+
                     break;
                 default:
                     return Json(new { success = false, message = "Невалиден ден." });
@@ -1656,8 +1700,8 @@ namespace PA_Website.Controllers
 
             // Get already reserved times
             var reservedTimes = await _context.userServices
-                .Where(r => r.ServiceId == serviceId && 
-                            r.ReservationTime.HasValue && 
+                .Where(r => r.ServiceId == serviceId &&
+                            r.ReservationTime.HasValue &&
                             r.ReservationDate.Date == date.Date &&
                             r.Status != "Cancelled")
                 .Select(r => r.ReservationTime!.Value)
@@ -1676,6 +1720,9 @@ namespace PA_Website.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SendBulkEmail()
         {
+            var tinyMceApiKey = _configuration["TinyMCE:ApiKey"];
+            ViewBag.TinyMceApiKey = tinyMceApiKey;
+
             var users = await _userManager.Users
                 .Where(u => u.EmailSend)
                 .OrderBy(u => u.FName)
@@ -1693,28 +1740,30 @@ namespace PA_Website.Controllers
                 .OrderBy(n => n.Email)
                 .Select(n => new
                 {
-                    Id = "newsletter_" + n.Id.ToString(),
+                    Id = "newsletter_" + n.Id.ToString(), // Fixed: Use underscore consistently
                     FName = "Newsletter",
-                    LName = "Subscriber", 
+                    LName = "Subscriber",
                     Email = n.Email
                 })
                 .ToListAsync();
 
-            // Pass both collections separately
             ViewBag.Users = users;
             ViewBag.NewsletterSubscribers = newsletterSubscribers;
 
             return View();
         }
 
-
-        // POST: UserServices/SendBulkEmail
+// POST Method - Enhanced with debugging and fixes
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> SendBulkEmail(string[] selectedUserIds, string subject, string message, string emailType)
+        public async Task<IActionResult> SendBulkEmail(string[] selectedUserIds, string subject, string message,
+            string emailType)
         {
-            _logger.LogInformation($"Bulk email request received. Selected users: {selectedUserIds?.Length ?? 0}, Subject: {subject}, EmailType: {emailType}");
+            _logger.LogInformation(
+                $"Bulk email request received. Selected users: {selectedUserIds?.Length ?? 0}, Subject: {subject}, EmailType: {emailType}");
+            _logger.LogInformation($"Message content length: {message?.Length ?? 0}");
+            _logger.LogInformation($"Selected user IDs: {string.Join(", ", selectedUserIds ?? new string[0])}");
 
             if (selectedUserIds == null || !selectedUserIds.Any())
             {
@@ -1723,9 +1772,10 @@ namespace PA_Website.Controllers
                 return RedirectToAction(nameof(SendBulkEmail));
             }
 
-            if (string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(message))
+            if (string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(message))
             {
-                _logger.LogWarning("Missing subject or message for bulk email");
+                _logger.LogWarning(
+                    $"Missing subject or message for bulk email. Subject empty: {string.IsNullOrWhiteSpace(subject)}, Message empty: {string.IsNullOrWhiteSpace(message)}");
                 TempData["ErrorMessage"] = "Моля, попълнете заглавие и съобщение.";
                 return RedirectToAction(nameof(SendBulkEmail));
             }
@@ -1733,12 +1783,22 @@ namespace PA_Website.Controllers
             // Separate regular user IDs from newsletter subscriber IDs
             var regularUserIds = selectedUserIds.Where(id => !id.StartsWith("newsletter_")).ToList();
             var newsletterIds = selectedUserIds.Where(id => id.StartsWith("newsletter_"))
-                .Select(id => int.Parse(id.Replace("newsletter_", "")))
+                .Select(id =>
+                {
+                    var idString = id.Replace("newsletter_", "");
+                    if (int.TryParse(idString, out int parsedId))
+                        return parsedId;
+                    _logger.LogWarning($"Failed to parse newsletter ID: {id}");
+                    return -1;
+                })
+                .Where(id => id != -1)
                 .ToList();
 
-            _logger.LogInformation($"Regular users: {regularUserIds.Count}, Newsletter subscribers: {newsletterIds.Count}");
+            _logger.LogInformation(
+                $"Regular users: {regularUserIds.Count}, Newsletter subscribers: {newsletterIds.Count}");
 
-            var recipients = new List<dynamic>();
+            // Use a proper class instead of dynamic
+            var recipients = new List<EmailRecipient>();
 
             // Get regular users
             if (regularUserIds.Any())
@@ -1750,9 +1810,10 @@ namespace PA_Website.Controllers
 
                 foreach (var user in users)
                 {
-                    recipients.Add(new { 
-                        FName = user.FName, 
-                        LName = user.LName, 
+                    recipients.Add(new EmailRecipient
+                    {
+                        FName = user.FName,
+                        LName = user.LName,
                         Email = user.Email,
                         IsUser = true
                     });
@@ -1769,9 +1830,10 @@ namespace PA_Website.Controllers
 
                 foreach (var subscriber in newsletterSubscribers)
                 {
-                    recipients.Add(new { 
-                        FName = "Newsletter", 
-                        LName = "Subscriber", 
+                    recipients.Add(new EmailRecipient
+                    {
+                        FName = "Newsletter",
+                        LName = "Subscriber",
                         Email = subscriber.Email,
                         IsUser = false
                     });
@@ -1796,7 +1858,7 @@ namespace PA_Website.Controllers
                 try
                 {
                     _logger.LogInformation($"Attempting to send email to {recipient.Email}");
-            
+
                     // Validate email
                     if (string.IsNullOrEmpty(recipient.Email))
                     {
@@ -1818,7 +1880,7 @@ namespace PA_Website.Controllers
                         // For newsletter subscribers, use a simpler template
                         emailHtml = CreateBulkEmailTemplateForSubscriber(recipient.Email, message, emailType);
                     }
-            
+
                     await _emailSender.SendEmailAsync(recipient.Email, subject, emailHtml);
                     successCount++;
                     _logger.LogInformation($"Successfully sent email to {recipient.Email}");
@@ -1838,7 +1900,8 @@ namespace PA_Website.Controllers
                 TempData["SuccessMessage"] = $"Имейлът е изпратен успешно на {successCount} потребител(и).";
                 if (failureCount > 0)
                 {
-                    TempData["WarningMessage"] = $"Грешка при изпращане на {failureCount} имейл(а): {string.Join(", ", failedEmails.Take(5))}";
+                    TempData["WarningMessage"] =
+                        $"Грешка при изпращане на {failureCount} имейл(а): {string.Join(", ", failedEmails.Take(5))}";
                     if (failedEmails.Count > 5)
                     {
                         TempData["WarningMessage"] += $" и още {failedEmails.Count - 5}...";
@@ -1851,6 +1914,15 @@ namespace PA_Website.Controllers
             }
 
             return RedirectToAction(nameof(SendBulkEmail));
+        }
+
+        // Helper class for recipients
+        public class EmailRecipient
+        {
+            public string FName { get; set; }
+            public string LName { get; set; }
+            public string Email { get; set; }
+            public bool IsUser { get; set; }
         }
 
         // Updated email template method for users
@@ -1971,6 +2043,7 @@ namespace PA_Website.Controllers
             {
                 reservations = reservations.Where(r => r.ReservationDate.Year == year.Value);
             }
+
             if (month.HasValue)
             {
                 reservations = reservations.Where(r => r.ReservationDate.Month == month.Value);
@@ -2023,6 +2096,7 @@ namespace PA_Website.Controllers
             {
                 earningsByMonth = earningsByMonth.Where(r => r.ReservationDate.Year == year.Value);
             }
+
             var monthlyData = earningsByMonth
                 .GroupBy(r => r.ReservationDate.Month)
                 .Select(g => new { Month = g.Key, Earnings = g.Sum(r => r.PricePaid) })
@@ -2045,8 +2119,5 @@ namespace PA_Website.Controllers
                 earningsByService
             });
         }
-
-
-
     }
 }

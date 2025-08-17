@@ -56,6 +56,7 @@ namespace PA_Website.Services
             try
             {
                 _logger.LogInformation("Testing email configuration...");
+                _logger.LogInformation($"SMTP Server: {_smtpServer}, Port: {_smtpPort}, FromEmail: {_fromEmail}, SSL: {_enableSsl}");
                 
                 using var client = new SmtpClient(_smtpServer, _smtpPort);
                 client.EnableSsl = _enableSsl;
@@ -69,6 +70,11 @@ namespace PA_Website.Services
             {
                 _logger.LogError(ex, "Email configuration test failed. Please check your email settings.");
                 _logger.LogError($"SMTP Server: {_smtpServer}, Port: {_smtpPort}, FromEmail: {_fromEmail}, SSL: {_enableSsl}");
+                _logger.LogError($"Error details: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError($"Inner exception: {ex.InnerException.Message}");
+                }
             }
         }
 
@@ -114,6 +120,7 @@ namespace PA_Website.Services
                 _logger.LogInformation($"From: {_fromEmail} ({_fromName})");
                 _logger.LogInformation($"To: {email}");
                 _logger.LogInformation($"Subject: {subject}");
+                _logger.LogInformation($"Message length: {htmlMessage?.Length ?? 0} characters");
 
                 await client.SendMailAsync(mailMessage);
 
@@ -196,6 +203,41 @@ namespace PA_Website.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Email configuration test failed");
+                return false;
+            }
+        }
+
+        // Method to test SMTP connection without sending email
+        public bool TestSmtpConnection()
+        {
+            try
+            {
+                _logger.LogInformation("Testing SMTP connection...");
+                
+                using var client = new SmtpClient(_smtpServer, _smtpPort);
+                client.EnableSsl = _enableSsl;
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential(_fromEmail, _password);
+                client.Timeout = 10000; // 10 seconds timeout
+                
+                // Try to connect and authenticate
+                client.SendCompleted += (sender, e) => {
+                    if (e.Error != null)
+                    {
+                        _logger.LogError($"SMTP SendCompleted error: {e.Error.Message}");
+                    }
+                    else
+                    {
+                        _logger.LogInformation("SMTP SendCompleted successfully");
+                    }
+                };
+                
+                _logger.LogInformation("SMTP connection test completed successfully");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "SMTP connection test failed");
                 return false;
             }
         }

@@ -262,13 +262,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Description" class="form-label">Описание</label>
-                        <div class="input-group px-2">
-                            <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Въведете описание на услугата"></textarea>
-                        </div>
+                        <label asp-for="Description" class="form-label flex items-center gap-2">
+                            <i class="fas fa-align-left text-gray-500"></i>
+                            Описание
+                        </label>
+                        <textarea asp-for="Description" id="editor" class="form-control" rows="5" placeholder="Въведете описание на услугата"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
+
+
 
                     <div class="form-group">
                         <label for="imageFile" class="form-label">Снимка на услугата</label>
@@ -299,4 +301,32 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="@($"https://cdn.tiny.cloud/1/{ViewBag.TinyMceApiKey}/tinymce/6/tinymce.min.js")" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#editor',
+            language: 'en',
+            height: 500,
+            plugins: 'lists link image table code help wordcount',
+            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | image | help',
+            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            images_upload_handler: function (blobInfo, progress, failure) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                        resolve(reader.result);
+                    };
+                    reader.onerror = function () {
+                        reject('Image upload failed');
+                    };
+                    reader.readAsDataURL(blobInfo.blob());
+                });
+            },
+            image_advtab: true,
+            image_dimensions: true
+        });
+    </script>
 }
+

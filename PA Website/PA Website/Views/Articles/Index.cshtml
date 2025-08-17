@@ -397,13 +397,12 @@
                                 <p class="article-description">@Html.Raw(article.Description.TruncateHtml(30))</p>
                             }
 
-                            @if (!string.IsNullOrEmpty(article.Creator?.UserName))
-                            {
+                           
                                 <div class="article-author">
                                     <i class="fas fa-user"></i>
-                                    <span>@article.Creator.UserName</span>
+                                    <span>Мариела Разпопова</span>
                                 </div>
-                            }
+                            
 
                             <!-- Action Buttons -->
                             <div class="article-actions">

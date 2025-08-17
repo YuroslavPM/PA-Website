@@ -460,6 +460,11 @@
                                     </div>
                                 }
                             </div>
+                            <div class="mt-4">
+                                <button type="button" id="exportExcelBtn" class="btn-outline">
+                                    <i class="fas fa-file-excel mr-2"></i> Експорт в Excel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -468,7 +473,7 @@
                 <div class="bulk-email-card">
                     <div class="bulk-email-body">
                         <h2 class="text-xl font-bold text-gray-800 mb-6">Създаване на имейл</h2>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Тип имейл</label>
                             <div class="email-type-buttons">
@@ -489,10 +494,11 @@
                             <label class="form-label">Заглавие на имейла</label>
                             <input type="text" id="subject" name="subject" class="form-control" placeholder="Въведете заглавие на имейла" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Съобщение</label>
-                            <textarea id="message" name="message" class="form-control" rows="8" placeholder="Въведете вашето персонализирано съобщение..." required></textarea>
+                            <textarea id="editor" class="form-control" rows="8" placeholder="Въведете вашето персонализирано съобщение..." required></textarea>
+                            <input type="hidden" id="message" name="message" />
                         </div>
 
                         <div class="progress-indicator" id="progressIndicator">
@@ -516,52 +522,71 @@
 </div>
 
 @section Scripts {
+    <script src="@($"https://cdn.tiny.cloud/1/{ViewBag.TinyMceApiKey}/tinymce/6/tinymce.min.js")" referrerpolicy="origin"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
+            // --- TinyMCE Init ---
+            if (typeof tinymce !== 'undefined') {
+                tinymce.init({
+                    selector: '#editor',
+                    height: 300,
+                    menubar: false,
+                    plugins: 'lists link table code',
+                    toolbar: 'undo redo | bold italic underline | bullist numlist | link table | removeformat | code',
+                    branding: false,
+                    language: 'en'
+                });
+            } else {
+                console.error('TinyMCE not loaded - check API key and CDN connection');
+            }
+
             // Show success/error messages
             @if (TempData["SuccessMessage"] != null)
             {
                 <text>
-                showMessage('@TempData["SuccessMessage"]', 'success');
+                showMessage('@Html.Raw(Html.Encode(TempData["SuccessMessage"]).ToString().Replace("'", "\\'"))', 'success');
                 </text>
             }
             @if (TempData["ErrorMessage"] != null)
             {
                 <text>
-                showMessage('@TempData["ErrorMessage"]', 'error');
+                showMessage('@Html.Raw(Html.Encode(TempData["ErrorMessage"]).ToString().Replace("'", "\\'"))', 'error');
                 </text>
             }
             @if (TempData["WarningMessage"] != null)
             {
                 <text>
-                showMessage('@TempData["WarningMessage"]', 'warning');
+                showMessage('@Html.Raw(Html.Encode(TempData["WarningMessage"]).ToString().Replace("'", "\\'"))', 'warning');
                 </text>
             }
 
             // Select all functionality
-            $('#selectAll').change(function() {
+            $('#selectAll').change(function () {
                 $('.user-select-checkbox').prop('checked', $(this).is(':checked'));
                 updateSelectedCount();
                 updateUserItemStyles();
             });
 
             // Individual checkbox functionality
-            $(document).on('change', '.user-select-checkbox', function() {
+            $(document).on('change', '.user-select-checkbox', function () {
                 updateSelectedCount();
                 updateSelectAllState();
                 updateUserItemStyles();
             });
 
             // Email type buttons
-            $('.email-type-btn').click(function() {
+            $('.email-type-btn').click(function () {
                 $('.email-type-btn').removeClass('active');
                 $(this).addClass('active');
                 $('#emailType').val($(this).data('type'));
             });
 
-            // Form submission
-            $('#bulkEmailForm').submit(function(e) {
+            // Form submission with enhanced debugging
+            $('#bulkEmailForm').on('submit', function (e) {
                 var selectedUsers = $('.user-select-checkbox:checked').length;
+                
                 if (selectedUsers === 0) {
                     e.preventDefault();
                     showMessage('Моля, изберете поне един потребител.', 'error');
@@ -569,7 +594,16 @@
                 }
 
                 var subject = $('#subject').val().trim();
-                var message = $('#message').val().trim();
+                var message = '';
+                try {
+                    if (tinymce.get('editor')) {
+                        message = tinymce.get('editor').getContent().trim();
+                    } else {
+                        message = $('#editor').val().trim();
+                    }
+                } catch (error) {
+                    message = $('#editor').val().trim();
+                }
 
                 if (!subject || !message) {
                     e.preventDefault();
@@ -577,20 +611,70 @@
                     return false;
                 }
 
-                // Show confirmation
                 var confirmMessage = `Сигурни ли сте, че искате да изпратите имейл на ${selectedUsers} потребител(и)?`;
                 if (!confirm(confirmMessage)) {
                     e.preventDefault();
                     return false;
                 }
 
-                // Show progress indicator
+                $('#message').val(message);
                 $('#progressIndicator').addClass('show');
                 $('#progressText').text(`Изпращане на имейли на ${selectedUsers} потребител(и)...`);
-
-                // Disable button and show loading
                 $('#sendButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Изпращане...');
+                
+                return true;
             });
+
+            // Handle submit button click
+            $('#sendButton').on('click', function(e) {
+                e.preventDefault();
+                
+                if (tinymce.get('editor')) {
+                    tinymce.get('editor').save();
+                }
+                
+                handleFormSubmission();
+            });
+            
+            function handleFormSubmission() {
+                var selectedUsers = $('.user-select-checkbox:checked').length;
+                
+                if (selectedUsers === 0) {
+                    showMessage('Моля, изберете поне един потребител.', 'error');
+                    return false;
+                }
+
+                var subject = $('#subject').val().trim();
+                var message = '';
+                try {
+                    if (tinymce.get('editor')) {
+                        message = tinymce.get('editor').getContent().trim();
+                    } else {
+                        message = $('#editor').val().trim();
+                    }
+                } catch (error) {
+                    message = $('#editor').val().trim();
+                }
+
+                if (!subject || !message) {
+                    showMessage('Моля, попълнете заглавие и съобщение.', 'error');
+                    return false;
+                }
+
+                var confirmMessage = `Сигурни ли сте, че искате да изпратите имейл на ${selectedUsers} потребител(и)?`;
+                if (!confirm(confirmMessage)) {
+                    return false;
+                }
+
+                $('#message').val(message);
+                $('#progressIndicator').addClass('show');
+                $('#progressText').text(`Изпращане на имейли на ${selectedUsers} потребител(и)...`);
+                $('#sendButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Изпращане...');
+                
+                document.getElementById('bulkEmailForm').submit();
+                
+                return true;
+            }
 
             function updateSelectedCount() {
                 var count = $('.user-select-checkbox:checked').length;
@@ -600,7 +684,7 @@
             function updateSelectAllState() {
                 var totalCheckboxes = $('.user-select-checkbox').length;
                 var checkedCheckboxes = $('.user-select-checkbox:checked').length;
-                
+
                 if (checkedCheckboxes === 0) {
                     $('#selectAll').prop('indeterminate', false).prop('checked', false);
                 } else if (checkedCheckboxes === totalCheckboxes) {
@@ -611,7 +695,7 @@
             }
 
             function updateUserItemStyles() {
-                $('.user-item').each(function() {
+                $('.user-item').each(function () {
                     var checkbox = $(this).find('.user-select-checkbox');
                     if (checkbox.is(':checked')) {
                         $(this).addClass('selected');
@@ -624,7 +708,7 @@
             function showMessage(message, type) {
                 var alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-warning';
                 var icon = type === 'success' ? 'fas fa-check-circle' : type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-exclamation-triangle';
-                
+
                 var alertHtml = `
                     <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
                         <i class="${icon} mr-2"></i>
@@ -634,11 +718,11 @@
                         </button>
                     </div>
                 `;
-                
+
+                $('.alert').remove();
                 $('.bulk-email-header').after(alertHtml);
-                
-                // Auto-dismiss after 5 seconds
-                setTimeout(function() {
+
+                setTimeout(function () {
                     $('.alert').fadeOut();
                 }, 5000);
             }
@@ -650,7 +734,32 @@
 
         function toggleUserSelection(element) {
             var checkbox = $(element).find('.user-select-checkbox');
-            checkbox.prop('checked', !checkbox.is(':checked')).trigger('change');
+            var wasChecked = checkbox.is(':checked');
+            checkbox.prop('checked', !wasChecked).trigger('change');
         }
+
+        // Excel export functionality
+        document.getElementById("exportExcelBtn").addEventListener("click", function () {
+            var selectedUsers = document.querySelectorAll(".user-select-checkbox:checked");
+
+            if (selectedUsers.length === 0) {
+                alert("Моля, изберете поне един потребител за експорт.");
+                return;
+            }
+
+            var data = [["Име", "Имейл"]];
+            selectedUsers.forEach(function (checkbox) {
+                var userItem = checkbox.closest(".user-item");
+                var name = userItem.querySelector(".user-name").innerText.trim();
+                var email = userItem.querySelector(".user-email").innerText.trim();
+                data.push([name, email]);
+            });
+
+            var ws = XLSX.utils.aoa_to_sheet(data);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Потребители");
+
+            XLSX.writeFile(wb, "users.xlsx");
+        });
     </script>
-} 
+}

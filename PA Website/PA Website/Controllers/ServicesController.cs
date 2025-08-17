@@ -21,13 +21,18 @@ namespace PA_Website.Controllers
         private readonly IEmailSender _emailSender;
         private readonly UserManager<User> _userManager;
         private readonly IPromotionService _promotionService;
+        private readonly IConfiguration _configuration;
 
-        public ServicesController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager, IPromotionService promotionService)
+
+        public ServicesController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager,
+            IConfiguration configuration, IPromotionService promotionService)
         {
             _context = context;
             _emailSender = emailSender;
             _userManager = userManager;
             _promotionService = promotionService;
+            _configuration = configuration;
+
         }
 
         // GET: Services
@@ -111,6 +116,8 @@ namespace PA_Website.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            var tinyMceApiKey = _configuration["TinyMCE:ApiKey"];
+            ViewBag.TinyMceApiKey = tinyMceApiKey;
             return View();
         }
 
@@ -170,6 +177,9 @@ namespace PA_Website.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
+            var tinyMceApiKey = _configuration["TinyMCE:ApiKey"];
+            ViewBag.TinyMceApiKey = tinyMceApiKey;
+
             if (id == null)
             {
                 return NotFound();
