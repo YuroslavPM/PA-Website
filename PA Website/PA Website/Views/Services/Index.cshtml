@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using PA_Website.Helpers
 @inject UserManager<User> UserManager
 @inject SignInManager<User> SignInManager
 @inject RoleManager<IdentityRole> RoleManager
@@ -678,7 +679,10 @@
                                 </span>
                             </div>
                             <h3 class="service-title">@service.NameService</h3>
-                            <p class="service-description">@service.Description</p>
+                            @if (!string.IsNullOrEmpty(service.Description))
+                            {
+                                <p class="service-description">@Html.Raw(service.Description.TruncateHtml(100))</p>
+                            }
                             <div class="service-date">
                                 <i class="fas fa-clock"></i>
                                 @* <span>@service.Duration минути</span> *@ <!-- Duration property does not exist in Service model -->

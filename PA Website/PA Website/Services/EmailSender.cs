@@ -168,11 +168,11 @@ namespace PA_Website.Services
         {
             try
             {
-                var testSubject = "Email Configuration Test - PA Website";
+                var testSubject = "Email Configuration Test - Dushevna Mozaika";
                 var testMessage = $@"
                     <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
                         <div style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
-                            <h1 style='margin: 0; font-size: 28px;'>PA Website</h1>
+                            <h1 style='margin: 0; font-size: 28px;'>Dushevna Mozaika</h1>
                             <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Email Configuration Test</p>
                         </div>
                         
@@ -193,7 +193,7 @@ namespace PA_Website.Services
                         
                         <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
                             <p>This is a test email sent at: {DateTime.Now:dd.MM.yyyy HH:mm:ss}</p>
-                            <p>© 2024 PA Website. All rights reserved.</p>
+                            <p>© 2024 Dushevna Mozaika. All rights reserved.</p>
                         </div>
                     </div>";
 

@@ -371,14 +371,12 @@
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 min-h-screen font-inter">
     <!-- Navigation -->
-    <nav class="navbar-gradient fixed top-0 w-full z-50 shadow-large transition-all duration-300 py-4 lg:py-6" id="navbar">
+    <nav class="navbar-gradient fixed top-0 w-full z-50 shadow-large transition-all duration-300 py-0" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <!-- Brand -->
                 <a class="font-playfair text-xl lg:text-2xl font-bold text-white drop-shadow-md hover:scale-105 transition-transform duration-300 flex items-center focus-visible:focus" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-star mr-2 text-yellow-400"></i>
-                    <span class="hidden sm:inline">Душевна Мозайка</span>
-                    <span class="sm:hidden">ДМ</span>
+                    <img src="~/Images/siteImg/logo.png" alt="Душевна Мозайка Logo" class="h-20 w-auto lg:h-24 xl:h-28 filter brightness-0 invert" />
                 </a>
 
                 <!-- Mobile menu button -->
@@ -518,7 +516,7 @@
     </nav>
 
     <!-- Main content -->
-    <div class="pt-16 lg:pt-20">
+    <div class="pt-24 lg:pt-28">
         @RenderBody()
     </div>
 

@@ -56,12 +56,12 @@ namespace PA_Website.Areas.Identity.Pages.Account
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
                     <div style='text-align: center; margin-bottom: 30px;'>
                         <h1 style='color: #333; margin-bottom: 10px;'>Промяна на парола/h1>
-                        <p style='color: #666; margin: 0;'>PA Website</p>
+                        <p style='color: #666; margin: 0;'>Dushevna Mozaika</p>
                     </div>
                     
                     <div style='background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;'>
                         <h2 style='color: #495057; margin-top: 0;'>Здравейте!</h2>
-                        <p>Получихме заявка за промяна на паролата за вашия акаунт в PA Website.</p>
+                        <p>Получихме заявка за промяна на паролата за вашия акаунт в Dushevna Mozaika.</p>
                         <p>За да промените паролата си, моля кликнете бутона по-долу:</p>
                     </div>
                     
@@ -85,7 +85,7 @@ namespace PA_Website.Areas.Identity.Pages.Account
                     <hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'>
                     <p style='color: #999; font-size: 12px; text-align: center;'>
                         Този имейл е изпратен на {DateTime.Now:dd.MM.yyyy HH:mm}<br>
-                        От системата за сигурност на PA Website
+                        От системата за сигурност на Dushevna Mozaika
                     </p>
                 </div>";
 
@@ -93,7 +93,7 @@ namespace PA_Website.Areas.Identity.Pages.Account
                 {
                     await _emailSender.SendEmailAsync(
                         Input.Email,
-                        "Нулиране на парола - PA Website",
+                        "Нулиране на парола - Dushevna Mozaika",
                         htmlMessage);
 
                     _logger.LogInformation($"Password reset email sent successfully to: {Input.Email}");

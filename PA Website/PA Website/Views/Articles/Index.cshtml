@@ -340,7 +340,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 class="articles-title">Статии</h1>
-                    <p class="articles-subtitle">Разгледайте нашите статии за психология и астрология</p>
+                    <p class="articles-subtitle">Тук събирам мисли, знания и практически идеи от света на психологията, астропсихологията и ароматерапията – всичко, което може да ти помогне да откриваш смисъл и хармония в ежедневието.</p>
                 </div>
 
         @if (isAdmin)
@@ -394,7 +394,7 @@
                             
                             @if (!string.IsNullOrEmpty(article.Description))
                             {
-                                <p class="article-description">@Html.Raw(article.Description.TruncateHtml(30))</p>
+                                <p class="article-description">@Html.Raw(article.Description.TruncateHtml(60))</p>
                             }
 
                            

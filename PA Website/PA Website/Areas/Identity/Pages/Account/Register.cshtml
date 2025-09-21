@@ -21,7 +21,7 @@
             position: relative;
             max-width: 900px;
             margin: 0 auto;
-}
+        }
 
         .auth-card::before {
             content: '';
@@ -307,122 +307,191 @@
             </div>
 
             <div class="auth-body">
-<div class="row">
+                <div class="row">
                     <div class="col-md-6">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                             <div asp-validation-summary="ModelOnly" class="alert-danger" role="alert"></div>
-                            
+
                             <div class="form-group">
                                 <label asp-for="Input.FName" class="form-label">Име</label>
-                <input asp-for="Input.FName" class="form-control" aria-required="true" placeholder="Име" />
-                <span asp-validation-for="Input.FName" class="text-danger"></span>
-            </div>
-                            
+                                <input asp-for="Input.FName" class="form-control" aria-required="true"
+                                       placeholder="Име"/>
+                                <span asp-validation-for="Input.FName" class="text-danger"></span>
+                            </div>
+
                             <div class="form-group">
                                 <label asp-for="Input.LName" class="form-label">Фамилия</label>
-                <input asp-for="Input.LName" class="form-control" aria-required="true" placeholder="Фамилия" />
-                <span asp-validation-for="Input.LName" class="text-danger"></span>
-            </div>
-                            
+                                <input asp-for="Input.LName" class="form-control" aria-required="true"
+                                       placeholder="Фамилия"/>
+                                <span asp-validation-for="Input.LName" class="text-danger"></span>
+                            </div>
+
                             <div class="form-group">
                                 <label asp-for="Input.Birth_Date" class="form-label">Дата на раждане</label>
-                                <input asp-for="Input.Birth_Date" class="form-control" 
-                                       type="date" 
+                                <input asp-for="Input.Birth_Date" class="form-control"
+                                       type="date"
                                        max="@DateTime.Today.AddYears(-16).ToString("yyyy-MM-dd")"
-                                       aria-required="true" />
+                                       aria-required="true"/>
                                 <span asp-validation-for="Input.Birth_Date" class="text-danger"></span>
                                 <small class="text-muted">Трябва да сте навършили поне 16 години</small>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label asp-for="Input.Phone_Number" class="form-label">Телефонен номер</label>
-                                <input asp-for="Input.Phone_Number" class="form-control" aria-required="true" placeholder="Телефонен номер" />
-                <span asp-validation-for="Input.Phone_Number" class="text-danger"></span>
-            </div>
-                            
+                                <input asp-for="Input.Phone_Number" class="form-control" aria-required="true"
+                                       placeholder="Телефонен номер"/>
+                                <span asp-validation-for="Input.Phone_Number" class="text-danger"></span>
+                            </div>
+
                             <div class="form-group">
                                 <label asp-for="Input.Email" class="form-label">Имейл адрес</label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-                            
+                                <input asp-for="Input.Email" class="form-control" autocomplete="username"
+                                       aria-required="true" placeholder="name@example.com"/>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
                             <div class="form-group">
                                 <label asp-for="Input.Password" class="form-label">Парола</label>
-                                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Парола" />
-    
+                                <div class="relative">
+                                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password"
+                                           aria-required="true" placeholder="Парола"/>
+                                    <button type="button"
+                                            id="togglePassword"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-purple-600 hover:text-purple-800">
+                                        <!-- Eye (default) -->
+                                        <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+
+                                        <!-- Eye with slash (hidden by default) -->
+                                        <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden"
+                                             fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7
+                         a9.956 9.956 0 012.642-4.362m3.06-2.398A9.956 9.956 0 0112 5
+                         c4.478 0 8.268 2.943 9.542 7a9.958 9.958 0 01-4.38 5.568M15 12a3 3 0 11-6 0
+                         3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M3 3l18 18"/>
+                                        </svg>
+                                    </button>
+                                </div>
                                 <div class="password-requirements mt-3">
                                     <div class="requirements-header">
                                         <span class="requirements-title">Изисквания за парола:</span>
                                     </div>
                                     <ul class="requirements-list">
                                         <li class="requirement-item" data-requirement="length">
-                                            <svg class="requirement-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                            <svg class="requirement-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                 fill="none">
                                                 <circle cx="12" cy="12" r="9" stroke="#94a3b8" stroke-width="2"/>
                                             </svg>
                                             <span>Минимум 8 символа</span>
                                         </li>
                                         <li class="requirement-item" data-requirement="digit">
-                                            <svg class="requirement-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                            <svg class="requirement-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                 fill="none">
                                                 <circle cx="12" cy="12" r="9" stroke="#94a3b8" stroke-width="2"/>
                                             </svg>
                                             <span>Съдържа поне 1 цифра</span>
                                         </li>
                                         <li class="requirement-item" data-requirement="case">
-                                            <svg class="requirement-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                            <svg class="requirement-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                 fill="none">
                                                 <circle cx="12" cy="12" r="9" stroke="#94a3b8" stroke-width="2"/>
                                             </svg>
                                             <span>Съдържа малки и големи букви</span>
                                         </li>
                                     </ul>
                                 </div>
-    
+
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label asp-for="Input.ConfirmPassword" class="form-label">Потвърди парола</label>
-                                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Потвърди парола" />
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
+                                <div class="relative">
+                                    <input asp-for="Input.ConfirmPassword" class="form-control"
+                                           autocomplete="new-password" aria-required="true"
+                                           placeholder="Потвърди парола"/>
+
+                                    <!-- Confirm Password Toggle -->
+                                    <button type="button"
+                                            id="toggleConfirmPassword"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-purple-600 hover:text-purple-800">
+                                        <!-- Eye Open -->
+                                        <svg id="eyeOpenConfirm" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                             fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+
+                                        <!-- Eye Closed -->
+                                        <svg id="eyeClosedConfirm" xmlns="http://www.w3.org/2000/svg"
+                                             class="h-5 w-5 hidden"
+                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7
+                                             a9.956 9.956 0 012.642-4.362m3.06-2.398A9.956 9.956 0 0112 5
+                                             c4.478 0 8.268 2.943 9.542 7a9.958 9.958 0 01-4.38 5.568M15 12a3 3 0 11-6 0
+                                             3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M3 3l18 18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
                             <div class="form-group">
                                 <div class="form-check">
-                                    <input asp-for="Input.EmailSend" class="form-check-input" />
-                                    <label asp-for="Input.EmailSend" class="form-check-label">Разрешавам изпращането на маркетингови имейли</label>
+                                    <input asp-for="Input.EmailSend" class="form-check-input"/>
+                                    <label asp-for="Input.EmailSend" class="form-check-label">Съгласен съм да получавам маркетингова информация по имейл</label>
                                 </div>
                             </div>
-                            
+
                             <button id="registerSubmit" type="submit" class="btn-primary">Регистрация</button>
-        </form>
-    </div>
-                    
+                        </form>
+                    </div>
+
                     <div class="col-md-6">
                         <div class="external-section">
                             <h3 class="external-title">Регистрация чрез външни услуги</h3>
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
+                            @{
+                                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                {
                                     <div class="text-center">
                                         <p style="color: #64748b;">
                                             В момента няма конфигурирани външни услуги за автентикация.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                        </p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <form id="external-account" asp-page="./ExternalLogin"
+                                          asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                                         <div class="external-login text-center">
                                             <p class="mb-3" style="color: #64748b;">
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Регистрация чрез вашия @provider.DisplayName акаунт">
+                                                @foreach (var provider in Model.ExternalLogins!)
+                                                {
+                                                    <button type="submit" class="btn btn-primary" name="provider"
+                                                            value="@provider.Name"
+                                                            title="Регистрация чрез вашия @provider.DisplayName акаунт">
                                                         @provider.DisplayName
                                                     </button>
+                                                }
+                                            </p>
+                                        </div>
+                                    </form>
                                 }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
+                            }
                         </div>
                     </div>
                 </div>
@@ -435,88 +504,124 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Password requirements validation
+
+            const togglePassword = document.getElementById("togglePassword");
+            if (togglePassword) {
+                togglePassword.addEventListener("click", function () {
+                    const input = document.getElementById("Input_Password");
+                    const eyeOpen = document.getElementById("eyeOpen");
+                    const eyeClosed = document.getElementById("eyeClosed");
+
+                    if (input.type === "password") {
+                        input.type = "text";
+                        eyeOpen.classList.add("hidden");
+                        eyeClosed.classList.remove("hidden");
+                    } else {
+                        input.type = "password";
+                        eyeClosed.classList.add("hidden");
+                        eyeOpen.classList.remove("hidden");
+                    }
+                });
+            }
+
+            const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+            if (toggleConfirmPassword) {
+                toggleConfirmPassword.addEventListener("click", function () {
+                    const input = document.getElementById("Input_ConfirmPassword");
+                    const eyeOpen = document.getElementById("eyeOpenConfirm");
+                    const eyeClosed = document.getElementById("eyeClosedConfirm");
+
+                    if (input.type === "password") {
+                        input.type = "text";
+                        eyeOpen.classList.add("hidden");
+                        eyeClosed.classList.remove("hidden");
+                    } else {
+                        input.type = "password";
+                        eyeClosed.classList.add("hidden");
+                        eyeOpen.classList.remove("hidden");
+                    }
+                });
+            }
+
             const passwordInput = document.querySelector('#Input_Password');
             const requirementItems = document.querySelectorAll('.requirement-item');
-            
-            passwordInput.addEventListener('input', function() {
-                const value = this.value;
-                
-                // Check length requirement
-                const lengthValid = value.length >= 8;
-                toggleRequirementClass('length', lengthValid);
-                
-                // Check digit requirement
-                const digitValid = /\d/.test(value);
-                toggleRequirementClass('digit', digitValid);
-                
-                // Check case requirement
-                const caseValid = /[a-z]/.test(value) && /[A-Z]/.test(value);
-                toggleRequirementClass('case', caseValid);
-            });
-            
+
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    const value = this.value;
+
+                    const lengthValid = value.length >= 8;
+                    toggleRequirementClass('length', lengthValid);
+
+                    const digitValid = /\d/.test(value);
+                    toggleRequirementClass('digit', digitValid);
+
+                    const caseValid = /[a-z]/.test(value) && /[A-Z]/.test(value);
+                    toggleRequirementClass('case', caseValid);
+                });
+            }
+
             function toggleRequirementClass(requirement, isValid) {
                 const item = document.querySelector(`.requirement-item[data-requirement="${requirement}"]`);
-                if (isValid) {
-                    item.classList.add('valid');
-                    // Update the icon to a checkmark
-                    item.querySelector('.requirement-icon').innerHTML = `
-                        <circle cx="12" cy="12" r="9" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-                        <path stroke="#16a34a" stroke-width="2" stroke-linecap="round" d="M8 12l3 3 5-6"/>
-                    `;
-                } else {
-                    item.classList.remove('valid');
-                    // Revert to original icon
-                    item.querySelector('.requirement-icon').innerHTML = `
-                        <circle cx="12" cy="12" r="9" stroke="#94a3b8" stroke-width="2"/>
-                    `;
+                if (item) {
+                    if (isValid) {
+                        item.classList.add('valid');
+                        item.querySelector('.requirement-icon').innerHTML = `
+                            <circle cx="12" cy="12" r="9" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                            <path stroke="#16a34a" stroke-width="2" stroke-linecap="round" d="M8 12l3 3 5-6"/>
+                        `;
+                    } else {
+                        item.classList.remove('valid');
+                        item.querySelector('.requirement-icon').innerHTML = `
+                            <circle cx="12" cy="12" r="9" stroke="#94a3b8" stroke-width="2"/>
+                        `;
+                    }
                 }
             }
 
-            // Birth date validation
-            const birthDateInput = document.getElementById('Input_Birth_Date');
             
-            birthDateInput.addEventListener('change', function() {
-                const selectedDate = new Date(this.value);
-                const today = new Date();
-                
-                if (selectedDate > today) {
-                    this.setCustomValidity('Датата на раждане не може да бъде в бъдещето');
-                } else {
-                    let age = today.getFullYear() - selectedDate.getFullYear();
-                    // Check if birthday hasn't occurred yet this year
-                    if (selectedDate > new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-                        age--;
-                    }
-                    
-                    if (age < 16) {
-                        this.setCustomValidity('Трябва да сте навършили поне 16 години');
+            const birthDateInput = document.getElementById('Input_Birth_Date');
+            if (birthDateInput) {
+                birthDateInput.addEventListener('change', function() {
+                    const selectedDate = new Date(this.value);
+                    const today = new Date();
+
+                    if (selectedDate > today) {
+                        this.setCustomValidity('Датата на раждане не може да бъде в бъдещето');
                     } else {
-                        this.setCustomValidity('');
+                        let age = today.getFullYear() - selectedDate.getFullYear();
+                        if (selectedDate > new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                            age--;
+                        }
+
+                        if (age < 16) {
+                            this.setCustomValidity('Трябва да сте навършили поне 16 години');
+                        } else {
+                            this.setCustomValidity('');
+                        }
                     }
-                }
-                
-                // Visual feedback
-                if (this.checkValidity()) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
+
+                    if (this.checkValidity()) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
         });
 
-        // jQuery validation for unobtrusive validation
+        
         $(function() {
             $.validator.addMethod('minimumage', function(value, element, params) {
                 if (!value) return false;
-                
+
                 const birthDate = new Date(value);
                 const today = new Date();
                 const minDate = new Date();
                 minDate.setFullYear(today.getFullYear() - params);
-                
+
                 return birthDate <= minDate;
             });
 
@@ -527,4 +632,6 @@
         });
     </script>
 }
+
+
 }

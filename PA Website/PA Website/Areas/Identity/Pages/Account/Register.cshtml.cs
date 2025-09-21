@@ -144,6 +144,7 @@ namespace PA_Website.Areas.Identity.Pages.Account
                 user.FName = Input.FName;
                 user.LName = Input.LName;
                 user.Birth_Date = DateTime.Parse(Input.Birth_Date);
+                user.PhoneNumber = Input.Phone_Number;
                 user.EmailSend = Input.EmailSend;
 
                 string zodiac;

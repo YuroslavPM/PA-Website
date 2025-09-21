@@ -7,6 +7,9 @@ using PA_Website.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using PA_Website.Services;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Server.IIS;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -32,6 +35,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options => {
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 8;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -48,6 +52,29 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
+builder.Services.AddScoped<IUserServiceService, UserServiceService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddHttpContextAccessor();
+
+// Configure request size limits for file uploads
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 100 * 1024 * 1024; // 100 MB
+});
+
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 100 * 1024 * 1024; // 100 MB
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = 100 * 1024 * 1024; // 100 MB
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

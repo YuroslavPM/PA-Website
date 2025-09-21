@@ -316,6 +316,8 @@
                         </div>
                     </div>
 
+
+
                     <div class="flex gap-4 mt-6">
                         <button type="submit" class="btn-primary flex-1">
                             <i class="fas fa-paper-plane mr-2"></i> Изпрати имейл
@@ -345,13 +347,51 @@
         function toggleCustomMessage() {
             const emailType = document.getElementById('emailType').value;
             const customSection = document.getElementById('customMessageSection');
+            const subjectField = document.getElementById('subject');
+            const messageField = document.getElementById('message');
             
             if (emailType === 'custom') {
                 customSection.classList.add('show');
+                subjectField.required = true;
+                messageField.required = true;
             } else {
                 customSection.classList.remove('show');
+                subjectField.required = false;
+                messageField.required = false;
+                // Set default values for non-custom types
+                subjectField.value = '';
+                messageField.value = '';
             }
         }
+
+        // Handle form submission
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            const emailType = document.getElementById('emailType').value;
+            const reservationId = document.getElementById('reservationId').value;
+            
+            if (!emailType) {
+                e.preventDefault();
+                alert('Моля, изберете тип имейл.');
+                return;
+            }
+            
+            if (!reservationId) {
+                e.preventDefault();
+                alert('Моля, изберете резервация.');
+                return;
+            }
+            
+            if (emailType === 'custom') {
+                const subject = document.getElementById('subject').value.trim();
+                const message = document.getElementById('message').value.trim();
+                
+                if (!subject || !message) {
+                    e.preventDefault();
+                    alert('Моля, попълнете заглавието и съобщението за персонализирания имейл.');
+                    return;
+                }
+            }
+        });
 
         // Initialize with selected reservation if any
         @if (ViewBag.SelectedReservationId != null)
