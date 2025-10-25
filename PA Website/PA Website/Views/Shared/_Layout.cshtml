@@ -392,14 +392,14 @@
                     <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Index">
                         <i class="fas fa-home mr-2"></i>Начало
                     </a>
-                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Articles" asp-action="Index">
-                        <i class="fas fa-newspaper mr-2"></i>Блог
-                    </a>
                     <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Services" asp-action="Index">
                         <i class="fas fa-magic mr-2"></i>Услуги
                     </a>
+                    <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Articles" asp-action="Index">
+                        <i class="fas fa-newspaper mr-2"></i>Блог
+                    </a>
                     <a class="font-poppins text-white hover:text-yellow-400 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 relative nav-link-hover font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Author">
-                        <i class="fas fa-user-edit mr-2"></i>За автора
+                        <i class="fas fa-user-edit mr-2"></i>За мен
                     </a>
 
                     @if (SignInManager.IsSignedIn(User))
@@ -471,14 +471,14 @@
                     <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Index">
                         <i class="fas fa-home mr-3"></i>Начало
                     </a>
-                    <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Articles" asp-action="Index">
-                        <i class="fas fa-newspaper mr-3"></i>Статии
-                    </a>
                     <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Services" asp-action="Index">
                         <i class="fas fa-magic mr-3"></i>Услуги
                     </a>
+                    <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Articles" asp-action="Index">
+                        <i class="fas fa-newspaper mr-3"></i>Статии
+                    </a>
                     <a class="mobile-nav-item font-poppins text-white hover:text-yellow-400 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 font-medium text-sm focus-visible:focus" asp-controller="Home" asp-action="Author">
-                        <i class="fas fa-user-edit mr-3"></i>За автора
+                        <i class="fas fa-user-edit mr-3"></i>За мен
                     </a>
                     @if (!SignInManager.IsSignedIn(User))
                     {
@@ -527,15 +527,17 @@
                 <!-- Brand section -->
                 <div class="text-center md:text-left">
                     <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Душевна Мозайка</h5>
-                    <p class="text-white/80 mb-4 lg:mb-6 leading-relaxed text-base lg:text-lg">Вашето място за астрологични консултации и психологическа подкрепа</p>
+                    <p class="text-white/80 mb-4 lg:mb-6 leading-relaxed text-base lg:text-lg">Психологически и астрологични консултации с Мариела Разпопова.
+                        Пространство за споделяне и преоткриване
+                    </p>
                     <div class="flex justify-center md:justify-start space-x-3 lg:space-x-4">
                         <a href="https://www.facebook.com/Dushevnamozaika" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                             <i class="fab fa-facebook-f text-white text-base lg:text-lg"></i>
                         </a>
-                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" aria-label="Instagram">
+                        <a href="https://www.instagram.com/dushevnamozaika/" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" aria-label="Instagram">
                             <i class="fab fa-instagram text-white text-base lg:text-lg"></i>
                         </a>
-                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" aria-label="YouTube">
+                        <a href="https://www.youtube.com/@@dushevnamozaika" class="inline-flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-xl transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-glow focus-visible:focus" aria-label="YouTube">
                             <i class="fab fa-youtube text-white text-base lg:text-lg"></i>
                         </a>
                     </div>
@@ -543,13 +545,24 @@
 
                 <!-- Quick links -->
                 <div class="text-center">
-                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Бързи връзки</h5>
                     <ul class="space-y-3 lg:space-y-4">
-                        <li><a href="/Home/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Начало</a></li>
-                        <li><a href="/Articles/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Статии</a></li>
-                        <li><a href="/Services/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Услуги</a></li>
-                        <li><a href="/Home/Privacy" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Политика за поверителност</a></li>
+                        <li>
+                            <a href="/Home/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Начало</a>
+                        </li>
+                        <li>
+                            <a href="/Services/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Услуги</a>
+                        </li>
+                        <li>
+                            <a href="/Articles/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Блог</a>
+                        </li>
+                        <li>
+                            <a href="/Home/Author" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">За мен</a>
+                        </li>
+                        <li>
+                            <a href="/Home/Privacy" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Политика за поверителност</a>
+                        </li>
                     </ul>
+                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Бързи връзки</h5>
                 </div>
 
                 <!-- Contact info -->

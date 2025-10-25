@@ -27,6 +27,12 @@ namespace PA_Website.Controllers
             .Take(3)
             .ToList();
 
+            var services = _context.Service
+                .OrderBy(x => Guid.NewGuid())
+                .Take(3)
+                .ToList();
+
+            ViewBag.Services = services;
             return View(latestArticles);
             
         }

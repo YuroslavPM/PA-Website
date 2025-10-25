@@ -617,7 +617,7 @@
             <div class="services-grid">
                 @foreach (var service in Model)
                 {
-                    <div class="service-card animate-on-scroll">
+                    <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="service-card animate-on-scroll block cursor-pointer">
                         <div class="service-image @(string.IsNullOrEmpty(service.ImagePath) ? "" : "has-image")">
                             @if (!string.IsNullOrEmpty(service.ImagePath))
                             {
@@ -688,19 +688,19 @@
                                 @* <span>@service.Duration минути</span> *@ <!-- Duration property does not exist in Service model -->
                             </div>
                             <div class="service-actions">
-                                <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-primary focus-visible:focus">
+                                <div class="btn-primary focus-visible:focus">
                                     <i class="fas fa-eye"></i>
                                     <span class="hidden sm:inline">Детайли</span>
                                     <span class="sm:hidden">Детайли</span>
-                                </a>
+                                </div>
                                 @if (isAdmin)
                                 {
-                                    <a href="@Url.Action("Edit", "Services", new { id = service.Id })" class="btn-outline focus-visible:focus">
+                                    <a href="@Url.Action("Edit", "Services", new { id = service.Id })" class="btn-outline focus-visible:focus" onclick="event.stopPropagation();">
                                         <i class="fas fa-edit"></i>
                                         <span class="hidden sm:inline">Редактирай</span>
                                         <span class="sm:hidden">Редактирай</span>
                                     </a>
-                                    <a href="@Url.Action("Delete", "Services", new { id = service.Id })" class="btn-danger focus-visible:focus">
+                                    <a href="@Url.Action("Delete", "Services", new { id = service.Id })" class="btn-danger focus-visible:focus" onclick="event.stopPropagation();">
                                         <i class="fas fa-trash"></i>
                                         <span class="hidden sm:inline">Изтрий</span>
                                         <span class="sm:hidden">Изтрий</span>
@@ -708,15 +708,15 @@
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-outline focus-visible:focus">
+                                    <div class="btn-outline focus-visible:focus">
                                         <i class="fas fa-calendar-plus"></i>
                                         <span class="hidden sm:inline">Запази час</span>
                                         <span class="sm:hidden">Запази час</span>
-                                    </a>
+                                    </div>
                                 }
                             </div>
                         </div>
-                    </div>
+                    </a>
                 }
             </div>
         }

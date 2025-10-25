@@ -107,6 +107,7 @@
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(124, 58, 237, 0.1);
+            cursor: pointer;
         }
 
         .article-card:hover {
@@ -330,6 +331,122 @@
                 gap: 1.5rem;
             }
         }
+
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.1);
+        }
+
+        .pagination-nav {
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination-list {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .pagination-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .pagination-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 12px;
+            color: #4c1d95;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 2.5rem;
+            justify-content: center;
+        }
+
+        .pagination-link:hover {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -5px rgba(124, 58, 237, 0.3);
+            border-color: transparent;
+        }
+
+        .pagination-current {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+            border-color: transparent;
+            font-weight: 600;
+            box-shadow: 0 4px 12px -2px rgba(124, 58, 237, 0.4);
+        }
+
+        .pagination-prev,
+        .pagination-next {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .pagination-ellipsis {
+            padding: 0.75rem 0.5rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .pagination-info {
+            text-align: center;
+        }
+
+        .pagination-info p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        @@media (max-width: 640px) {
+            .pagination-container {
+                padding: 1.5rem;
+                margin-top: 1.5rem;
+            }
+
+            .pagination-list {
+                gap: 0.25rem;
+            }
+
+            .pagination-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+                min-width: 2rem;
+            }
+
+            .pagination-prev,
+            .pagination-next {
+                padding: 0.5rem 1rem;
+            }
+
+            .pagination-prev span,
+            .pagination-next span {
+                display: none;
+            }
+        }
     </style>
 }
 
@@ -359,7 +476,7 @@
             <div class="articles-grid">
                 @foreach (var article in Model)
                 {
-                        <div class="article-card">
+                        <div class="article-card" data-article-id="@article.Id" onclick="window.location.href='@Url.Action("Details", "Articles", new { id = article.Id })'">
                         <!-- Article Image -->
                         <div class="article-image">
                             @if (!string.IsNullOrEmpty(article.ImagePath))
@@ -406,19 +523,19 @@
 
                             <!-- Action Buttons -->
                             <div class="article-actions">
-                                <a href="@Url.Action("Details", "Articles", new { id = article.Id })" class="btn-primary">
+                                <div class="btn-primary">
                                     <i class="fas fa-eye"></i>
                                     Прочети
-                                    </a>
+                                </div>
 
-                                    @if (isAdmin)
-                                    {
-                                    <a href="@Url.Action("Edit", "Articles", new { id = article.Id })" class="btn-outline">
+                                @if (isAdmin)
+                                {
+                                    <a href="@Url.Action("Edit", "Articles", new { id = article.Id })" class="btn-outline" onclick="event.stopPropagation();">
                                                 <i class="fas fa-edit"></i>
                                         Редактирай
                                             </a>
 
-                                    <a href="@Url.Action("Delete", "Articles", new { id = article.Id })" class="btn-danger">
+                                    <a href="@Url.Action("Delete", "Articles", new { id = article.Id })" class="btn-danger" onclick="event.stopPropagation();">
                                         <i class="fas fa-trash"></i>
                                         Изтрий
                                     </a>
@@ -447,6 +564,96 @@
                         Добави първата статия
                     </a>
                 }
+            </div>
+        }
+
+        <!-- Pagination -->
+        @if (Model.Any())
+        {
+            <div class="pagination-container">
+                <nav class="pagination-nav" aria-label="Article pagination">
+                    <ul class="pagination-list">
+                        @{
+                            int currentPage = (int)ViewData["CurrentPage"];
+                            int totalPages = (int)ViewData["TotalPages"];
+                            
+                            // Previous button
+                            if (currentPage > 1)
+                            {
+                                <li class="pagination-item">
+                                    <a href="@Url.Action("Index", "Articles", new { pageNumber = currentPage - 1 })" 
+                                       class="pagination-link pagination-prev" aria-label="Previous page">
+                                        <i class="fas fa-chevron-left"></i>
+                                        <span>Предишна</span>
+                                    </a>
+                                </li>
+                            }
+
+                            // Page numbers
+                            int startPage = Math.Max(1, currentPage - 2);
+                            int endPage = Math.Min(totalPages, currentPage + 2);
+
+                            // Show first page if not in range
+                            if (startPage > 1)
+                            {
+                                <li class="pagination-item">
+                                    <a href="@Url.Action("Index", "Articles", new { pageNumber = 1 })" class="pagination-link">1</a>
+                                </li>
+                                if (startPage > 2)
+                                {
+                                    <li class="pagination-item">
+                                        <span class="pagination-ellipsis">...</span>
+                                    </li>
+                                }
+                            }
+
+                            // Show page numbers in range
+                            for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="pagination-item">
+                                    @if (i == currentPage)
+                                    {
+                                        <span class="pagination-link pagination-current">@i</span>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Index", "Articles", new { pageNumber = i })" class="pagination-link">@i</a>
+                                    }
+                                </li>
+                            }
+
+                            // Show last page if not in range
+                            if (endPage < totalPages)
+                            {
+                                if (endPage < totalPages - 1)
+                                {
+                                    <li class="pagination-item">
+                                        <span class="pagination-ellipsis">...</span>
+                                    </li>
+                                }
+                                <li class="pagination-item">
+                                    <a href="@Url.Action("Index", "Articles", new { pageNumber = totalPages })" class="pagination-link">@totalPages</a>
+                                </li>
+                            }
+
+                            // Next button
+                            if (currentPage < totalPages)
+                            {
+                                <li class="pagination-item">
+                                    <a href="@Url.Action("Index", "Articles", new { pageNumber = currentPage + 1 })" 
+                                       class="pagination-link pagination-next" aria-label="Next page">
+                                        <span>Следваща</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </nav>
+                
+                <div class="pagination-info">
+                    <p>Страница @ViewData["CurrentPage"] от @ViewData["TotalPages"]</p>
+                </div>
             </div>
         }
     </div>

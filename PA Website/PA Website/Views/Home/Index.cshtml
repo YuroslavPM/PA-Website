@@ -523,6 +523,132 @@
             background: #a78bfa;
         }
 
+        /* Service carousel styles */
+        .services-container {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .service-slide {
+            display: none;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .service-slide.active {
+            display: block;
+        }
+
+        .service-slide.hidden {
+            display: none;
+        }
+
+        .service-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #d1d5db;
+        }
+
+        .service-dot.active {
+            background: #7c3aed;
+            transform: scale(1.2);
+        }
+
+        .service-dot:hover {
+            background: #a78bfa;
+        }
+
+        /* Newsletter modal styles */
+        .newsletter-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .newsletter-modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @@keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .newsletter-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.3s ease;
+        }
+
+        .newsletter-modal-close:hover {
+            color: #374151;
+        }
+
+        .newsletter-success-icon {
+            font-size: 3rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-success-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-success-message {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .newsletter-modal-btn {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+        }
+
         /* Author section improvements */
         .author-image {
             transition: transform 0.6s ease;
@@ -553,8 +679,8 @@
                         Душевна Мозайка
                     </h1>
                     <p class="hero-subtitle-responsive text-lg sm:text-xl md:text-2xl mb-4 lg:mb-6 animate-text-fade-in text-white/90 " style="animation-delay: 0.2s;">
-                        Психологически и астрологични консултации
-                    </p>
+                        Мариела Разпопова – психолог и астролог
+                        </p>
                     <p class="hero-description-responsive text-base sm:text-lg md:text-xl mb-8 lg:mb-10 animate-text-fade-in text-white/80 " style="animation-delay: 0.4s;">
                         Пространство за споделяне и преоткриване
                     </p>
@@ -575,55 +701,78 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12 sm:mb-16">
                 <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block gradient-text">
-                    Нашите Услуги
+                    Услуги
                     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
                 </h2>
                 <p class="text-lg sm:text-xl text-gray-600 section-description">
-                    Комбинация от астрология и психология за пълно разбиране на вашата личност
-                </p>
+                    Холистичен подход, който те подкрепя в твоята житейска ситуация – избери услугата, която най-силно откликва на теб в този момент.                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 services-grid">
-                <!-- Psychology Service -->
-                <div class="bg-white rounded-2xl overflow-hidden enhanced-card group">
-                    <div class="h-64 sm:h-80 bg-gradient-to-br from-blue-400 to-purple-600 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-black/20"></div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-brain text-4xl sm:text-6xl text-white opacity-80 group-hover:scale-110 transition-transform duration-500"></i>
-                        </div>
-                    </div>
-                    <div class="p-6 sm:p-8">
-                        <h3 class="text-xl sm:text-2xl font-bold text-primary mb-3 sm:mb-4">Психологически Консултации</h3>
-                        <p class="text-gray-600 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
-                            Професионална психологическа подкрепа за преодоляване на житейски предизвикателства и постигане на вътрешна хармония.
-                        </p>
-                        <a href="/Services/Index" class="inline-flex items-center bg-white border border-purple-500 btn-purple-text px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium btn-hover-effect text-sm sm:text-base">
-                            Научи повече
-                            <i class="fas fa-arrow-right ml-2"></i>
+            @if (ViewBag.Services != null && ((List<PA_Website.Models.Service>)ViewBag.Services).Any())
+            {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 services-grid">
+                    @foreach (var service in (List<PA_Website.Models.Service>)ViewBag.Services)
+                    {
+                        <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="block bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+                            @if (!string.IsNullOrEmpty(service.ImagePath))
+                            {
+                                <div class="h-48 sm:h-64 overflow-hidden">
+                                    <img src="@service.ImagePath" alt="@service.NameService"
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="h-48 sm:h-64 bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
+                                    @if (service.CategoryOfService.ToLower().Contains("психология") || service.CategoryOfService.ToLower().Contains("психологически"))
+                                    {
+                                        <i class="fas fa-brain text-3xl sm:text-4xl text-primary opacity-50"></i>
+                                    }
+                                    else if (service.CategoryOfService.ToLower().Contains("астрология") || service.CategoryOfService.ToLower().Contains("астрологически"))
+                                    {
+                                        <i class="fas fa-star text-3xl sm:text-4xl text-primary opacity-50"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-cog text-3xl sm:text-4xl text-primary opacity-50"></i>
+                                    }
+                                </div>
+                            }
+                            <div class="p-4 sm:p-6">
+                                <div class="flex items-center text-xs sm:text-sm text-secondary mb-2 sm:mb-3">
+                                    <i class="fas fa-tag mr-2"></i>
+                                    @service.CategoryOfService
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-money-bill-wave mr-2"></i>
+                                    @service.Price лв.
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3 line-clamp-2">@service.NameService</h3>
+                                @if (!string.IsNullOrEmpty(service.Description))
+                                {
+                                    <p class="text-gray-600 mb-3 sm:mb-4 line-clamp-3 text-sm sm:text-base">@Html.Raw(service.Description.Length > 100 ? service.Description.Substring(0, 100) + "..." : service.Description)</p>
+                                }
+                                <div class="inline-flex items-center text-primary hover:text-secondary font-medium transition-colors duration-300 text-sm sm:text-base">
+                                    Научи повече
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </div>
+                            </div>
                         </a>
-                    </div>
+                    }
                 </div>
-
-                <!-- Astrology Service -->
-                <div class="bg-white rounded-2xl overflow-hidden enhanced-card group">
-                    <div class="h-64 sm:h-80 bg-gradient-to-br from-purple-500 to-pink-600 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-black/20"></div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-star text-4xl sm:text-6xl text-white opacity-80 group-hover:scale-110 transition-transform duration-500"></i>
-                        </div>
-                    </div>
-                    <div class="p-6 sm:p-8">
-                        <h3 class="text-xl sm:text-2xl font-bold text-primary mb-3 sm:mb-4">Астрологически Хороскопи</h3>
-                        <p class="text-gray-600 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
-                            Персонализирани астрологически анализи за разбиране на вашия характер и житейски път.
-                        </p>
-                        <a href="/Services/Index" class="inline-flex items-center bg-white border border-purple-500 btn-purple-text px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium btn-hover-effect text-sm sm:text-base">
-                            Научи повече
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
+                <div class="text-center mt-8">
+                    <a href="@Url.Action("Index", "Services")" class="inline-flex items-center border-2 border-primary btn-purple-text hover:bg-primary hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium btn-hover-effect text-sm sm:text-base">
+                        Виж всички услуги
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 sm:p-8 text-center max-w-2xl mx-auto">
+                    <i class="fas fa-info-circle text-2xl sm:text-3xl text-blue-500 mb-4"></i>
+                    <p class="text-blue-700 text-base sm:text-lg">Все още няма налични услуги.</p>
+                </div>
+            }
         </div>
     </section>
 
@@ -645,7 +794,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12 articles-grid">
                     @foreach (var article in Model)
                     {
-                        <div class="bg-white rounded-2xl overflow-hidden enhanced-card animate-on-scroll">
+                        <a href="@Url.Action("Details", "Articles", new { id = article.Id })" class="block bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
                             @if (!string.IsNullOrEmpty(article.ImagePath))
                             {
                                 <div class="h-48 sm:h-64 overflow-hidden">
@@ -671,13 +820,12 @@
                                 @if (!string.IsNullOrEmpty(article.Description)){
                                 <p class="text-gray-600 mb-3 sm:mb-4 line-clamp-3 text-sm sm:text-base">@Html.Raw(article.Description.TruncateHtml(30))</p>
                                 }
-                                <a href="@Url.Action("Details", "Articles", new { id = article.Id })"
-                                   class="inline-flex items-center text-primary hover:text-secondary font-medium transition-colors duration-300 text-sm sm:text-base focus-visible:focus">
+                                <div class="inline-flex items-center text-primary hover:text-secondary font-medium transition-colors duration-300 text-sm sm:text-base">
                                     Прочети повече
                                     <i class="fas fa-arrow-right ml-2"></i>
-                                </a>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     }
                 </div>
                 <div class="text-center">
@@ -712,7 +860,7 @@
             </div>
             <div class="text-center lg:text-left">
                 <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6 sm:mb-8 relative inline-block gradient-text">
-                    За автора
+                    За мен
                     <div class="absolute bottom-0 left-0 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
                 </h2>
                 <div class="space-y-4 sm:space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
@@ -883,33 +1031,42 @@
                     </div>
                     <div class="md:w-1/2 p-8 sm:p-10">
                         <h3 class="text-xl sm:text-2xl font-bold text-primary mb-4 text-center md:text-left gradient-text">Нашият Бюлетин</h3>
-                        <form asp-controller="Newsletter" asp-action="Subscribe" method="post" class="space-y-4">
+                        <form id="newsletterForm" class="space-y-4">
+                            @Html.AntiForgeryToken()
                             <div>
                                 <input type="email" 
+                                       id="newsletterEmail"
                                        name="email"
                                        class="w-full px-4 py-3 rounded-lg border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 text-sm sm:text-base"
                                        placeholder="Вашият имейл адрес"
                                        required />
                             </div>
-                            <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center space-x-2">
+                            <button type="submit" id="newsletterSubmitBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center space-x-2">
                                 <span>Абонирай се</span>
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                             <p class="text-xs text-gray-500 text-center">Никога няма да споделяме вашия имейл. Можете да се отпишете по всяко време.</p>
                         </form>
-
-                        @if (TempData["NewsletterMessage"] != null)
-                        {
-                            <div class="mt-4 p-3 rounded-lg bg-purple-50 text-purple-700 text-sm">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                @TempData["NewsletterMessage"]
-                            </div>
-                        }
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    
+    <!-- Newsletter Success Modal -->
+    <div id="newsletterModal" class="newsletter-modal">
+        <div class="newsletter-modal-content">
+            <button class="newsletter-modal-close" onclick="closeNewsletterModal()">&times;</button>
+            <div class="newsletter-success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="newsletter-success-title">Успешно абониране!</h3>
+            <p class="newsletter-success-message" id="newsletterModalMessage">
+                Благодаря, че се абонира за бюлетина на Душевна Мозайка! Оттук нататък ще получаваш вдъхновение, новини и практични насоки директно в пощата си.
+            </p>
+            <button class="newsletter-modal-btn" onclick="closeNewsletterModal()">Разбрах</button>
+        </div>
+    </div>
     
 </main>
 
@@ -951,6 +1108,50 @@
 
             // Auto-advance slides
             setInterval(nextSlide, 7000);
+
+            // Newsletter form submission
+            $('#newsletterForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const email = $('#newsletterEmail').val();
+                const submitBtn = $('#newsletterSubmitBtn');
+                const originalText = submitBtn.find('span').text();
+                
+                // Show loading state
+                submitBtn.prop('disabled', true);
+                submitBtn.find('span').text('Изпраща...');
+                submitBtn.find('i').removeClass('fa-paper-plane').addClass('fa-spinner fa-spin');
+                
+                // Get anti-forgery token
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                
+                $.ajax({
+                    url: '/Newsletter/Subscribe',
+                    type: 'POST',
+                    data: {
+                        email: email,
+                        __RequestVerificationToken: token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#newsletterModalMessage').text(response.message);
+                            showNewsletterModal();
+                            $('#newsletterForm')[0].reset();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Възникна грешка при абонирането. Моля, опитайте отново.');
+                    },
+                    complete: function() {
+                        // Reset button state
+                        submitBtn.prop('disabled', false);
+                        submitBtn.find('span').text(originalText);
+                        submitBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-paper-plane');
+                    }
+                });
+            });
 
             // Generate random stars
             function createStars() {
@@ -1008,5 +1209,24 @@
             const animatedElements = document.querySelectorAll('.animate-on-scroll');
             animatedElements.forEach(el => observer.observe(el));
         });
+
+        // Newsletter modal functions
+        function showNewsletterModal() {
+            document.getElementById('newsletterModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNewsletterModal() {
+            document.getElementById('newsletterModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('newsletterModal');
+            if (event.target === modal) {
+                closeNewsletterModal();
+            }
+        }
     </script>
 }
