@@ -794,7 +794,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12 articles-grid">
                     @foreach (var article in Model)
                     {
-                        <a href="@Url.Action("Details", "Articles", new { id = article.Id })" class="block bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+                        <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer" 
+                             data-article-id="@article.Id" 
+                             onclick="window.location.href='@Url.Action("Details", "Articles", new { id = article.Id })'">
                             @if (!string.IsNullOrEmpty(article.ImagePath))
                             {
                                 <div class="h-48 sm:h-64 overflow-hidden">
@@ -825,7 +827,7 @@
                                     <i class="fas fa-arrow-right ml-2"></i>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     }
                 </div>
                 <div class="text-center">
