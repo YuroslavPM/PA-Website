@@ -22,13 +22,15 @@ namespace PA_Website.Controllers
         {
             if (string.IsNullOrWhiteSpace(email) || !new EmailAddressAttribute().IsValid(email))
             {
-                return Json(new { success = false, message = "Въведете валиден имейл адрес." });
+                TempData["NewsletterMessage"] = "Въведете валиден имейл адрес.";
+                return RedirectToAction("Index", "Home");
             }
 
             var exists = _context.NewsletterSubscribers.Any(x => x.Email == email);
             if (exists)
             {
-                return Json(new { success = false, message = "Този имейл вече е абониран към бюлетина!" });
+                TempData["NewsletterMessage"] = "Този имейл вече е абониран към бюлетина!.";
+                return RedirectToAction("Index", "Home");
             }
 
             var subscriber = new NewsletterSubscription
@@ -40,7 +42,8 @@ namespace PA_Website.Controllers
             _context.NewsletterSubscribers.Add(subscriber);
             _context.SaveChanges();
 
-            return Json(new { success = true, message = "Благодаря, че се абонира за бюлетина на Душевна Мозайка! Оттук нататък ще получаваш вдъхновение, новини и практични насоки директно в пощата си." });
+            TempData["NewsletterMessage"] = "Благодаря за абонирането към бюлетина!";
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]

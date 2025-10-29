@@ -14,7 +14,6 @@ public static class StringExtensions
         if (plainText.Length <= maxLength)
             return html; // No need to truncate
 
-        // Now truncate properly with HTML tags
         var truncated = string.Empty;
         var tagStack = new Stack<string>();
         var currentLength = 0;
@@ -28,16 +27,17 @@ public static class StringExtensions
                 // It's a tag
                 truncated += match.Value;
 
-                if (!match.Value.Contains("/"))
+                if (match.Value.StartsWith("</"))
                 {
-                    // Opening tag - push to stack
+                    // Closing tag — pop only if stack not empty
+                    if (tagStack.Count > 0)
+                        tagStack.Pop();
+                }
+                else if (!match.Value.EndsWith("/>"))
+                {
+                    // Opening tag (not self-closing)
                     var tagName = match.Value.Split(new[] { ' ', '>' }, StringSplitOptions.RemoveEmptyEntries)[0].Substring(1);
                     tagStack.Push(tagName);
-                }
-                else if (match.Value.Contains("/"))
-                {
-                    // Closing tag - pop from stack
-                    tagStack.Pop();
                 }
             }
             else
