@@ -143,6 +143,22 @@
             margin-bottom: 1.5rem;
         }
 
+        .article-content a {
+            color: #7c3aed;
+            text-decoration: underline;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .article-content a:hover {
+            color: #4c1d95;
+            text-decoration: none;
+        }
+
+        .article-content a:visited {
+            color: #a855f7;
+        }
+
         .article-content table {
             width: 100%;
             border-collapse: collapse;
@@ -342,4 +358,43 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function() {
+            // Fix external links in article content
+            $('.article-content a').each(function() {
+                var originalHref = $(this).attr('href');
+                
+                if (originalHref) {
+                    var fixedHref = originalHref;
+                    var isExternal = false;
+                    
+                    // If link doesn't start with /, http://, https://, mailto:, or tel:
+                    if (!originalHref.match(/^(https?:\/\/|mailto:|tel:|\/|#)/)) {
+                        // Add https:// to make it an external link
+                        fixedHref = 'https://' + originalHref;
+                        isExternal = true;
+                        $(this).attr('href', fixedHref);
+                    }
+                    
+                    // Check if it's an external link (starts with http:// or https:// and not same domain)
+                    if (fixedHref.match(/^https?:\/\//)) {
+                        try {
+                            var linkHostname = new URL(fixedHref).hostname;
+                            var currentHostname = window.location.hostname;
+                            
+                            if (linkHostname !== currentHostname) {
+                                isExternal = true;
+                                $(this).attr('target', '_blank');
+                                $(this).attr('rel', 'noopener noreferrer');
+                            }
+                        } catch (e) {
+                            // If URL parsing fails, assume it's external and open in new tab
+                            $(this).attr('target', '_blank');
+                            $(this).attr('rel', 'noopener noreferrer');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 }
