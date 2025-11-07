@@ -319,8 +319,10 @@
             selector: '.tinymce-editor',
             language: 'en',
             height: 500,
-            plugins: 'lists link image table code help wordcount',
-            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | image | help',
+            branding: false,
+            menubar: 'file edit view insert format tools table help',
+            plugins: 'lists link autolink image table code help wordcount',
+            toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link unlink openlink | image code | help',
             content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
             automatic_uploads: true,
             file_picker_types: 'image',
@@ -337,7 +339,13 @@
                 });
                 },
             image_advtab: true,
-            image_dimensions: true
+            image_dimensions: true,
+            link_default_protocol: 'https',
+            link_assume_external_targets: true,
+            link_context_toolbar: true,
+            relative_urls: false,
+            remove_script_host: false,
+            convert_urls: false
         });
     </script>
 }
