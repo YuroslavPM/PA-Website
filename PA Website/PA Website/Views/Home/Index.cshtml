@@ -713,7 +713,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 services-grid">
                     @foreach (var service in (List<PA_Website.Models.Service>)ViewBag.Services)
                     {
-                        <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="block bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+                        <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+                             data-service-id="@service.Id"
+                             onclick="window.location.href='@Url.Action("Details", "Services", new { id = service.Id })'">
                             @if (!string.IsNullOrEmpty(service.ImagePath))
                             {
                                 <div class="h-48 sm:h-64 overflow-hidden">
@@ -756,7 +758,7 @@
                                     <i class="fas fa-arrow-right ml-2"></i>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     }
                 </div>
                 <div class="text-center mt-8">

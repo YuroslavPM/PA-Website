@@ -49,18 +49,26 @@ namespace PA_Website.Controllers
         /// <summary>
         /// GET: Services - Display all services with promotion eligibility
         /// </summary>
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 9)
         {
             try
             {
-                var services = await _context.Service.ToListAsync();
+                var services = _context.Service
+                    .OrderBy(s => s.NameService)
+                    .AsQueryable();
+
+                int totalRecords = await _context.Service.CountAsync();
+                var pagedServices = await services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+                
                 var promotionData = await GetPromotionDataAsync();
 
                 ViewBag.FirstBookingPromo = promotionData.FirstBookingPromo;
                 ViewBag.IsEligibleForFirstBookingPromo = promotionData.IsEligible;
                 ViewBag.DebugInfo = promotionData.DebugInfo;
+                ViewData["CurrentPage"] = pageNumber;
+                ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
 
-                return View(services);
+                return View(pagedServices);
             }
             catch (Exception ex)
             {
