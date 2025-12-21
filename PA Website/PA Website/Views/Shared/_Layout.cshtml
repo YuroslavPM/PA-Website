@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @using PA_Website.Models
 @inject UserManager<User> UserManager
 @inject SignInManager<User> SignInManager
@@ -12,12 +12,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- DNS Prefetch and Preconnect for Performance -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://code.jquery.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+    <link rel="dns-prefetch" href="https://code.jquery.com" />
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://code.jquery.com/jquery-3.6.0.min.js" as="script" crossorigin />
     
     <!-- SEO Meta Tags -->
     <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка - Астрологични консултации и психологическа подкрепа")</title>
@@ -43,356 +46,16 @@
         ViewBag.TinyMceApiKey = Configuration["TinyMCE:ApiKey"];
     }
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            200: '#ddd6fe',
-                            300: '#c4b5fd',
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        },
-                        secondary: {
-                            50: '#fdf4ff',
-                            100: '#fae8ff',
-                            200: '#f5d0fe',
-                            300: '#f0abfc',
-                            400: '#e879f9',
-                            500: '#d946ef',
-                            600: '#c026d3',
-                            700: '#a21caf',
-                            800: '#86198f',
-                            900: '#701a75',
-                        },
-                        accent: {
-                            50: '#fffbeb',
-                            100: '#fef3c7',
-                            200: '#fde68a',
-                            300: '#fcd34d',
-                            400: '#fbbf24',
-                            500: '#f59e0b',
-                            600: '#d97706',
-                            700: '#b45309',
-                            800: '#92400e',
-                            900: '#78350f',
-                        }
-                    },
-                    fontFamily: {
-                        'playfair': ['Playfair Display', 'serif'],
-                        'poppins': ['Poppins', 'sans-serif'],
-                        'inter': ['Inter', 'sans-serif'],
-                    },
-                    spacing: {
-                        '18': '4.5rem',
-                        '88': '22rem',
-                        '128': '32rem',
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.6s ease-out forwards',
-                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-                        'fade-in-down': 'fadeInDown 0.8s ease-out forwards',
-                        'slide-in-left': 'slideInLeft 0.6s ease-out forwards',
-                        'slide-in-right': 'slideInRight 0.6s ease-out forwards',
-                        'scale-in': 'scaleIn 0.5s ease-out forwards',
-                        'bounce-in': 'bounceIn 0.8s ease-out forwards',
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'text-fade-in': 'textFadeIn 0.8s ease-out forwards',
-                        'slide-up': 'slideUp 0.6s ease-out forwards',
-                        'slide-down': 'slideDown 0.6s ease-out forwards',
-                        'zoom-in': 'zoomIn 0.5s ease-out forwards',
-                        'rotate-in': 'rotateIn 0.6s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        },
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(30px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        fadeInDown: {
-                            '0%': { opacity: '0', transform: 'translateY(-30px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        slideInLeft: {
-                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
-                            '100%': { opacity: '1', transform: 'translateX(0)' }
-                        },
-                        slideInRight: {
-                            '0%': { opacity: '0', transform: 'translateX(30px)' },
-                            '100%': { opacity: '1', transform: 'translateX(0)' }
-                        },
-                        scaleIn: {
-                            '0%': { opacity: '0', transform: 'scale(0.9)' },
-                            '100%': { opacity: '1', transform: 'scale(1)' }
-                        },
-                        bounceIn: {
-                            '0%': { opacity: '0', transform: 'scale(0.3)' },
-                            '50%': { opacity: '1', transform: 'scale(1.05)' },
-                            '70%': { transform: 'scale(0.9)' },
-                            '100%': { opacity: '1', transform: 'scale(1)' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        },
-                        textFadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(40px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        slideDown: {
-                            '0%': { opacity: '0', transform: 'translateY(-40px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        zoomIn: {
-                            '0%': { opacity: '0', transform: 'scale(0.8)' },
-                            '100%': { opacity: '1', transform: 'scale(1)' }
-                        },
-                        rotateIn: {
-                            '0%': { opacity: '0', transform: 'rotate(-10deg) scale(0.9)' },
-                            '100%': { opacity: '1', transform: 'rotate(0deg) scale(1)' }
-                        }
-                    },
-                    boxShadow: {
-                        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-                        'medium': '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                        'large': '0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 2px 10px -2px rgba(0, 0, 0, 0.05)',
-                        'glow': '0 0 20px rgba(139, 92, 246, 0.3)',
-                        'glow-yellow': '0 0 20px rgba(251, 191, 36, 0.3)',
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Compiled Tailwind CSS (built at compile time) -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
+    <!-- Preload fonts for better performance -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
-    <!-- Font Awesome - Self-hosted to avoid third-party cookies -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
-    <!-- Polyfill for async CSS loading -->
-    <script>
-        !function(e){"use strict";var t=function(t,n,o){function i(e){return a.body?e():void setTimeout(function(){i(e)})}function r(){l.addEventListener&&l.removeEventListener("load",r),l.media=o||"all"}var d,a=e.document,l=a.createElement("link");if(n)d=n;else{var s=(a.body||a.getElementsByTagName("head")[0]).childNodes;d=s[s.length-1]}var f=a.styleSheets;l.rel="stylesheet",l.href=t,l.media="only x",i(function(){d.parentNode.insertBefore(l,n?d:d.nextSibling)});var u=function(e){for(var t=l.href,n=f.length;n--;)if(f[n].href===t)return e();setTimeout(function(){u(e)})};return l.addEventListener&&l.addEventListener("load",r),l.onloadcssdefined=u,u(r),l};"undefined"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}("undefined"!=typeof global?global:this);
-    </script>
-
-    <!-- Custom styles -->
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    <style>
-        /* Enhanced custom styles */
-        .navbar-gradient {
-            background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .navbar-scrolled {
-            /* background: rgba(76, 29, 149, 0.95);  <-- REMOVE THIS LINE */
-            /* Keep the gradient always */
-            backdrop-filter: blur(20px);
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
-        }
-        
-        .footer-gradient {
-            background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
-        }
-
-        .hero-gradient {
-            background: linear-gradient(135deg, rgba(76, 29, 149, 0.95), rgba(124, 58, 237, 0.95));
-        }
-
-        .card-shadow-soft {
-            box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
-        }
-
-        .card-shadow-medium {
-            box-shadow: 0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .card-shadow-large {
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 2px 10px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .hover-lift {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-        }
-
-        .nav-link-hover {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link-hover::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #fbbf24, #f59e0b);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-50%);
-        }
-
-        .nav-link-hover:hover::before {
-            width: 80%;
-        }
-
-        .dropdown-menu-custom {
-            background: rgba(30, 41, 59, 0.98);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
-        }
-
-        .footer-title {
-            position: relative;
-            display: inline-block;
-        }
-
-        .footer-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(90deg, #fbbf24, #f59e0b);
-            border-radius: 2px;
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .btn-primary-gradient {
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-primary-gradient:hover {
-            background: linear-gradient(135deg, #6d28d9, #9333ea);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-        }
-
-        .btn-secondary-gradient {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-secondary-gradient:hover {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
-        }
-
-        /* Mobile menu improvements */
-        .mobile-menu {
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .mobile-menu.open {
-            transform: translateX(0);
-        }
-
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #6d28d9, #9333ea);
-        }
-
-        /* Loading animation */
-        .loading-dots {
-            display: inline-block;
-        }
-
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s steps(5, end) infinite;
-        }
-
-        @@keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
-        }
-
-        /* Responsive improvements */
-        @@media (max-width: 768px) {
-            .mobile-nav-item {
-                opacity: 0;
-                transform: translateY(20px);
-                animation: slideInUp 0.5s ease-out forwards;
-            }
-            
-            .mobile-nav-item:nth-child(1) { animation-delay: 0.1s; }
-            .mobile-nav-item:nth-child(2) { animation-delay: 0.2s; }
-            .mobile-nav-item:nth-child(3) { animation-delay: 0.3s; }
-            .mobile-nav-item:nth-child(4) { animation-delay: 0.4s; }
-            .mobile-nav-item:nth-child(5) { animation-delay: 0.5s; }
-        }
-
-        /* Focus styles for accessibility */
-        .focus-visible:focus {
-            outline: 2px solid #fbbf24;
-            outline-offset: 2px;
-        }
-
-        /* Reduced motion for users who prefer it */
-        @@media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
 
     @RenderSection("Styles", required: false)
     @RenderSection("Head", required: false)
@@ -554,7 +217,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
                 <!-- Brand section -->
                 <div class="text-center md:text-left">
-                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Душевна Мозайка</h5>
+                    <h2 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Душевна Мозайка</h2>
                     <p class="text-white/80 mb-4 lg:mb-6 leading-relaxed text-base lg:text-lg">Психологически и астрологични консултации с Мариела Разпопова.
                         Пространство за споделяне и преоткриване
                     </p>
@@ -573,7 +236,7 @@
 
                 <!-- Quick links -->
                 <div class="text-center">
-                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Бързи връзки</h5>
+                    <h2 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Бързи връзки</h2>
                     <ul class="space-y-3 lg:space-y-4">
                         <li>
                             <a href="/Home/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Начало</a>
@@ -595,7 +258,7 @@
 
                 <!-- Contact info -->
                 <div class="text-center md:text-right">
-                    <h5 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Контакти</h5>
+                    <h2 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Контакти</h2>
                     <div class="space-y-3 lg:space-y-4">
                         <p class="flex items-center justify-center md:justify-end text-base lg:text-lg text-white/80">
                             <i class="fas fa-map-marker-alt mr-3"></i> Пловдив, България
@@ -619,7 +282,7 @@
     </footer>
 
     <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script>
         // Enhanced mobile menu toggle with animations
         document.getElementById('mobile-menu-button').addEventListener('click', function() {

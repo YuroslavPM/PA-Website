@@ -42,4 +42,9 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <!-- Tailwind CSS Build - Compiles on every build -->
+  <Target Name="Tailwind" BeforeTargets="Build">
+    <Exec Command="npx @tailwindcss/cli -i ./wwwroot/css/input.css -o ./wwwroot/css/site.css --minify" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+
 </Project>
