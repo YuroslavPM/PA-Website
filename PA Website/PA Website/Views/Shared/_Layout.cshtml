@@ -54,9 +54,6 @@
         .text-white{color:#fff}
         .font-bold{font-weight:700}
         .fas,.fab,.far{display:inline-block;width:1em;height:1em}
-        /* Fix Font Awesome font-display for faster text rendering */
-        @@font-face{font-family:"Font Awesome 6 Free";font-display:swap!important}
-        @@font-face{font-family:"Font Awesome 6 Brands";font-display:swap!important}
     </style>
     
     <link rel="preload" href="~/css/site.css" as="style" asp-append-version="true" />
@@ -66,9 +63,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
-    <link rel="preload" href="~/lib/font-awesome/css/all.min.css" as="style" asp-append-version="true" />
-    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" asp-append-version="true">
-    <noscript><link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true"></noscript>
+    <!-- Font Awesome: Minimal custom build with only used icons (~2KB vs 22KB) -->
+    <link rel="preload" href="~/lib/font-awesome/css/custom.min.css" as="style" asp-append-version="true" />
+    <link href="~/lib/font-awesome/css/custom.min.css" rel="stylesheet" media="print" onload="this.media='all'" asp-append-version="true">
+    <noscript><link rel="stylesheet" href="~/lib/font-awesome/css/custom.min.css" asp-append-version="true"></noscript>
 
     @RenderSection("Styles", required: false)
     @RenderSection("Head", required: false)

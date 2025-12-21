@@ -1,0 +1,58 @@
+@font-face{font-family:"Font Awesome 6 Free";font-style:normal;font-weight:900;font-display:swap;src:url(../webfonts/fa-solid-900.woff2) format("woff2"),url(../webfonts/fa-solid-900.ttf) format("truetype")}
+@font-face{font-family:"Font Awesome 6 Brands";font-style:normal;font-weight:400;font-display:swap;src:url(../webfonts/fa-brands-400.woff2) format("woff2"),url(../webfonts/fa-brands-400.ttf) format("truetype")}
+
+.fas,.fa-solid{font-family:"Font Awesome 6 Free";font-weight:900}
+.fab,.fa-brands{font-family:"Font Awesome 6 Brands";font-weight:400}
+.fas,.fab,.far,.fa{display:inline-block;font-style:normal;font-variant:normal;line-height:1;text-rendering:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.fa-spin{animation:fa-spin 2s infinite linear}
+@keyframes fa-spin{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Solid Icons (fas) */
+.fa-arrow-right:before{content:"\f061"}
+.fa-bars:before{content:"\f0c9"}
+.fa-brain:before{content:"\f5dc"}
+.fa-calendar:before{content:"\f133"}
+.fa-check-circle:before{content:"\f058"}
+.fa-chevron-down:before{content:"\f078"}
+.fa-chevron-left:before{content:"\f053"}
+.fa-chevron-right:before{content:"\f054"}
+.fa-clock:before{content:"\f017"}
+.fa-cog:before{content:"\f013"}
+.fa-envelope:before{content:"\f0e0"}
+.fa-envelope-open-text:before{content:"\f658"}
+.fa-euro-sign:before{content:"\f153"}
+.fa-eye:before{content:"\f06e"}
+.fa-home:before{content:"\f015"}
+.fa-info-circle:before{content:"\f05a"}
+.fa-list-alt:before{content:"\f022"}
+.fa-magic:before{content:"\f0d0"}
+.fa-map-marker-alt:before{content:"\f3c5"}
+.fa-money-bill-wave:before{content:"\f53a"}
+.fa-newspaper:before{content:"\f1ea"}
+.fa-paper-plane:before{content:"\f1d8"}
+.fa-phone:before{content:"\f095"}
+.fa-plus:before{content:"\f067"}
+.fa-sign-in-alt:before{content:"\f2f6"}
+.fa-sign-out-alt:before{content:"\f2f5"}
+.fa-spinner:before{content:"\f110"}
+.fa-star:before{content:"\f005"}
+.fa-tachometer-alt:before{content:"\f3fd"}
+.fa-tag:before{content:"\f02b"}
+.fa-times:before{content:"\f00d"}
+.fa-user-circle:before{content:"\f2bd"}
+.fa-user-cog:before{content:"\f4fe"}
+.fa-user-edit:before{content:"\f4ff"}
+.fa-users:before{content:"\f0c0"}
+
+/* Brand Icons (fab) */
+.fa-facebook-f:before{content:"\f39e"}
+.fa-instagram:before{content:"\f16d"}
+.fa-youtube:before{content:"\f167"}
+
+/* Utility classes */
+.mr-2{margin-right:.5rem}
+.mr-3{margin-right:.75rem}
+.ml-2{margin-left:.5rem}
+.text-xl{font-size:1.25rem}
+.text-xs{font-size:.75rem}
+
