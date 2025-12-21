@@ -29,22 +29,78 @@ namespace PA_Website.Controllers
             var baseUrl = _configuration["BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}";
             var sitemapUrl = $"{baseUrl}/sitemap.xml";
 
-            var robotsContent = $@"User-agent: *
-            Allow: /
-            Disallow: /Identity/
-            Disallow: /UserServices/
-            Disallow: /Users/
-            Disallow: /Services/Create
-            Disallow: /Services/Edit
-            Disallow: /Services/Delete
-            Disallow: /Articles/Create
-            Disallow: /Articles/Edit
-            Disallow: /Articles/Delete
-            Disallow: /Promotions/Create
-            Disallow: /Promotions/Edit
-            Disallow: /Promotions/Delete
+            var robotsContent = $@"# Robots.txt for Душевна Мозайка
 
-            Sitemap: {sitemapUrl}";
+# Allow all search engine crawlers
+User-agent: *
+Allow: /
+Disallow: /Identity/
+Disallow: /UserServices/
+Disallow: /Users/
+Disallow: /Services/Create
+Disallow: /Services/Edit
+Disallow: /Services/Delete
+Disallow: /Articles/Create
+Disallow: /Articles/Edit
+Disallow: /Articles/Delete
+Disallow: /Promotions/Create
+Disallow: /Promotions/Edit
+Disallow: /Promotions/Delete
+
+# Block AI training crawlers
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: YouBot
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+# Sitemap location
+Sitemap: {sitemapUrl}";
 
             return Content(robotsContent, "text/plain");
         }
