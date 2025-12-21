@@ -96,6 +96,17 @@ namespace PA_Website.Controllers
                 ViewData["ReservedTimes"] = reservedTimes;
                 ViewData["SelectedDate"] = selectedDate;
 
+                // Set SEO meta tags
+                ViewData["Title"] = service.NameService;
+                ViewData["Description"] = service.Description?.Length > 160 
+                    ? service.Description.Substring(0, 160) + "..." 
+                    : service.Description ?? $"Резервирайте {service.NameService} - {service.CategoryOfService}";
+                ViewData["Keywords"] = $"{service.NameService}, {service.CategoryOfService}, услуги, резервация";
+                if (!string.IsNullOrEmpty(service.ImagePath))
+                {
+                    ViewData["Image"] = service.ImagePath;
+                }
+
                 return View(service);
             }
             catch (Exception ex)

@@ -10,10 +10,27 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Душевна Мозайка</title>
-    <meta name="description" content="Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа" />
-    <meta name="keywords" content="астрология, психология, хороскоп, консултации, Душевна Мозайка" />
+    
+    <!-- SEO Meta Tags -->
+    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка - Астрологични консултации и психологическа подкрепа")</title>
+    <meta name="description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа с Мариела Разпопова")" />
+    <meta name="keywords" content="@(ViewData["Keywords"] as string ?? "астрология, психология, хороскоп, консултации, Душевна Мозайка, Мариела Разпопова")" />
     <meta name="author" content="Мариела Разпопова" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка")" />
+    <meta property="og:description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа")" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.png")" />
+    <meta property="og:url" content="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@@dushevnamozaika" />
+    <meta name="twitter:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка")" />
+    <meta name="twitter:description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа")" />
+    <meta name="twitter:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.png")" />
     @{
         ViewBag.TinyMceApiKey = Configuration["TinyMCE:ApiKey"];
     }

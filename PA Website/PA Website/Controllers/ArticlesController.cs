@@ -57,6 +57,17 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
 
+            // Set SEO meta tags
+            ViewData["Title"] = article.Title;
+            ViewData["Description"] = article.Description.Length > 160 
+                ? article.Description.Substring(0, 160) + "..." 
+                : article.Description;
+            ViewData["Keywords"] = $"{article.Category}, астрология, психология, {article.Title}";
+            if (!string.IsNullOrEmpty(article.ImagePath))
+            {
+                ViewData["Image"] = article.ImagePath;
+            }
+
             return View(article);
         }
 
