@@ -42,8 +42,9 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
-  <!-- Tailwind CSS Build - Compiles on every build -->
-  <Target Name="Tailwind" BeforeTargets="Build">
+  <!-- Tailwind CSS Build - Only runs in development when node_modules exists -->
+  <!-- On production/VPS: run 'npm run build:css' locally before publishing -->
+  <Target Name="Tailwind" BeforeTargets="Build" Condition="Exists('$(ProjectDir)node_modules') AND '$(SkipTailwind)' != 'true'">
     <Exec Command="npx @tailwindcss/cli -i ./wwwroot/css/input.css -o ./wwwroot/css/site.css --minify" WorkingDirectory="$(ProjectDir)" />
   </Target>
 
