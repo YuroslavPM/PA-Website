@@ -54,6 +54,9 @@
         .text-white{color:#fff}
         .font-bold{font-weight:700}
         .fas,.fab,.far{display:inline-block;width:1em;height:1em}
+        /* Fix Font Awesome font-display for faster text rendering */
+        @@font-face{font-family:"Font Awesome 6 Free";font-display:swap!important}
+        @@font-face{font-family:"Font Awesome 6 Brands";font-display:swap!important}
     </style>
     
     <link rel="preload" href="~/css/site.css" as="style" asp-append-version="true" />
@@ -77,7 +80,11 @@
             <div class="flex justify-between items-center">
                 <!-- Brand -->
                 <a class="font-playfair text-xl lg:text-2xl font-bold text-white drop-shadow-md hover:scale-105 transition-transform duration-300 flex items-center focus-visible:focus" asp-controller="Home" asp-action="Index">
-                    <img src="~/Images/siteImg/logo.webp" 
+                    <img src="/Images/siteImg/logo-112.webp"
+                         srcset="/Images/siteImg/logo-80.webp 80w,
+                                 /Images/siteImg/logo-96.webp 96w,
+                                 /Images/siteImg/logo-112.webp 112w"
+                         sizes="(max-width: 1024px) 80px, (max-width: 1280px) 96px, 112px"
                          alt="Душевна Мозайка Logo" 
                          width="112"
                          height="112"
