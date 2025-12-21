@@ -11,6 +11,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- DNS Prefetch and Preconnect for Performance -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    
     <!-- SEO Meta Tags -->
     <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка - Астрологични консултации и психологическа подкрепа")</title>
     <meta name="description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа с Мариела Разпопова")" />
@@ -22,7 +32,7 @@
     <meta property="og:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка")" />
     <meta property="og:description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа")" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.png")" />
+    <meta property="og:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")" />
     <meta property="og:url" content="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
     
     <!-- Twitter Card Meta Tags -->
@@ -30,7 +40,7 @@
     <meta name="twitter:site" content="@@dushevnamozaika" />
     <meta name="twitter:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка")" />
     <meta name="twitter:description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа")" />
-    <meta name="twitter:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.png")" />
+    <meta name="twitter:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")" />
     @{
         ViewBag.TinyMceApiKey = Configuration["TinyMCE:ApiKey"];
     }
@@ -173,13 +183,15 @@
         }
     </script>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+    <!-- Polyfill for async CSS loading -->
+    <script>
+        !function(e){"use strict";var t=function(t,n,o){function i(e){return a.body?e():void setTimeout(function(){i(e)})}function r(){l.addEventListener&&l.removeEventListener("load",r),l.media=o||"all"}var d,a=e.document,l=a.createElement("link");if(n)d=n;else{var s=(a.body||a.getElementsByTagName("head")[0]).childNodes;d=s[s.length-1]}var f=a.styleSheets;l.rel="stylesheet",l.href=t,l.media="only x",i(function(){d.parentNode.insertBefore(l,n?d:d.nextSibling)});var u=function(e){for(var t=l.href,n=f.length;n--;)if(f[n].href===t)return e();setTimeout(function(){u(e)})};return l.addEventListener&&l.addEventListener("load",r),l.onloadcssdefined=u,u(r),l};"undefined"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}("undefined"!=typeof global?global:this);
+    </script>
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -385,6 +397,7 @@
     </style>
 
     @RenderSection("Styles", required: false)
+    @RenderSection("Head", required: false)
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 min-h-screen font-inter">
     <!-- Navigation -->
@@ -393,7 +406,7 @@
             <div class="flex justify-between items-center">
                 <!-- Brand -->
                 <a class="font-playfair text-xl lg:text-2xl font-bold text-white drop-shadow-md hover:scale-105 transition-transform duration-300 flex items-center focus-visible:focus" asp-controller="Home" asp-action="Index">
-                    <img src="~/Images/siteImg/logo.png" alt="Душевна Мозайка Logo" class="h-20 w-auto lg:h-24 xl:h-28 filter brightness-0 invert" />
+                    <img src="~/Images/siteImg/logo.webp" alt="Душевна Мозайка Logo" class="h-20 w-auto lg:h-24 xl:h-28 filter brightness-0 invert" />
                 </a>
 
                 <!-- Mobile menu button -->
