@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.StaticFiles;
 using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -97,8 +98,7 @@ builder.Services.AddResponseCompression(options =>
         "text/plain",
         "text/xml",
         "application/xml",
-        "image/svg+xml",
-        "font/woff2"
+        "image/svg+xml"
     });
 });
 
@@ -118,26 +118,33 @@ app.UseResponseCompression();
 
 app.UseHttpsRedirection();
 
+var contentTypeProvider = new FileExtensionContentTypeProvider();
+contentTypeProvider.Mappings[".woff2"] = "font/woff2";
+contentTypeProvider.Mappings[".woff"] = "font/woff";
+contentTypeProvider.Mappings[".ttf"] = "font/ttf";
+contentTypeProvider.Mappings[".eot"] = "application/vnd.ms-fontobject";
+contentTypeProvider.Mappings[".webp"] = "image/webp";
+
 app.UseStaticFiles(new StaticFileOptions
 {
+    ContentTypeProvider = contentTypeProvider,
     OnPrepareResponse = ctx =>
     {
         var path = ctx.Context.Request.Path.Value ?? "";
         
-        // Versioned assets (with ?v= query string) get 1 year cache
         if (ctx.Context.Request.QueryString.HasValue && 
             ctx.Context.Request.QueryString.Value?.Contains("v=") == true)
         {
             ctx.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
         }
-        // images, fonts get 30 days cache
         else if (path.Contains("/Images/") || 
                  path.EndsWith(".webp") || 
                  path.EndsWith(".png") || 
                  path.EndsWith(".jpg") || 
                  path.EndsWith(".jpeg") ||
                  path.EndsWith(".woff2") ||
-                 path.EndsWith(".woff"))
+                 path.EndsWith(".woff") ||
+                 path.EndsWith(".ttf"))
         {
             ctx.Context.Response.Headers.CacheControl = "public, max-age=2592000"; // 30 days
         }
