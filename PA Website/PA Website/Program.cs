@@ -10,6 +10,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -79,16 +81,88 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+// Add Response Compression for better performance (fixes slow server response)
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
+    {
+        "text/css",
+        "application/javascript",
+        "text/javascript",
+        "application/json",
+        "text/html",
+        "text/plain",
+        "text/xml",
+        "application/xml",
+        "image/svg+xml",
+        "font/woff2"
+    });
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Optimal;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Optimal;
+});
+
 var app = builder.Build();
 
+app.UseResponseCompression();
+
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        var path = ctx.Context.Request.Path.Value ?? "";
+        
+        // Versioned assets (with ?v= query string) get 1 year cache
+        if (ctx.Context.Request.QueryString.HasValue && 
+            ctx.Context.Request.QueryString.Value?.Contains("v=") == true)
+        {
+            ctx.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+        }
+        // images, fonts get 30 days cache
+        else if (path.Contains("/Images/") || 
+                 path.EndsWith(".webp") || 
+                 path.EndsWith(".png") || 
+                 path.EndsWith(".jpg") || 
+                 path.EndsWith(".jpeg") ||
+                 path.EndsWith(".woff2") ||
+                 path.EndsWith(".woff"))
+        {
+            ctx.Context.Response.Headers.CacheControl = "public, max-age=2592000"; // 30 days
+        }
+        else if (path.EndsWith(".css") || path.EndsWith(".js"))
+        {
+            ctx.Context.Response.Headers.CacheControl = "public, max-age=604800"; // 7 days
+        }
+        else
+        {
+            ctx.Context.Response.Headers.CacheControl = "public, max-age=86400"; // 1 day
+        }
+    }
+});
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "astro-cards")),
-    RequestPath = "/astro-cards"
+    RequestPath = "/astro-cards",
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.CacheControl = "public, max-age=2592000"; // 30 days for PDFs
+    }
 });
+
 app.UseRouting();
 
 app.UseAuthentication();
