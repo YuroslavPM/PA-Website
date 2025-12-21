@@ -12,15 +12,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- DNS Prefetch and Preconnect for Performance -->
-    <link rel="preconnect" href="https://code.jquery.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://code.jquery.com" />
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://code.jquery.com/jquery-3.6.0.min.js" as="script" crossorigin />
     
     <!-- SEO Meta Tags -->
     <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка - Астрологични консултации и психологическа подкрепа")</title>
@@ -46,16 +41,31 @@
         ViewBag.TinyMceApiKey = Configuration["TinyMCE:ApiKey"];
     }
 
-    <!-- Compiled Tailwind CSS (built at compile time) -->
+    <!-- Inline Critical CSS: Prevent FOUC for navbar and initial layout -->
+    <style>
+        .navbar-gradient{background:linear-gradient(135deg,#4a0e78 0%,#6a3093 50%,#7c3aed 100%)}
+        .footer-gradient{background:linear-gradient(135deg,#4a0e78 0%,#6a3093 50%,#7c3aed 100%)}
+        body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif}
+        .min-h-screen{min-height:100vh}
+        .fixed{position:fixed}
+        .top-0{top:0}
+        .w-full{width:100%}
+        .z-50{z-index:50}
+        .text-white{color:#fff}
+        .font-bold{font-weight:700}
+        .fas,.fab,.far{display:inline-block;width:1em;height:1em}
+    </style>
+    
+    <link rel="preload" href="~/css/site.css" as="style" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
-    <!-- Preload fonts for better performance -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+    <link rel="preload" href="~/lib/font-awesome/css/all.min.css" as="style" asp-append-version="true" />
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" asp-append-version="true">
+    <noscript><link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true"></noscript>
 
     @RenderSection("Styles", required: false)
     @RenderSection("Head", required: false)
@@ -286,7 +296,6 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script>
         // Enhanced mobile menu toggle with animations
