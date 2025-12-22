@@ -179,7 +179,7 @@
             }
         }
 
-            /* Enhanced floating stars animation */
+            /* Enhanced floating stars animation - optimized for performance */
             .star {
                 position: absolute;
                 background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
@@ -187,6 +187,8 @@
                 animation: float 8s infinite ease-in-out;
                 box-shadow: 0 0 15px rgba(255,255,255,0.6), 0 0 30px rgba(255,255,255,0.3);
                 z-index: 3;
+                will-change: transform, opacity;
+                transform: translateZ(0); /* Force GPU acceleration */
             }
 
             @@keyframes float {
@@ -1178,8 +1180,28 @@
                 showSlide(currentSlide);
             });
 
-            // Auto-advance slides
-            setInterval(nextSlide, 7000);
+            // Auto-advance slides - only if page is visible
+            let carouselInterval;
+            function startCarousel() {
+                if (document.visibilityState === 'visible') {
+                    carouselInterval = setInterval(nextSlide, 7000);
+                }
+            }
+            function stopCarousel() {
+                if (carouselInterval) {
+                    clearInterval(carouselInterval);
+                    carouselInterval = null;
+                }
+            }
+            startCarousel();
+            // Pause carousel when page is hidden to save resources
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    startCarousel();
+                } else {
+                    stopCarousel();
+                }
+            });
 
             // Newsletter form submission
             $('#newsletterForm').on('submit', function(e) {
@@ -1225,9 +1247,13 @@
                 });
             });
 
-            // Generate random stars
+            // Generate random stars - deferred until after page load for better performance
             function createStars() {
                 const starsContainer = document.getElementById('floating-elements');
+                if (!starsContainer) return;
+                
+                // Use DocumentFragment for better performance
+                const fragment = document.createDocumentFragment();
                 for (let i = 0; i < 20; i++) {
                     const star = document.createElement('div');
                     star.className = 'star';
@@ -1244,42 +1270,69 @@
                         top: ${posY}%;
                         animation-delay: ${delay}s;
                         animation-duration: ${duration}s;
+                        will-change: transform, opacity;
                     `;
 
-                    starsContainer.appendChild(star);
+                    fragment.appendChild(star);
                 }
+                starsContainer.appendChild(fragment);
             }
 
-            createStars();
+            // Defer star creation until after initial render
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(createStars, { timeout: 3000 });
+            } else {
+                setTimeout(createStars, 500);
+            }
 
-            // Smooth scrolling for anchor links
-            $('a[href^="#"]').on('click', function(event) {
-                const target = $($(this).attr('href'));
-                if (target.length) {
-                    event.preventDefault();
-                    $('html, body').animate({
-                        scrollTop: target.offset().top - 80
-                    }, 800);
-                }
-            });
-
-            // Intersection Observer for animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate-fade-in-up');
+            // Smooth scrolling for anchor links - native implementation (no jQuery needed)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(event) {
+                    const href = this.getAttribute('href');
+                    if (href === '#' || href === '') return;
+                    
+                    const target = document.querySelector(href);
+                    if (target) {
+                        event.preventDefault();
+                        const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 80;
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
                     }
                 });
-            }, observerOptions);
+            });
 
-            // Observe elements for animation
-            const animatedElements = document.querySelectorAll('.animate-on-scroll');
-            animatedElements.forEach(el => observer.observe(el));
+            // Use shared IntersectionObserver from layout if available, otherwise create one
+            let observer;
+            if (window.getSharedObserver) {
+                observer = window.getSharedObserver();
+            } else {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-fade-in-up');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+            }
+
+            // Observe elements for animation - deferred
+            const observeElements = function() {
+                const animatedElements = document.querySelectorAll('.animate-on-scroll');
+                animatedElements.forEach(el => observer.observe(el));
+            };
+            
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(observeElements, { timeout: 2000 });
+            } else {
+                setTimeout(observeElements, 100);
+            }
         });
 
         // Newsletter modal functions

@@ -54,13 +54,18 @@
         .text-white{color:#fff}
         .font-bold{font-weight:700}
         .fas,.fab,.far{display:inline-block;width:1em;height:1em}
+        /* Optimize transitions to use transform/opacity only */
+        .transition-all{transition-property:transform,opacity}
     </style>
     
     <link rel="preload" href="~/css/site.css" as="style" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
+    <!-- Optimized font loading with font-display: swap for faster FCP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
     <!-- Font Awesome: Minimal custom build with only used icons (~2KB vs 22KB) -->
@@ -301,21 +306,27 @@
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <!-- Defer jQuery loading to prevent blocking render -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous" defer></script>
     <script>
-        // Enhanced mobile menu toggle with animations
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const icon = this.querySelector('i');
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
-            
-            mobileMenu.classList.toggle('hidden');
-            this.setAttribute('aria-expanded', !isExpanded);
-            
-            if (mobileMenu.classList.contains('hidden')) {
-                icon.className = 'fas fa-bars text-xl';
-            } else {
-                icon.className = 'fas fa-times text-xl';
+        // Enhanced mobile menu toggle with animations - runs immediately without jQuery
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function() {
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    const icon = this.querySelector('i');
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    
+                    mobileMenu.classList.toggle('hidden');
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.className = 'fas fa-bars text-xl';
+                    } else {
+                        icon.className = 'fas fa-times text-xl';
+                    }
+                });
             }
         });
 
@@ -346,34 +357,61 @@
             });
         });
 
-        // Enhanced navbar scroll effect
+        // Enhanced navbar scroll effect - throttled for performance
+        let scrollTimeout;
         window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('navbar-scrolled');
-            } else {
-                navbar.classList.remove('navbar-scrolled');
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
             }
-        });
-
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-fade-in-up');
+            scrollTimeout = window.requestAnimationFrame(function() {
+                const navbar = document.getElementById('navbar');
+                if (navbar) {
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('navbar-scrolled');
+                    } else {
+                        navbar.classList.remove('navbar-scrolled');
+                    }
                 }
             });
-        }, observerOptions);
+        }, { passive: true });
 
-        // Observe elements for animation
+        // Shared Intersection Observer for animations - single instance for better performance
+        let sharedObserver = null;
+        function getSharedObserver() {
+            if (!sharedObserver) {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                sharedObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-fade-in-up');
+                            // Unobserve after animation to save resources
+                            sharedObserver.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+            }
+            return sharedObserver;
+        }
+        // Expose to window for use in other scripts
+        window.getSharedObserver = getSharedObserver;
+
+        // Observe elements for animation - deferred until after initial render
         document.addEventListener('DOMContentLoaded', function() {
-            const animatedElements = document.querySelectorAll('.animate-on-scroll');
-            animatedElements.forEach(el => observer.observe(el));
+            // Use requestIdleCallback if available, otherwise setTimeout
+            const observeElements = function() {
+                const animatedElements = document.querySelectorAll('.animate-on-scroll');
+                const observer = getSharedObserver();
+                animatedElements.forEach(el => observer.observe(el));
+            };
+            
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(observeElements, { timeout: 2000 });
+            } else {
+                setTimeout(observeElements, 100);
+            }
         });
 
         // Keyboard navigation improvements
