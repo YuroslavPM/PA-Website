@@ -21,27 +21,28 @@ namespace PA_Website.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IPromotionService _promotionService;
         private readonly IConfiguration _configuration;
+        private readonly IImageService _imageService;
 
         // Constants
         private const string AstrologyCategory = "астрология";
         private const string PendingStatus = "Pending";
         private const string CancelledStatus = "Cancelled";
         private const string FirstBookingPromotionType = "FirstBooking";
-        private const long MaxFileSizeBytes = 5 * 1024 * 1024; // 5MB
-        private static readonly string[] AllowedImageExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
 
         public ServicesController(
             ApplicationDbContext context, 
             IEmailSender emailSender, 
             UserManager<User> userManager,
             IConfiguration configuration, 
-            IPromotionService promotionService)
+            IPromotionService promotionService,
+            IImageService imageService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
         }
 
         #region Public Actions
@@ -465,54 +466,29 @@ namespace PA_Website.Controllers
 
         private async Task<ImageUploadResult> ProcessImageUploadAsync(IFormFile imageFile)
         {
-            var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-
-            if (!AllowedImageExtensions.Contains(fileExtension))
+            if (!_imageService.IsValidImageFile(imageFile))
             {
                 return new ImageUploadResult
                 {
                     IsValid = false,
-                    ErrorMessage = "Само JPG, JPEG, PNG и GIF файлове са разрешени."
+                    ErrorMessage = "Невалиден формат на изображението. Поддържани формати: JPG, PNG, GIF, WebP (макс. 10MB)."
                 };
             }
 
-            if (imageFile.Length > MaxFileSizeBytes)
+            // Use ImageService for optimization - converts to WebP for best compression
+            var result = await _imageService.OptimizeAndSaveAsync(
+                imageFile,
+                "services",
+                maxWidth: 800,
+                maxHeight: 600,
+                quality: 80);
+
+            return new ImageUploadResult
             {
-                return new ImageUploadResult
-                {
-                    IsValid = false,
-                    ErrorMessage = "Файлът не може да бъде по-голям от 5MB."
-                };
-            }
-
-            try
-            {
-                var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "services");
-                
-                if (!Directory.Exists(directoryPath))
-                    Directory.CreateDirectory(directoryPath);
-
-                var filePath = Path.Combine(directoryPath, fileName);
-
-                await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None,
-                    bufferSize: 4096, useAsync: true);
-                await imageFile.CopyToAsync(fileStream);
-
-                return new ImageUploadResult
-                {
-                    IsValid = true,
-                    ImagePath = $"/Images/services/{fileName}"
-                };
-            }
-            catch (Exception)
-            {
-                return new ImageUploadResult
-                {
-                    IsValid = false,
-                    ErrorMessage = "Грешка при качването на изображението."
-                };
-            }
+                IsValid = result.IsSuccess,
+                ImagePath = result.ImagePath ?? string.Empty,
+                ErrorMessage = result.ErrorMessage ?? string.Empty
+            };
         }
 
         private async Task UpdateServiceAsync(Service existingService, Service updatedService, IFormFile? imageFile)
@@ -523,13 +499,10 @@ namespace PA_Website.Controllers
                 if (!imageResult.IsValid)
                     throw new InvalidOperationException(imageResult.ErrorMessage);
 
-                // Delete old image
+                // Delete old image using ImageService
                 if (!string.IsNullOrEmpty(existingService.ImagePath))
                 {
-                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
-                        existingService.ImagePath.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                        System.IO.File.Delete(oldImagePath);
+                    await _imageService.DeleteImageAsync(existingService.ImagePath);
                 }
 
                 existingService.ImagePath = imageResult.ImagePath;

@@ -13,6 +13,11 @@ using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
 using System.IO.Compression;
+using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Caching;
+using SixLabors.ImageSharp.Web.Commands;
+using SixLabors.ImageSharp.Web.Processors;
+using SixLabors.ImageSharp.Web.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -59,7 +64,36 @@ builder.Services.AddScoped<IUserServiceService, UserServiceService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddImageSharp(options =>
+{
+    options.Configuration = SixLabors.ImageSharp.Configuration.Default;
+    options.BrowserMaxAge = TimeSpan.FromDays(30);
+    options.CacheMaxAge = TimeSpan.FromDays(365);
+    options.CacheHashLength = 12;
+    
+    options.OnParseCommandsAsync = context =>
+    {
+        context.Commands.Remove("bgcolor");
+        return Task.CompletedTask;
+    };
+})
+.SetRequestParser<QueryCollectionRequestParser>()
+.Configure<PhysicalFileSystemCacheOptions>(options =>
+{
+    options.CacheRootPath = null; 
+    options.CacheFolder = "is-cache";
+    options.CacheFolderDepth = 8;
+})
+.SetCache<PhysicalFileSystemCache>()
+.SetCacheHash<SHA256CacheHash>()
+.AddProvider<PhysicalFileSystemProvider>()
+.AddProcessor<ResizeWebProcessor>()
+.AddProcessor<FormatWebProcessor>()
+.AddProcessor<QualityWebProcessor>()
+.AddProcessor<BackgroundColorWebProcessor>();
 
 // Configure request size limits for file uploads
 builder.Services.Configure<IISServerOptions>(options =>
@@ -117,6 +151,8 @@ var app = builder.Build();
 app.UseResponseCompression();
 
 app.UseHttpsRedirection();
+
+app.UseImageSharp();
 
 var contentTypeProvider = new FileExtensionContentTypeProvider();
 contentTypeProvider.Mappings[".woff2"] = "font/woff2";

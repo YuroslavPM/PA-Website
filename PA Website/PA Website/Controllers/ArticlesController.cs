@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
+using PA_Website.Services;
 
 namespace PA_Website.Controllers
 {
@@ -17,13 +18,19 @@ namespace PA_Website.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IImageService _imageService;
 
 
-        public ArticlesController(ApplicationDbContext context, UserManager<User> userManager, IConfiguration configuration)
+        public ArticlesController(
+            ApplicationDbContext context, 
+            UserManager<User> userManager, 
+            IConfiguration configuration,
+            IImageService imageService)
         {
             _context = context;
             _userManager = userManager;
             _configuration = configuration;
+            _imageService = imageService;
         }
 
 
@@ -125,23 +132,32 @@ namespace PA_Website.Controllers
                     article.CreatorId = currentUser.Id;
                     article.PublicationDate = DateTime.Now;
 
-                    // Handle image upload first
+                    // Handle image upload with optimization
                     if (article.ImageFile != null && article.ImageFile.Length > 0)
                     {
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(article.ImageFile.FileName);
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", fileName);
+                        var imageResult = await _imageService.OptimizeAndSaveAsync(
+                            article.ImageFile,
+                            "articles",
+                            maxWidth: 1200,
+                            maxHeight: 800,
+                            quality: 80);
 
-                        // Ensure directory exists
-                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                        // Save file
-                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        if (!imageResult.IsSuccess)
                         {
-                            await article.ImageFile.CopyToAsync(stream);
+                            ModelState.AddModelError("ImageFile", imageResult.ErrorMessage ?? "Грешка при качване на изображението.");
+                            ViewData["Categories"] = new SelectList(new[]
+                            {
+                                "Психология",
+                                "Астрология", 
+                                "Личностно развитие",
+                                "Медитация",
+                                "Зодиакални знаци",
+                                "Други"
+                            });
+                            return View(article);
                         }
 
-                        // Store path in database
-                        article.ImagePath = $"/Images/articles/{fileName}";
+                        article.ImagePath = imageResult.ImagePath;
                     }
 
                     // Now save the article with the image path
@@ -242,22 +258,32 @@ namespace PA_Website.Controllers
                         // Delete old image
                         if (!string.IsNullOrEmpty(existingArticle.ImagePath))
                         {
-                            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingArticle.ImagePath.TrimStart('/'));
-                            if (System.IO.File.Exists(oldFilePath))
-                            {
-                                System.IO.File.Delete(oldFilePath);
-                            }
+                            await _imageService.DeleteImageAsync(existingArticle.ImagePath);
                         }
 
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(article.ImageFile.FileName);
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", fileName);
+                        var imageResult = await _imageService.OptimizeAndSaveAsync(
+                            article.ImageFile,
+                            "articles",
+                            maxWidth: 1200,
+                            maxHeight: 800,
+                            quality: 80);
 
-                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        if (!imageResult.IsSuccess)
                         {
-                            await article.ImageFile.CopyToAsync(stream);
+                            ModelState.AddModelError("ImageFile", imageResult.ErrorMessage ?? "Грешка при качване на изображението.");
+                            ViewData["Categories"] = new SelectList(new[]
+                            {
+                                "Психология",
+                                "Астрология", 
+                                "Личностно развитие",
+                                "Медитация",
+                                "Зодиакални знаци",
+                                "Други"
+                            }, article.Category);
+                            return View(article);
                         }
 
-                        existingArticle.ImagePath = $"/Images/articles/{fileName}";
+                        existingArticle.ImagePath = imageResult.ImagePath;
                     }
 
                     _context.Update(existingArticle);
@@ -352,38 +378,29 @@ namespace PA_Website.Controllers
                     return Json(new { uploaded = 0, error = new { message = "No image file provided." } });
                 }
 
-                // Validate file type
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-                var fileExtension = Path.GetExtension(upload.FileName).ToLowerInvariant();
-                
-                if (!allowedExtensions.Contains(fileExtension))
+                if (!_imageService.IsValidImageFile(upload))
                 {
-                    return Json(new { uploaded = 0, error = new { message = "Invalid file type. Only JPG, PNG, GIF, and WebP are allowed." } });
+                    return Json(new { uploaded = 0, error = new { message = "Invalid file type or size. Supported: JPG, PNG, GIF, WebP (max 10MB)." } });
                 }
 
-                // Validate file size (max 5MB)
-                if (upload.Length > 5 * 1024 * 1024)
+                // Optimize and save the image (converted to WebP for best compression)
+                var imageResult = await _imageService.OptimizeAndSaveAsync(
+                    upload,
+                    "articles/content",
+                    maxWidth: 1200,
+                    maxHeight: 900,
+                    quality: 80);
+
+                if (!imageResult.IsSuccess)
                 {
-                    return Json(new { uploaded = 0, error = new { message = "File size too large. Maximum size is 5MB." } });
+                    return Json(new { uploaded = 0, error = new { message = imageResult.ErrorMessage } });
                 }
 
-                // Generate unique filename
-                var fileName = Guid.NewGuid().ToString() + fileExtension;
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "articles", "content", fileName);
-
-                // Ensure directory exists
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                // Save file
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await upload.CopyToAsync(stream);
-                }
-
-                // Return the URL for the uploaded image (CKEditor 4 format)
-                var imageUrl = $"/Images/articles/content/{fileName}";
-
-                return Json(new { uploaded = 1, fileName = fileName, url = imageUrl });
+                return Json(new { 
+                    uploaded = 1, 
+                    fileName = Path.GetFileName(imageResult.ImagePath), 
+                    url = imageResult.ImagePath 
+                });
             }
             catch (Exception ex)
             {
