@@ -2,13 +2,14 @@ namespace PA_Website.Services
 {
     public interface IImageService
     {
+
         Task<ImageOptimizationResult> OptimizeAndSaveAsync(
             IFormFile file,
             string subFolder,
             int maxWidth = 1920,
             int maxHeight = 1080,
             int quality = 80);
-        
+
         bool IsValidImageFile(IFormFile file);
         Task<bool> DeleteImageAsync(string imagePath);
     }
@@ -45,4 +46,5 @@ namespace PA_Website.Services
         }
     }
 }
+
 
