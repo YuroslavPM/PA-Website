@@ -7,13 +7,14 @@ ViewData["Title"] = "Административен Панел";
 var user = await UserManager.GetUserAsync(User);
 Layout = "_Layout";
 
-// Get statistics
-var totalReservations = Model.Count();
-var pendingReservations = Model.Count(r => r.Status == "Pending");
-var confirmedReservations = Model.Count(r => r.Status == "Confirmed");
-var completedReservations = Model.Count(r => r.Status == "Completed");
-var cancelledReservations = Model.Count(r => r.Status == "Cancelled");
-var recentReservations = Model.OrderByDescending(r => r.ReservationDate).Take(4).ToList();
+// Get statistics - handle null Model
+var reservations = Model ?? new List<PA_Website.Models.UserService>();
+var totalReservations = reservations.Count();
+var pendingReservations = reservations.Count(r => r.Status == "Pending");
+var confirmedReservations = reservations.Count(r => r.Status == "Confirmed");
+var completedReservations = reservations.Count(r => r.Status == "Completed");
+var cancelledReservations = reservations.Count(r => r.Status == "Cancelled");
+var recentReservations = reservations.OrderByDescending(r => r.ReservationDate).Take(4).ToList();
 }
 
 @section Styles {
@@ -524,7 +525,7 @@ var recentReservations = Model.OrderByDescending(r => r.ReservationDate).Take(4)
             <div class="financial-summary">
                 <div class="total-earnings">
                     <div class="flex items-center justify-center gap-3 mb-2">
-                        <div class="earnings-amount" id="totalEarnings">0.00 лв.</div>
+                        <div class="earnings-amount" id="totalEarnings">0.00 €</div>
                         <div id="percentChange" class="text-lg font-semibold"></div>
                     </div>
                     <div class="earnings-label">Общ приход</div>
@@ -717,101 +718,150 @@ var recentReservations = Model.OrderByDescending(r => r.ReservationDate).Take(4)
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Helper: get years from 2023 to current
-    function populateYearSelect() {
-        var yearSelect = document.getElementById('yearSelect');
-        var currentYear = new Date().getFullYear();
-        for (var y = currentYear; y >= 2023; y--) {
-            var opt = document.createElement('option');
-            opt.value = y;
-            opt.text = y;
-            yearSelect.appendChild(opt);
-        }
-        yearSelect.value = currentYear;
-    }
-
-    // Chart.js instance
-    var earningsChart;
-
-    function fetchFinancials() {
-        var year = $('#yearSelect').val();
-        var month = $('#monthSelect').val();
-        $.ajax({
-            url: '/UserServices/GetFinancials',
-            type: 'GET',
-            data: { year: year, month: month },
-            success: function (data) {
-                // Update total earnings
-                $('#totalEarnings').text(data.totalEarnings.toFixed(2) + ' лв.');
-
-                // Show percent change
-                var percent = data.percentChange;
-                var percentText = '';
-                if (percent > 0) {
-                    percentText = '<span style="color:#10b981;">▲ ' + percent.toFixed(1) + '%</span>';
-                } else if (percent < 0) {
-                    percentText = '<span style="color:#ef4444;">▼ ' + percent.toFixed(1) + '%</span>';
-                } else {
-                    percentText = '<span style="color:#64748b;">0%</span>';
+    // Admin Dashboard - using vanilla JavaScript (no jQuery dependency)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Helper: get years from 2023 to current
+            function populateYearSelect() {
+                var yearSelect = document.getElementById('yearSelect');
+                if (!yearSelect) return;
+                
+                var currentYear = new Date().getFullYear();
+                for (var y = currentYear; y >= 2023; y--) {
+                    var opt = document.createElement('option');
+                    opt.value = y;
+                    opt.text = y;
+                    yearSelect.appendChild(opt);
                 }
-                $('#percentChange').html(percentText);
+                yearSelect.value = currentYear;
+            }
 
-                // Prepare chart data
-                var labels = [];
-                var values = [];
-                for (var i = 1; i <= 12; i++) {
-                    var found = data.monthlyData.find(m => m.Month === i);
-                    labels.push([
-                        'Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'
-                    ][i-1]);
-                    values.push(found ? found.Earnings : 0);
-                }
-                if (earningsChart) earningsChart.destroy();
-                var ctx = document.getElementById('earningsChart').getContext('2d');
-                earningsChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Приходи (лв.)',
-                            data: values,
-                            backgroundColor: 'rgba(76,29,149,0.7)',
-                            borderRadius: 8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: false }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(226, 232, 240, 0.5)'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
+            // Chart.js instance
+            var earningsChart;
+
+            function fetchFinancials() {
+                var yearSelect = document.getElementById('yearSelect');
+                var monthSelect = document.getElementById('monthSelect');
+                if (!yearSelect || !monthSelect) return;
+
+                var year = yearSelect.value;
+                var month = monthSelect.value;
+                
+                // Use fetch API instead of jQuery ajax for better reliability
+                var url = '/UserServices/GetFinancials?year=' + encodeURIComponent(year) + '&month=' + encodeURIComponent(month);
+                
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    // Update total earnings
+                    var totalEarningsEl = document.getElementById('totalEarnings');
+                    if (totalEarningsEl) {
+                        totalEarningsEl.textContent = (data.totalEarnings || 0).toFixed(2) + ' €';
+                    }
+
+                    // Show percent change
+                    var percentChangeEl = document.getElementById('percentChange');
+                    if (percentChangeEl) {
+                        var percent = data.percentChange || 0;
+                        var percentText = '';
+                        if (percent > 0) {
+                            percentText = '<span style="color:#10b981;">▲ ' + percent.toFixed(1) + '%</span>';
+                        } else if (percent < 0) {
+                            percentText = '<span style="color:#ef4444;">▼ ' + percent.toFixed(1) + '%</span>';
+                        } else {
+                            percentText = '<span style="color:#64748b;">0%</span>';
                         }
+                        percentChangeEl.innerHTML = percentText;
+                    }
+
+                    // Prepare chart data
+                    var labels = [];
+                    var values = [];
+                    var monthlyData = data.monthlyData || [];
+                    for (var i = 1; i <= 12; i++) {
+                        var found = monthlyData.find(function(m) { return m.Month === i; });
+                        labels.push([
+                            'Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'
+                        ][i-1]);
+                        values.push(found ? found.Earnings : 0);
+                    }
+                    
+                    var chartCanvas = document.getElementById('earningsChart');
+                    if (chartCanvas && typeof Chart !== 'undefined') {
+                        try {
+                            if (earningsChart) earningsChart.destroy();
+                            var ctx = chartCanvas.getContext('2d');
+                            earningsChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Приходи (€)',
+                                        data: values,
+                                        backgroundColor: 'rgba(76,29,149,0.7)',
+                                        borderRadius: 8
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: { display: false },
+                                        title: { display: false }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(226, 232, 240, 0.5)'
+                                            }
+                                        },
+                                        x: {
+                                            grid: {
+                                                display: false
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } catch (chartError) {
+                            console.error('Error creating chart:', chartError);
+                            chartCanvas.parentElement.innerHTML = '<p class="text-gray-600 text-center">Графиката не може да бъде заредена</p>';
+                        }
+                    } else if (chartCanvas && typeof Chart === 'undefined') {
+                        chartCanvas.parentElement.innerHTML = '<p class="text-gray-600 text-center">Графиката не може да бъде заредена</p>';
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error fetching financials:', error);
+                    var totalEarningsEl = document.getElementById('totalEarnings');
+                    if (totalEarningsEl) {
+                        totalEarningsEl.textContent = 'Грешка';
                     }
                 });
-            },
-            error: function () {
-                $('#totalEarnings').text('Грешка');
             }
-        });
-    }
 
-    $(document).ready(function () {
-        populateYearSelect();
-        fetchFinancials();
-        $('#yearSelect, #monthSelect').change(fetchFinancials);
+        // Initialize dashboard
+        var yearSelectEl = document.getElementById('yearSelect');
+        var monthSelectEl = document.getElementById('monthSelect');
+        
+        if (yearSelectEl && monthSelectEl) {
+            populateYearSelect();
+            fetchFinancials();
+            
+            // Add event listeners for year and month select changes
+            yearSelectEl.addEventListener('change', fetchFinancials);
+            monthSelectEl.addEventListener('change', fetchFinancials);
+        }
     });
 </script>
 }
