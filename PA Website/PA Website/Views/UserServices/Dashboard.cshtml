@@ -9,11 +9,6 @@
     var availableServices = ViewData["AvailableServices"] as List<PA_Website.Models.Service>;
     Layout = "_Layout";
 
-    // Helper method to convert BGN to EUR
-    decimal ConvertToEur(decimal bgnPrice)
-    {
-        return Math.Round(bgnPrice / 1.95583m, 2);
-    }
 }
 
 @section Styles {
@@ -608,7 +603,7 @@
                                 }
                                 <div>
                                     <span class="font-semibold text-gray-600">Цена:</span>
-                                    <span class="text-gray-800">@reservation.Service.Price.ToString("0.00") лв.</span>
+                                    <span class="text-gray-800">@reservation.Service.Price.ToString("0.00") €</span>
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-2">

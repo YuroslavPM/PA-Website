@@ -317,7 +317,7 @@
                         }
                         @if (Model.FixedDiscount.HasValue)
                         {
-                            <p><strong>Фиксирана отстъпка:</strong> @Model.FixedDiscount.Value лв.</p>
+                            <p><strong>Фиксирана отстъпка:</strong> @Model.FixedDiscount.Value.ToString("0.00") €</p>
                         }
                     </div>
                 }

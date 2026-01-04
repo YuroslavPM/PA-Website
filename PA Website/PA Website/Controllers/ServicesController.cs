@@ -680,7 +680,7 @@ namespace PA_Website.Controllers
 </ul>
 <p><strong>Инструкции за плащане:</strong></p>
 <ol>
-    <li>Сума за плащане: {service.Price} лв.</li>
+    <li>Сума за плащане: {service.Price:F2} €</li>
     <li>Банкова сметка (IBAN): <strong>{iban}</strong></li>
     <li>Титуляр на сметката: Мариела Разпопова</li>
     <li>В основание на плащането моля посочете: Резервация {service.NameService}</li>

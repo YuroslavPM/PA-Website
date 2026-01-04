@@ -23,7 +23,7 @@ namespace PA_Website.Models
         [Range(0, 100, ErrorMessage = "Процентът трябва да е между 0 и 100")]
         public decimal? DiscountPercentage { get; set; }
 
-        [Display(Name = "Фиксирана отстъпка (лв.)")]
+        [Display(Name = "Фиксирана отстъпка (€)")]
         [Range(0, double.MaxValue, ErrorMessage = "Сумата трябва да е положителна")]
         public decimal? FixedDiscount { get; set; }
 

@@ -198,7 +198,7 @@ namespace PA_Website.Services
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
-                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #f59e0b; font-weight: bold;'>Чакаща</span></p>
                         </div>
                         
@@ -245,7 +245,7 @@ namespace PA_Website.Services
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
-                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #ef4444; font-weight: bold;'>Отменена</span></p>
                         </div>
                         
@@ -298,7 +298,7 @@ namespace PA_Website.Services
                             <div style='background: #dcfce7; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #10b981;'>
                                 <p style='margin: 5px 0; color: #166534;'><strong>✅ Нова резервация:</strong> {newDateTime}</p>
                             </div>
-                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #f59e0b; font-weight: bold;'>Чакаща</span></p>
                         </div>
                         
@@ -348,7 +348,7 @@ namespace PA_Website.Services
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
-                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #10b981; font-weight: bold;'>Потвърдена</span></p>
                         </div>
                         
@@ -395,7 +395,7 @@ namespace PA_Website.Services
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
-                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #f59e0b; font-weight: bold;'>Потвърдена</span></p>
                         </div>
                         
@@ -448,7 +448,7 @@ namespace PA_Website.Services
                             <li>Категория: {service.CategoryOfService}</li>
                             <li>Дата за астрологичен анализ: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>
                             <li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>
-                            <li>Цена: {service.Price} лв.</li>
+                            <li>Цена: {service.Price:F2} €</li>
                         </ul>
                         
                         <p><strong>Какво следва:</strong></p>
@@ -509,7 +509,7 @@ namespace PA_Website.Services
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
-                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} лв.</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: {color}; font-weight: bold;'>{reservation.Status}</span></p>
                             <p style='margin: 5px 0;'><strong>ID на резервация:</strong> {reservation.Id}</p>
                         </div>

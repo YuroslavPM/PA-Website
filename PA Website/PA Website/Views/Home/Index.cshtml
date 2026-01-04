@@ -457,20 +457,29 @@
         }
 
         /* Testimonial carousel improvements */
+        #testimonialsCarousel {
+            position: relative;
+            min-height: 300px;
+        }
+
         .testimonial-slide {
             opacity: 0;
             transform: translateX(50px);
             transition: all 0.5s ease;
+            display: none;
+            width: 100%;
         }
 
         .testimonial-slide.active {
             opacity: 1;
             transform: translateX(0);
+            display: block;
         }
 
         .testimonial-slide.hidden {
             opacity: 0;
             transform: translateX(-50px);
+            display: none;
         }
 
         /* Navigation buttons */
@@ -808,7 +817,7 @@
                                     @service.CategoryOfService
                                     <span class="mx-2">•</span>
                                     <i class="fas fa-money-bill-wave mr-2"></i>
-                                    @service.Price лв.
+                                    @service.Price.ToString("0.00") €
                                 </div>
                                 <h3 class="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3 line-clamp-2">@service.NameService</h3>
                                 @if (!string.IsNullOrEmpty(service.Description))
@@ -1146,19 +1155,43 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            // Testimonials carousel
+        // Testimonials carousel - using vanilla JavaScript for better reliability
+        document.addEventListener('DOMContentLoaded', function() {
             let currentSlide = 0;
-            const slides = $('.testimonial-slide');
-            const dots = $('.testimonial-dot');
+            const slides = document.querySelectorAll('.testimonial-slide');
+            const dots = document.querySelectorAll('.testimonial-dot');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
             const totalSlides = slides.length;
 
-            function showSlide(index) {
-                slides.removeClass('active').addClass('hidden');
-                dots.removeClass('active bg-primary').addClass('bg-gray-300');
+            if (totalSlides === 0) return; // Exit if no slides found
 
-                slides.eq(index).removeClass('hidden').addClass('active');
-                dots.eq(index).removeClass('bg-gray-300').addClass('active bg-primary');
+            function showSlide(index) {
+                // Ensure index is within bounds
+                if (index < 0) index = totalSlides - 1;
+                if (index >= totalSlides) index = 0;
+                currentSlide = index;
+
+                // Hide all slides
+                slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    slide.classList.add('hidden');
+                });
+
+                // Show current slide
+                slides[currentSlide].classList.remove('hidden');
+                slides[currentSlide].classList.add('active');
+
+                // Update dots
+                dots.forEach((dot, i) => {
+                    dot.classList.remove('active', 'bg-primary');
+                    dot.classList.add('bg-gray-300');
+                });
+
+                if (dots[currentSlide]) {
+                    dots[currentSlide].classList.remove('bg-gray-300');
+                    dots[currentSlide].classList.add('active', 'bg-primary');
+                }
             }
 
             function nextSlide() {
@@ -1171,20 +1204,26 @@
                 showSlide(currentSlide);
             }
 
-            // Event listeners
-            $('#nextBtn').click(nextSlide);
-            $('#prevBtn').click(prevSlide);
+            // Event listeners for navigation buttons
+            if (nextBtn) {
+                nextBtn.addEventListener('click', nextSlide);
+            }
+            if (prevBtn) {
+                prevBtn.addEventListener('click', prevSlide);
+            }
 
-            dots.click(function() {
-                currentSlide = $(this).data('slide');
-                showSlide(currentSlide);
+            // Event listeners for dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    showSlide(index);
+                });
             });
 
             // Auto-advance slides - only if page is visible
             let carouselInterval;
             function startCarousel() {
                 if (document.visibilityState === 'visible') {
-                    carouselInterval = setInterval(nextSlide, 7000);
+                    carouselInterval = setInterval(nextSlide, 9000);
                 }
             }
             function stopCarousel() {
@@ -1203,51 +1242,70 @@
                 }
             });
 
-            // Newsletter form submission
-            $('#newsletterForm').on('submit', function(e) {
-                e.preventDefault();
-                
-                const email = $('#newsletterEmail').val();
-                const submitBtn = $('#newsletterSubmitBtn');
-                const originalText = submitBtn.find('span').text();
-                
-                // Show loading state
-                submitBtn.prop('disabled', true);
-                submitBtn.find('span').text('Изпраща...');
-                submitBtn.find('i').removeClass('fa-paper-plane').addClass('fa-spinner fa-spin');
-                
-                // Get anti-forgery token
-                const token = $('input[name="__RequestVerificationToken"]').val();
-                
-                $.ajax({
-                    url: '/Newsletter/Subscribe',
-                    type: 'POST',
-                    data: {
-                        email: email,
-                        __RequestVerificationToken: token
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            $('#newsletterModalMessage').text(response.message);
-                            showNewsletterModal();
-                            $('#newsletterForm')[0].reset();
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function() {
-                        alert('Възникна грешка при абонирането. Моля, опитайте отново.');
-                    },
-                    complete: function() {
-                        // Reset button state
-                        submitBtn.prop('disabled', false);
-                        submitBtn.find('span').text(originalText);
-                        submitBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-paper-plane');
-                    }
-                });
-            });
+            // Initialize first slide
+            showSlide(0);
+        });
 
-            // Generate random stars - deferred until after page load for better performance
+        // Newsletter form and other jQuery-dependent code
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for jQuery to be available
+            function initJQueryDependent() {
+                if (typeof jQuery === 'undefined' || typeof $ === 'undefined') {
+                    setTimeout(initJQueryDependent, 100);
+                    return;
+                }
+
+                $(document).ready(function() {
+                    // Newsletter form submission
+                    $('#newsletterForm').on('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const email = $('#newsletterEmail').val();
+                        const submitBtn = $('#newsletterSubmitBtn');
+                        const originalText = submitBtn.find('span').text();
+                        
+                        // Show loading state
+                        submitBtn.prop('disabled', true);
+                        submitBtn.find('span').text('Изпраща...');
+                        submitBtn.find('i').removeClass('fa-paper-plane').addClass('fa-spinner fa-spin');
+                        
+                        // Get anti-forgery token
+                        const token = $('input[name="__RequestVerificationToken"]').val();
+                        
+                        $.ajax({
+                            url: '/Newsletter/Subscribe',
+                            type: 'POST',
+                            data: {
+                                email: email,
+                                __RequestVerificationToken: token
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    $('#newsletterModalMessage').text(response.message);
+                                    showNewsletterModal();
+                                    $('#newsletterForm')[0].reset();
+                                } else {
+                                    alert(response.message);
+                                }
+                            },
+                            error: function() {
+                                alert('Възникна грешка при абонирането. Моля, опитайте отново.');
+                            },
+                            complete: function() {
+                                // Reset button state
+                                submitBtn.prop('disabled', false);
+                                submitBtn.find('span').text(originalText);
+                                submitBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-paper-plane');
+                            }
+                        });
+                    });
+                });
+            }
+            initJQueryDependent();
+        });
+
+        // Generate random stars - deferred until after page load for better performance (doesn't need jQuery)
+        document.addEventListener('DOMContentLoaded', function() {
             function createStars() {
                 const starsContainer = document.getElementById('floating-elements');
                 if (!starsContainer) return;
@@ -1284,8 +1342,10 @@
             } else {
                 setTimeout(createStars, 500);
             }
+        });
 
-            // Smooth scrolling for anchor links - native implementation (no jQuery needed)
+        // Smooth scrolling for anchor links - native implementation (no jQuery needed)
+        document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(event) {
                     const href = this.getAttribute('href');

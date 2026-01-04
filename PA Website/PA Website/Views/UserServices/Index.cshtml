@@ -31,11 +31,6 @@
     };
     var selectedSort = sortOrder;
 
-    // Helper method to convert BGN to EUR (approximate rate: 1 EUR = 1.95583 BGN)
-    decimal ConvertToEur(decimal bgnPrice)
-    {
-        return Math.Round(bgnPrice / 1.95583m, 2);
-    }
 }
 
 @section Styles {
@@ -530,7 +525,7 @@
                                         <i class="fas fa-coins text-purple-500 text-lg"></i>
                                         <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Цена</label>
                                     </div>
-                                    <p class="text-gray-800 font-medium text-lg">@reservation.Service.Price.ToString("0.00") лв. / @ConvertToEur(reservation.Service.Price).ToString("0.00") €</p>
+                                    <p class="text-gray-800 font-medium text-lg">@reservation.Service.Price.ToString("0.00") €</p>
                                 </div>
                                 
                                 <div class="info-item">

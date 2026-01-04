@@ -11,11 +11,6 @@
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     Layout = "_Layout";
 
-    // Helper method to convert BGN to EUR (approximate rate: 1 EUR = 1.95583 BGN)
-    decimal ConvertToEur(decimal bgnPrice)
-    {
-        return Math.Round(bgnPrice / 1.95583m, 2);
-    }
 }
 
 @section Styles {
@@ -787,20 +782,14 @@
                                             promoPrice = Math.Max(0, Math.Round(service.Price - promo.FixedDiscount.Value, 2));
                                         }
                                         <span style="display: flex; align-items: center; gap: 8px;">
-                                            <span style="font-size: 1.3em; font-weight: 700; color: #fff;">@promoPrice лв.</span>
+                                            <span style="font-size: 1.3em; font-weight: 700; color: #fff;">@promoPrice.ToString("0.00") €</span>
                                             <span style="background: #2563eb; color: #fff; font-size: 0.85em; font-weight: 600; border-radius: 999px; padding: 2px 10px;">Промоция!</span>
                                         </span>
-                                        <span style="color: #fca5a5; text-decoration: line-through; font-size: 1em;">@service.Price лв.</span>
-                                        <span style="color: #fff; font-size: 0.95em; display: flex; align-items: center; gap: 4px;">
-                                            <i class="fas fa-euro-sign"></i> @ConvertToEur(promoPrice) €
-                                        </span>
+                                        <span style="color: #fca5a5; text-decoration: line-through; font-size: 1em;">@service.Price.ToString("0.00") €</span>
                                     }
                                     else
                                     {
-                                        <span style="font-size:1.1em; font-weight:600; color:#fff;">@service.Price лв.</span>
-                                        <span style="color:#fff; font-size:0.95em; display:flex; align-items:center; gap:4px; margin-top:2px;">
-                                            <i class="fas fa-euro-sign"></i> @ConvertToEur(service.Price) €
-                                        </span>
+                                        <span style="font-size:1.1em; font-weight:600; color:#fff;">@service.Price.ToString("0.00") €</span>
                                     }
                                 </span>
                             </div>
