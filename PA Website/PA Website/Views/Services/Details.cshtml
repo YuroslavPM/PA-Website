@@ -451,7 +451,7 @@
                         @if (Model.CategoryOfService.ToLower() == "астрология")
                         {
                             <h3 class="reservation-title">Резервация за астрологична консултация</h3>
-                            <form id="reservationForm" method="post" action="/Services/CreateReservation">
+                            <form id="reservationForm" method="post" action="/Services/CreateReservation" class="mx-auto" style="max-width: 500px;">
                                 <input type="hidden" name="ServiceId" value="@Model.Id"/>
                                 <div class="mb-3">
                                     <label for="astrologicalDate" class="form-label">Дата и час на раждане</label>
@@ -477,14 +477,14 @@
                                        min="@DateTime.Today.ToString("yyyy-MM-dd")">
                             </div>
 
-                            <div id="timeSlotsContainer" class="text-center d-none">
+                            <div id="timeSlotsContainer" class="text-center hidden">
                                 <h5 class="mb-3">Свободни часове:</h5>
-                                <div id="timeSlots" class="d-flex flex-wrap justify-content-center gap-2 mb-4"></div>
+                                <div id="timeSlots" class="flex flex-wrap justify-center gap-2 mb-4"></div>
                             </div>
 
-                            <div id="errorMessage" class="alert alert-danger text-center d-none mt-3"></div>
+                            <div id="errorMessage" class="alert alert-danger text-center hidden mt-3"></div>
 
-                            <form id="timeReservationForm" method="post" action="/Services/CreateReservation" class="d-none text-center">
+                            <form id="timeReservationForm" method="post" action="/Services/CreateReservation" class="hidden text-center">
                                 <input type="hidden" name="ServiceId" value="@Model.Id"/>
                                 <input type="hidden" id="selectedReservationDate" name="reservationDate"/>
                                 <input type="hidden" id="selectedReservationTime" name="reservationTime"/>
@@ -542,52 +542,52 @@
                         .then(response => response.json())
                         .then(data => {
                             timeSlotsDiv.innerHTML = "";
-                            errorDiv.classList.add("d-none");
+                            errorDiv.classList.add("hidden");
 
                             if (!data.success) {
                                 errorDiv.textContent = data.message;
-                                errorDiv.classList.remove("d-none");
-                                timeSlotsContainer.classList.add("d-none");
-                                timeReservationForm.classList.add("d-none");
+                                errorDiv.classList.remove("hidden");
+                                timeSlotsContainer.classList.add("hidden");
+                                timeReservationForm.classList.add("hidden");
                                 return;
                             }
 
                             if (data.availableTimes.length === 0) {
                                 errorDiv.textContent = "Няма свободни часове за избраната дата.";
-                                errorDiv.classList.remove("d-none");
-                                timeSlotsContainer.classList.add("d-none");
-                                timeReservationForm.classList.add("d-none");
+                                errorDiv.classList.remove("hidden");
+                                timeSlotsContainer.classList.add("hidden");
+                                timeReservationForm.classList.add("hidden");
                                 return;
                             }
 
                             data.availableTimes.forEach(time => {
                                 const button = document.createElement("button");
                                 button.type = "button";
-                                button.className = "btn btn-outline-primary time-slot-btn";
+                                button.className = "btn btn-outline-service time-slot-btn";
                                 button.textContent = time;
                                 button.onclick = function() {
                                     document.querySelectorAll('.time-slot-btn').forEach(btn => {
-                                        btn.classList.remove('btn-primary');
-                                        btn.classList.add('btn-outline-primary');
+                                        btn.classList.remove('btn-service');
+                                        btn.classList.add('btn-outline-service');
                                     });
-                                    this.classList.remove('btn-outline-primary');
-                                    this.classList.add('btn-primary');
+                                    this.classList.remove('btn-outline-service');
+                                    this.classList.add('btn-service');
 
                                     selectedDateInput.value = selectedDate;
                                     selectedTimeInput.value = time;
-                                    timeReservationForm.classList.remove("d-none");
+                                    timeReservationForm.classList.remove("hidden");
                                 };
                                 timeSlotsDiv.appendChild(button);
                             });
 
-                            timeSlotsContainer.classList.remove("d-none");
+                            timeSlotsContainer.classList.remove("hidden");
                         })
                         .catch(error => {
                             console.error('Error:', error);
                             errorDiv.textContent = "Възникна грешка при зареждането на часовете.";
-                            errorDiv.classList.remove("d-none");
-                            timeSlotsContainer.classList.add("d-none");
-                            timeReservationForm.classList.add("d-none");
+                            errorDiv.classList.remove("hidden");
+                            timeSlotsContainer.classList.add("hidden");
+                            timeReservationForm.classList.add("hidden");
                         });
                 });
             }

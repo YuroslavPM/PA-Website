@@ -160,6 +160,9 @@
             margin-bottom: 1rem;
             border: 1px solid #e2e8f0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            user-select: none;
+            pointer-events: auto;
         }
 
         .reservation-card:hover {
@@ -170,6 +173,7 @@
         .reservation-card.selected {
             border-color: #7c3aed;
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
 
         .status-badge {
@@ -235,7 +239,7 @@
                 <div class="space-y-4 max-h-96 overflow-y-auto">
                     @foreach (var reservation in ViewBag.Reservations)
                     {
-                        <div class="reservation-card cursor-pointer" onclick="selectReservation(@reservation.Id)">
+                        <div class="reservation-card" onclick="selectReservation(@reservation.Id, this)">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <h3 class="font-semibold text-gray-800">
@@ -331,14 +335,14 @@
 
 @section Scripts {
     <script>
-        function selectReservation(reservationId) {
+        function selectReservation(reservationId, element) {
             // Remove selected class from all cards
             document.querySelectorAll('.reservation-card').forEach(card => {
                 card.classList.remove('selected');
             });
             
             // Add selected class to clicked card
-            event.currentTarget.classList.add('selected');
+            element.classList.add('selected');
             
             // Update hidden input
             document.getElementById('reservationId').value = reservationId;
@@ -399,10 +403,13 @@
             <text>
             document.addEventListener('DOMContentLoaded', function() {
                 const reservationId = @ViewBag.SelectedReservationId;
-                const card = document.querySelector(`[onclick="selectReservation(${reservationId})"]`);
-                if (card) {
-                    card.classList.add('selected');
-                }
+                const cards = document.querySelectorAll('.reservation-card');
+                cards.forEach(card => {
+                    const onclickAttr = card.getAttribute('onclick');
+                    if (onclickAttr && onclickAttr.includes(`selectReservation(${reservationId}`)) {
+                        card.classList.add('selected');
+                    }
+                });
             });
             </text>
         }
