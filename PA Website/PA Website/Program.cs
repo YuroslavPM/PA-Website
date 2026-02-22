@@ -219,6 +219,8 @@ app.MapRazorPages();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    await context.Database.MigrateAsync(); 
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
     await SeedRoles.SeedAsync(roleManager);
