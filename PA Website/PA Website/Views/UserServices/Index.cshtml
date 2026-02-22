@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using PA_Website.Helpers
 @inject UserManager<User> UserManager
 @inject SignInManager<User> SignInManager
 @inject RoleManager<IdentityRole> RoleManager
@@ -494,10 +495,12 @@
                                             <span class="status-badge
                                                 @(reservation.Status == "Pending" ? "status-pending" : 
                                                   reservation.Status == "Confirmed" ? "status-confirmed" : 
-                                                  reservation.Status == "Completed" ? "status-completed" : "status-cancelled")">
+                                                  reservation.Status == "Completed" ? "status-completed" : 
+                                                  reservation.Status == "Rejected" ? "status-cancelled" : "status-cancelled")">
                                                 @(reservation.Status == "Pending" ? "Чакаща" : 
                                                   reservation.Status == "Confirmed" ? "Потвърдена" : 
-                                                  reservation.Status == "Completed" ? "Завършена" : "Отменена")
+                                                  reservation.Status == "Completed" ? "Завършена" : 
+                                                  reservation.Status == "Rejected" ? "Отхвърлена" : "Отменена")
                                             </span>
                                             <div class="flex items-center gap-2 text-gray-600">
                                                 <i class="fas fa-calendar text-purple-500"></i>
@@ -577,7 +580,7 @@
                                         <i class="fas fa-info-circle text-purple-500 text-lg"></i>
                                         <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Описание на услугата</label>
                                     </div>
-                                    <p class="text-gray-700 leading-relaxed text-base">@reservation.Service.Description</p>
+                                    <div class="text-gray-700 leading-relaxed text-base">@Html.Raw(reservation.Service.Description?.TruncateHtml(30) ?? "")</div>
                                 </div>
                             }
 

@@ -168,7 +168,7 @@ namespace PA_Website.Services
             if (reservation == null)
                 return false;
 
-            var validStatuses = new[] { "Pending", "Confirmed", "Completed", "Cancelled" };
+            var validStatuses = new[] { "Pending", "Confirmed", "Completed", "Cancelled", "Rejected" };
             if (!validStatuses.Contains(newStatus))
                 return false;
 
@@ -513,11 +513,11 @@ namespace PA_Website.Services
             return dayOfWeek switch
             {
                 DayOfWeek.Monday or DayOfWeek.Tuesday or DayOfWeek.Wednesday or DayOfWeek.Thursday or DayOfWeek.Friday
-                    => new List<TimeSpan> { new(18, 30, 0), new(19, 30, 0) },
+                    => Enumerable.Range(9, 3).Select(hour => new TimeSpan(hour, 0, 0)).ToList(),
                 DayOfWeek.Saturday
-                    => Enumerable.Range(9, 8).Select(hour => new TimeSpan(hour, 0, 0)).ToList(),
-                DayOfWeek.Sunday
                     => Enumerable.Range(9, 5).Select(hour => new TimeSpan(hour, 0, 0)).ToList(),
+                DayOfWeek.Sunday
+                    => new List<TimeSpan>(), // Sunday is closed
                 _ => new List<TimeSpan>()
             };
         }

@@ -72,12 +72,26 @@ namespace PA_Website.Services
                     var htmlMessage = CreateConfirmationEmailTemplate(user, reservation, service);
                     await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
                 }
-                else if (newStatus == "Completed" && oldStatus != "Completed" && 
-                         service.CategoryOfService.ToLower() == "астрология")
+                else if (newStatus == "Rejected" && oldStatus != "Rejected")
                 {
-                    var subject = "Вашата астрологична услуга е завършена";
-                    var htmlMessage = CreateAstroCardCompletionTemplate(user, reservation, service);
+                    var subject = "Резервацията е отхвърлена - Душевна Мозайка";
+                    var htmlMessage = CreateRejectedEmailTemplate(user, reservation, service);
                     await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
+                }
+                else if (newStatus == "Completed" && oldStatus != "Completed")
+                {
+                    if (service.CategoryOfService.ToLower() == "астрология")
+                    {
+                        var subject = "Вашата астрологична услуга е завършена";
+                        var htmlMessage = CreateAstroCardCompletionTemplate(user, reservation, service);
+                        await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
+                    }
+                    else
+                    {
+                        var subject = "Твоята резервация е завършена - Душевна Мозайка";
+                        var htmlMessage = CreateCompletedEmailTemplate(user, reservation, service);
+                        await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
+                    }
                 }
             }
             catch (Exception ex)
@@ -331,16 +345,16 @@ namespace PA_Website.Services
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
-                    <div style='background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
-                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Потвърждение на резервация</p>
+                    <div style='background-color: #059669; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>Потвърждение на резервация</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
-                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравей, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Вашата резервация е потвърдена от администратор. Ето детайлите:
+                            Твоята резервация е потвърдена. Ето детайлите:
                         </p>
                         
                         <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
@@ -353,20 +367,22 @@ namespace PA_Website.Services
                         </div>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Очакваме ви в посочения час. Ако имате въпроси, не се колебайте да се свържете с нас.
+                            Очаквам те в посочения час. Ако имаш въпроси, не се колебай да се свържеш с мен.
                         </p>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 5px;'>С уважение,</p>
+                        <p style='color: #374151; line-height: 1.6; margin-top: 0;'>Мариела Разпопова</p>
                         
                         <div style='text-align: center; margin-top: 30px;'>
                             <a href='{baseUrl}/UserServices/Dashboard' 
-                               style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                               style='background-color: #4c1d95; background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
                                 Преглед на резервациите
                             </a>
                         </div>
                     </div>
                     
                     <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
-                        <p>Този имейл е изпратен от администратор.</p>
-                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                        <p>© 2025 Душевна Мозайка. Всички права запазени.</p>
                     </div>
                 </div>";
         }
@@ -538,9 +554,9 @@ namespace PA_Website.Services
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
-                    <div style='background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
-                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{headerText}</p>
+                    <div style='background-color: #4c1d95; background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>{headerText}</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
@@ -560,7 +576,7 @@ namespace PA_Website.Services
                     
                     <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
                         <p>Този имейл е изпратен от администратор.</p>
-                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                        <p>© 2025 Душевна Мозайка. Всички права запазени.</p>
                     </div>
                 </div>";
         }
@@ -574,9 +590,9 @@ namespace PA_Website.Services
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
-                    <div style='background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
-                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{headerText}</p>
+                    <div style='background-color: #4c1d95; background: {headerColor}; color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>{headerText}</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
@@ -596,7 +612,7 @@ namespace PA_Website.Services
                     
                     <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
                         <p>Този имейл е изпратен от администратор.</p>
-                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                        <p>© 2025 Душевна Мозайка. Всички права запазени.</p>
                     </div>
                 </div>";
         }
@@ -638,6 +654,112 @@ namespace PA_Website.Services
                     <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
                         <p>Този имейл е изпратен от администратор.</p>
                         <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        private string CreateRejectedEmailTemplate(User user, UserService reservation, Service service)
+        {
+            var dateTime = GetFormattedDateTime(reservation, service);
+            var baseUrl = GetBaseUrl();
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background-color: #dc2626; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>Резервация отхвърлена</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравей, {user.FName}!</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            За съжаление, твоята резервация за <strong>{service.NameService}</strong> бе отхвърлена, вероятно не е получено плащане.
+                        </p>
+                        
+                        <div style='background: #fef2f2; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ef4444;'>
+                            <h3 style='color: #991b1b; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #ef4444; font-weight: bold;'>Отхвърлена</span></p>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Ако смяташ, че е допусната грешка или имаш въпроси, моля свържи се с мен на 
+                            <a href='mailto:dushevnamozaika@gmail.com' style='color: #4c1d95; text-decoration: underline;'>dushevnamozaika@gmail.com</a>.
+                        </p>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 5px;'>С уважение,</p>
+                        <p style='color: #374151; line-height: 1.6; margin-top: 0;'>Мариела Разпопова</p>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{baseUrl}/Services' 
+                               style='background-color: #4c1d95; background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Разгледай услуги
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>© 2025 Душевна Мозайка. Всички права запазени.</p>
+                    </div>
+                </div>";
+        }
+
+        private string CreateCompletedEmailTemplate(User user, UserService reservation, Service service)
+        {
+            var dateTime = GetFormattedDateTime(reservation, service);
+            var baseUrl = GetBaseUrl();
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+                    <div style='background-color: #4b5563; background: linear-gradient(135deg, #6b7280, #4b5563); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>Резервация завършена</p>
+                    </div>
+                    
+                    <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравей, {user.FName}!</h2>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Твоята резервация за <strong>{service.NameService}</strong> бе завършена успешно.
+                        </p>
+                        
+                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
+                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
+                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #6b7280; font-weight: bold;'>Завършена</span></p>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
+                            Благодаря ти, че избра моите услуги! Ще се радвам да споделиш своето мнение чрез кратката анкета по-долу.
+                        </p>
+                        
+                        <div style='text-align: center; margin: 25px 0;'>
+                            <a href='https://forms.gle/w9aM8eqcLffQiG447' 
+                               style='background-color: #f59e0b; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;'>
+                                Попълни анкета за обратна връзка
+                            </a>
+                        </div>
+                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 5px;'>С уважение,</p>
+                        <p style='color: #374151; line-height: 1.6; margin-top: 0;'>Мариела Разпопова</p>
+                        
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{baseUrl}/Services' 
+                               style='background-color: #4c1d95; background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
+                                Разгледай услуги
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
+                        <p>© 2025 Душевна Мозайка. Всички права запазени.</p>
                     </div>
                 </div>";
         }

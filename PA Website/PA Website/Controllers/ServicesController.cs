@@ -344,7 +344,7 @@ namespace PA_Website.Controllers
             {
                 var allowedTimes = GetAllowedTimesForDay(date.DayOfWeek);
                 if (allowedTimes == null)
-                    return Json(new { success = false, message = "Невалиден ден." });
+                    return Json(new { success = false, message = "Неработен ден." });
 
                 var reservedTimes = await GetReservedTimesForDateAsync(serviceId, date);
                 var availableTimes = allowedTimes
@@ -451,15 +451,9 @@ namespace PA_Website.Controllers
             return dayOfWeek switch
             {
                 DayOfWeek.Monday or DayOfWeek.Tuesday or DayOfWeek.Wednesday or DayOfWeek.Thursday or DayOfWeek.Friday
-                    => Enumerable.Range(9, 7).Select(hour => new TimeSpan(hour, 0, 0)).ToList(),
+                    => Enumerable.Range(9, 3).Select(hour => new TimeSpan(hour, 0, 0)).ToList(),
                 DayOfWeek.Saturday
-                    => Enumerable.Range(9, 3).Select(hour => new TimeSpan(hour, 0, 0))
-                        .Concat(new []
-                        {
-                            new TimeSpan(12, 30, 0),
-                            new TimeSpan(13, 30, 0),
-                            new TimeSpan(14, 30, 0)
-                        }).ToList(),
+                    => Enumerable.Range(9, 5).Select(hour => new TimeSpan(hour, 0, 0)).ToList(),
                 _ => null
             };
         }
@@ -649,28 +643,32 @@ namespace PA_Website.Controllers
         }
 
         private async Task SendReservationEmailAsync(User user, Service service, DateTime reservationDateTime, string birthCity)
-        {
-            if (string.IsNullOrEmpty(user.Email))
-                return;
+{
+    if (string.IsNullOrEmpty(user.Email))
+        return;
 
-            var subject = "Потвърждение на резервация";
-            var iban = "BG89CECB979010G3001000";
-            
-            var dateInfo = service.CategoryOfService.ToLower() == AstrologyCategory
-                ? $"<li>Дата за астрологичен анализ: {reservationDateTime:dd.MM.yyyy HH:mm}</li>"
-                : $"<li>Дата на консултация: {reservationDateTime:dd.MM.yyyy HH:mm}</li>";
-            
-            var birthCityInfo = service.CategoryOfService.ToLower() == AstrologyCategory && !string.IsNullOrEmpty(birthCity)
-                ? $"<li>Място на раждане: {birthCity}</li>"
-                : string.Empty;
+    var subject = "Потвърждение на резервация";
+    var iban = "BG89CECB979010G3001000";
+    
+    var dateInfo = service.CategoryOfService.ToLower() == AstrologyCategory
+        ? $"<li>Дата за астрологичен анализ: {reservationDateTime:dd.MM.yyyy HH:mm}</li>"
+        : $"<li>Дата на консултация: {reservationDateTime:dd.MM.yyyy HH:mm}</li>";
+    
+    var birthCityInfo = service.CategoryOfService.ToLower() == AstrologyCategory && !string.IsNullOrEmpty(birthCity)
+        ? $"<li>Място на раждане: {birthCity}</li>"
+        : string.Empty;
 
-            var htmlMessage = $@"
-<h3>Уважаеми/а {user.FName},</h3>
-<p>Благодарим Ви, че избрахте нашите услуги!</p>
-<p>Вашата заявка за <b>{service.NameService}</b> е получена успешно.</p>
+    var paymentDeadline = service.CategoryOfService.ToLower() == AstrologyCategory
+        ? "в рамките на 3 работни дни"
+        : "най-късно 2 работни дни преди датата на консултацията";
+
+    var htmlMessage = $@"
+<h3>Здравей, {user.FName}!</h3>
+<p>Благодаря ти, че избра моите услуги!</p>
+<p>Твоята заявка за <b>{service.NameService}</b> е получена успешно.</p>
 <div style='background-color: #fff3cd; padding: 15px; border-left: 5px solid #ffeeba; margin: 15px 0;'>
     <h4 style='color: #856404; margin-top: 0;'>Статус на резервацията: <strong>ИЗЧАКВАНЕ</strong></h4>
-    <p>Вашата резервация е в процес на обработка. За да бъде активирана, е необходимо да извършите плащане.</p>
+    <p>Твоята резервация е в процес на обработка. За да бъде активирана, е необходимо да извършиш плащане {paymentDeadline}.</p>
 </div>
 <p><strong>Данни за резервация:</strong></p>
 <ul>
@@ -683,15 +681,14 @@ namespace PA_Website.Controllers
     <li>Сума за плащане: {service.Price:F2} €</li>
     <li>Банкова сметка (IBAN): <strong>{iban}</strong></li>
     <li>Титуляр на сметката: Мариела Разпопова</li>
-    <li>В основание на плащането моля посочете: Резервация {service.NameService}</li>
+    <li>В основание на плащането моля посочи: Имената си, {service.NameService}</li>
 </ol>
-<p>След получаване на плащането, ще получите потвърждение за активиране на резервацията.</p>
-<p>Ако имате въпроси, не се колебайте да се свържете с мен.</p>
+<p>След получаване на плащането, ще получиш потвърждение за активиране на резервацията.</p>
+<p>Ако имаш въпроси, не се колебай да се свържеш с мен.</p>
 <p>С уважение,<br>Мариела Разпопова</p>";
 
-            await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
-        }
-
+    await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
+}
         private void SetErrorMessage(string message)
         {
             TempData["ErrorMessage"] = message;

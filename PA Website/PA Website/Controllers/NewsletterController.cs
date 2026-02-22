@@ -20,16 +20,22 @@ namespace PA_Website.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Subscribe(string email)
         {
+            bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+
             if (string.IsNullOrWhiteSpace(email) || !new EmailAddressAttribute().IsValid(email))
             {
-                TempData["NewsletterMessage"] = "Въведете валиден имейл адрес.";
+                var msg = "Въведете валиден имейл адрес.";
+                if (isAjax) return Json(new { success = false, message = msg });
+                TempData["NewsletterMessage"] = msg;
                 return RedirectToAction("Index", "Home");
             }
 
             var exists = _context.NewsletterSubscribers.Any(x => x.Email == email);
             if (exists)
             {
-                TempData["NewsletterMessage"] = "Този имейл вече е абониран към бюлетина!.";
+                var msg = "Този имейл вече е абониран към бюлетина!";
+                if (isAjax) return Json(new { success = false, message = msg });
+                TempData["NewsletterMessage"] = msg;
                 return RedirectToAction("Index", "Home");
             }
 
@@ -42,7 +48,9 @@ namespace PA_Website.Controllers
             _context.NewsletterSubscribers.Add(subscriber);
             _context.SaveChanges();
 
-            TempData["NewsletterMessage"] = "Благодаря за абонирането към бюлетина!";
+            var successMsg = "Благодаря за абонирането към бюлетина!";
+            if (isAjax) return Json(new { success = true, message = successMsg });
+            TempData["NewsletterMessage"] = successMsg;
             return RedirectToAction("Index", "Home");
         }
 
