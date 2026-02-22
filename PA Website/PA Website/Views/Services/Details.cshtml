@@ -7,10 +7,65 @@
     var reservedTimes = ViewData["ReservedTimes"] as List<DateTime> ?? new List<DateTime>();
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
-    ViewData["Title"] = "Детайли за услугата";
+    ViewData["Title"] = Model.NameService;
+    ViewData["Description"] = !string.IsNullOrEmpty(Model.Description) 
+        ? System.Text.RegularExpressions.Regex.Replace(Model.Description, "<.*?>", "").Length > 160 
+            ? System.Text.RegularExpressions.Regex.Replace(Model.Description, "<.*?>", "").Substring(0, 157) + "..." 
+            : System.Text.RegularExpressions.Regex.Replace(Model.Description, "<.*?>", "")
+        : $"{Model.NameService} - Душевна Мозайка";
     var serviceId = Model.Id;
     Layout = "_Layout";
 
+}
+
+@section Head {
+    @* JSON-LD: Service + BreadcrumbList *@
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "Service",
+        "name": "@Model.NameService",
+        "description": "@(System.Text.RegularExpressions.Regex.Replace(Model.Description ?? "", "<.*?>", ""))",
+        "provider": {
+            "@@type": "ProfessionalService",
+            "name": "Душевна Мозайка",
+            "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")"
+        },
+        "offers": {
+            "@@type": "Offer",
+            "price": "@Model.Price",
+            "priceCurrency": "EUR",
+            "availability": "https://schema.org/InStock"
+        },
+        "category": "@Model.CategoryOfService"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@@type": "ListItem",
+                "position": 1,
+                "name": "Начало",
+                "item": "@($"{Context.Request.Scheme}://{Context.Request.Host}")"
+            },
+            {
+                "@@type": "ListItem",
+                "position": 2,
+                "name": "Услуги",
+                "item": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Services")"
+            },
+            {
+                "@@type": "ListItem",
+                "position": 3,
+                "name": "@Model.NameService",
+                "item": "@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")"
+            }
+        ]
+    }
+    </script>
 }
 
 @section Styles {

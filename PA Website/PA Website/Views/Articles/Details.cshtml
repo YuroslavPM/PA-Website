@@ -6,8 +6,65 @@
 @{
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Title;
+    ViewData["Description"] = !string.IsNullOrEmpty(Model.Description) 
+        ? System.Text.RegularExpressions.Regex.Replace(Model.Description, "<.*?>", "").Length > 160 
+            ? System.Text.RegularExpressions.Regex.Replace(Model.Description, "<.*?>", "").Substring(0, 157) + "..." 
+            : System.Text.RegularExpressions.Regex.Replace(Model.Description, "<.*?>", "")
+        : $"{Model.Title} - Душевна Мозайка";
     Layout = "_Layout";
+}
+
+@section Head {
+    @* JSON-LD: BlogPosting + BreadcrumbList *@
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "BlogPosting",
+        "headline": "@Model.Title",
+        "image": "@(string.IsNullOrEmpty(Model.ImagePath) ? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp" : $"{Context.Request.Scheme}://{Context.Request.Host}{Model.ImagePath}")",
+        "datePublished": "@Model.PublicationDate.ToString("yyyy-MM-ddTHH:mm:ssZ")",
+        "author": {
+            "@@type": "Person",
+            "name": "Мариела Разпопова"
+        },
+        "publisher": {
+            "@@type": "Organization",
+            "name": "Душевна Мозайка",
+            "logo": {
+                "@@type": "ImageObject",
+                "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")"
+            }
+        },
+        "description": "@(System.Text.RegularExpressions.Regex.Replace(Model.Description ?? "", "<.*?>", ""))"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@@type": "ListItem",
+                "position": 1,
+                "name": "Начало",
+                "item": "@($"{Context.Request.Scheme}://{Context.Request.Host}")"
+            },
+            {
+                "@@type": "ListItem",
+                "position": 2,
+                "name": "Блог",
+                "item": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Articles")"
+            },
+            {
+                "@@type": "ListItem",
+                "position": 3,
+                "name": "@Model.Title",
+                "item": "@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")"
+            }
+        ]
+    }
+    </script>
 }
 
 @section Styles {
@@ -359,38 +416,36 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Fix external links in article content
-            $('.article-content a').each(function() {
-                var originalHref = $(this).attr('href');
+            const links = document.querySelectorAll('.article-content a');
+            links.forEach(function(link) {
+                const originalHref = link.getAttribute('href');
                 
                 if (originalHref) {
-                    var fixedHref = originalHref;
-                    var isExternal = false;
+                    let fixedHref = originalHref;
                     
                     // If link doesn't start with /, http://, https://, mailto:, or tel:
                     if (!originalHref.match(/^(https?:\/\/|mailto:|tel:|\/|#)/)) {
                         // Add https:// to make it an external link
                         fixedHref = 'https://' + originalHref;
-                        isExternal = true;
-                        $(this).attr('href', fixedHref);
+                        link.setAttribute('href', fixedHref);
                     }
                     
                     // Check if it's an external link (starts with http:// or https:// and not same domain)
                     if (fixedHref.match(/^https?:\/\//)) {
                         try {
-                            var linkHostname = new URL(fixedHref).hostname;
-                            var currentHostname = window.location.hostname;
+                            const linkHostname = new URL(fixedHref).hostname;
+                            const currentHostname = window.location.hostname;
                             
                             if (linkHostname !== currentHostname) {
-                                isExternal = true;
-                                $(this).attr('target', '_blank');
-                                $(this).attr('rel', 'noopener noreferrer');
+                                link.setAttribute('target', '_blank');
+                                link.setAttribute('rel', 'noopener noreferrer');
                             }
                         } catch (e) {
                             // If URL parsing fails, assume it's external and open in new tab
-                            $(this).attr('target', '_blank');
-                            $(this).attr('rel', 'noopener noreferrer');
+                            link.setAttribute('target', '_blank');
+                            link.setAttribute('rel', 'noopener noreferrer');
                         }
                     }
                 }

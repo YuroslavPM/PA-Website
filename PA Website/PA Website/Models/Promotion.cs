@@ -56,6 +56,8 @@ namespace PA_Website.Models
         [Display(Name = "Обновена на")]
         public DateTime? UpdatedAt { get; set; }
 
+        public string Slug { get; set; } = string.Empty;
+
         // Navigation properties
         public virtual ICollection<UserPromotion> UserPromotions { get; set; } = new List<UserPromotion>();
     }

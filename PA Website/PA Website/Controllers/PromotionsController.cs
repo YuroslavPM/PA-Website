@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
+using PA_Website.Helpers;
 
 namespace PA_Website.Controllers
 {
@@ -17,7 +18,6 @@ namespace PA_Website.Controllers
             _context = context;
         }
 
-        // GET: Promotions
         public async Task<IActionResult> Index()
         {
             var promotions = await _context.Promotions
@@ -26,18 +26,37 @@ namespace PA_Website.Controllers
             return View(promotions);
         }
 
-        // GET: Promotions/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var promotion = await _context.Promotions
-                .Include(p => p.UserPromotions)
-                .ThenInclude(up => up.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Promotion? promotion = null;
+
+            // Check if it's an ID for backward compatibility
+            if (int.TryParse(id, out int promoId))
+            {
+                promotion = await _context.Promotions.FindAsync(promoId);
+                if (promotion != null)
+                {
+                    if (string.IsNullOrEmpty(promotion.Slug))
+                    {
+                        promotion.Slug = promotion.Title.ToSlug();
+                        _context.Update(promotion);
+                        await _context.SaveChangesAsync();
+                    }
+                    return RedirectToActionPermanent(nameof(Details), new { id = promotion.Slug });
+                }
+            }
+            else
+            {
+                promotion = await _context.Promotions
+                    .Include(p => p.UserPromotions)
+                    .ThenInclude(up => up.User)
+                    .FirstOrDefaultAsync(m => m.Slug == id);
+            }
 
             if (promotion == null)
             {
@@ -47,7 +66,6 @@ namespace PA_Website.Controllers
             return View(promotion);
         }
 
-        // GET: Promotions/Create
         public IActionResult Create()
         {
             ViewData["PromotionTypes"] = new SelectList(new[]
@@ -61,7 +79,6 @@ namespace PA_Website.Controllers
             return View();
         }
 
-        // POST: Promotions/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description,PromotionType,DiscountPercentage,FixedDiscount,FreeServiceName,StartDate,EndDate,MaxUsage,IsActive")] Promotion promotion)
@@ -69,6 +86,7 @@ namespace PA_Website.Controllers
             if (ModelState.IsValid)
             {
                 promotion.CreatedAt = DateTime.Now;
+                promotion.Slug = promotion.Title.ToSlug();
                 _context.Add(promotion);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Промоцията е създадена успешно!";
@@ -86,7 +104,6 @@ namespace PA_Website.Controllers
             return View(promotion);
         }
 
-        // GET: Promotions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -111,7 +128,6 @@ namespace PA_Website.Controllers
             return View(promotion);
         }
 
-        // POST: Promotions/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,PromotionType,DiscountPercentage,FixedDiscount,FreeServiceName,StartDate,EndDate,MaxUsage,IsActive")] Promotion promotion)
@@ -125,8 +141,23 @@ namespace PA_Website.Controllers
             {
                 try
                 {
-                    promotion.UpdatedAt = DateTime.Now;
-                    _context.Update(promotion);
+                    var existingPromo = await _context.Promotions.FindAsync(id);
+                    if (existingPromo == null) return NotFound();
+
+                    existingPromo.Title = promotion.Title;
+                    existingPromo.Description = promotion.Description;
+                    existingPromo.PromotionType = promotion.PromotionType;
+                    existingPromo.DiscountPercentage = promotion.DiscountPercentage;
+                    existingPromo.FixedDiscount = promotion.FixedDiscount;
+                    existingPromo.FreeServiceName = promotion.FreeServiceName;
+                    existingPromo.StartDate = promotion.StartDate;
+                    existingPromo.EndDate = promotion.EndDate;
+                    existingPromo.MaxUsage = promotion.MaxUsage;
+                    existingPromo.IsActive = promotion.IsActive;
+                    existingPromo.Slug = promotion.Title.ToSlug();
+                    existingPromo.UpdatedAt = DateTime.Now;
+
+                    _context.Update(existingPromo);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Промоцията е обновена успешно!";
                 }
@@ -155,7 +186,6 @@ namespace PA_Website.Controllers
             return View(promotion);
         }
 
-        // GET: Promotions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -173,7 +203,6 @@ namespace PA_Website.Controllers
             return View(promotion);
         }
 
-        // POST: Promotions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -189,7 +218,6 @@ namespace PA_Website.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Promotions/ToggleActive/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleActive(int id)

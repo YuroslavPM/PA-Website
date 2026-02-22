@@ -339,7 +339,7 @@
                         </div>
 
                         <div class="promotion-actions">
-                            <a href="@Url.Action("Details", "Promotions", new { id = promotion.Id })" class="btn-promotion btn-outline">
+                            <a href="@Url.Action("Details", "Promotions", new { id = !string.IsNullOrEmpty(promotion.Slug) ? promotion.Slug : promotion.Id.ToString() })" class="btn-promotion btn-outline">
                                 <i class="fas fa-eye mr-2"></i> Детайли
                             </a>
                             <a href="@Url.Action("Edit", "Promotions", new { id = promotion.Id })" class="btn-promotion btn-secondary">

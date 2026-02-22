@@ -8,6 +8,61 @@
 
 @section Head {
     <link rel="preload" as="image" href="/Images/therapy.webp" fetchpriority="high" />
+    
+    @* JSON-LD Structured Data: ProfessionalService + WebSite *@
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "ProfessionalService",
+        "name": "Душевна Мозайка",
+        "alternateName": "Dushevna Mozaika",
+        "description": "Психологически и астрологични консултации от Мариела Разпопова. Пространство за споделяне и преоткриване.",
+        "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")",
+        "logo": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")",
+        "image": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Images/therapy.webp")",
+        "priceRange": "$$",
+        "knowsLanguage": "bg",
+        "areaServed": {
+            "@@type": "Country",
+            "name": "Bulgaria"
+        },
+        "founder": {
+            "@@type": "Person",
+            "name": "Мариела Разпопова",
+            "jobTitle": "Психолог и астролог",
+            "description": "Сертифициран консултант по метода на Позитивната психотерапия на д-р Носрат Песешкиан"
+        },
+        "hasOfferCatalog": {
+            "@@type": "OfferCatalog",
+            "name": "Услуги",
+            "itemListElement": [
+                {
+                    "@@type": "OfferCatalog",
+                    "name": "Психологически консултации"
+                },
+                {
+                    "@@type": "OfferCatalog",
+                    "name": "Астрологични консултации"
+                }
+            ]
+        },
+        "aggregateRating": {
+            "@@type": "AggregateRating",
+            "ratingValue": "4.6",
+            "reviewCount": "5",
+            "bestRating": "5",
+            "worstRating": "1"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "WebSite",
+        "name": "Душевна Мозайка",
+        "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")"
+    }
+    </script>
 }
 
 @section Styles {
@@ -786,11 +841,12 @@
                     {
                         <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
                              data-service-id="@service.Id"
-                             onclick="window.location.href='@Url.Action("Details", "Services", new { id = service.Id })'">
+                             onclick="window.location.href='@Url.Action("Details", "Services", new { id = !string.IsNullOrEmpty(service.Slug) ? service.Slug : service.Id.ToString() })'">
                             @if (!string.IsNullOrEmpty(service.ImagePath))
                             {
                                 <div class="h-48 sm:h-64 overflow-hidden">
                                     <img src="@service.ImagePath" alt="@service.NameService"
+                                         loading="lazy" decoding="async" width="400" height="256"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 </div>
                             }
@@ -925,11 +981,12 @@
                     {
                         <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer" 
                              data-article-id="@article.Id" 
-                             onclick="window.location.href='@Url.Action("Details", "Articles", new { id = article.Id })'">
+                             onclick="window.location.href='@Url.Action("Details", "Articles", new { id = !string.IsNullOrEmpty(article.Slug) ? article.Slug : article.Id.ToString() })'">
                             @if (!string.IsNullOrEmpty(article.ImagePath))
                             {
                                 <div class="h-48 sm:h-64 overflow-hidden">
                                     <img src="@article.ImagePath" alt="@article.Title"
+                                         loading="lazy" decoding="async" width="400" height="256"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 </div>
                             }
@@ -1260,62 +1317,62 @@
             showSlide(0);
         });
 
-        // Newsletter form and other jQuery-dependent code
+        // Newsletter form submission using vanilla fetch
         document.addEventListener('DOMContentLoaded', function() {
-            // Wait for jQuery to be available
-            function initJQueryDependent() {
-                if (typeof jQuery === 'undefined' || typeof $ === 'undefined') {
-                    setTimeout(initJQueryDependent, 100);
-                    return;
-                }
+            const newsletterForm = document.getElementById('newsletterForm');
+            if (!newsletterForm) return;
 
-                $(document).ready(function() {
-                    // Newsletter form submission
-                    $('#newsletterForm').on('submit', function(e) {
-                        e.preventDefault();
-                        
-                        const email = $('#newsletterEmail').val();
-                        const submitBtn = $('#newsletterSubmitBtn');
-                        const originalText = submitBtn.find('span').text();
-                        
-                        // Show loading state
-                        submitBtn.prop('disabled', true);
-                        submitBtn.find('span').text('Изпраща...');
-                        submitBtn.find('i').removeClass('fa-paper-plane').addClass('fa-spinner fa-spin');
-                        
-                        // Get anti-forgery token
-                        const token = $('input[name="__RequestVerificationToken"]').val();
-                        
-                        $.ajax({
-                            url: '/Newsletter/Subscribe',
-                            type: 'POST',
-                            data: {
-                                email: email,
-                                __RequestVerificationToken: token
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    $('#newsletterModalMessage').text(response.message);
-                                    showNewsletterModal();
-                                    $('#newsletterForm')[0].reset();
-                                } else {
-                                    alert(response.message);
-                                }
-                            },
-                            error: function() {
-                                alert('Възникна грешка при абонирането. Моля, опитайте отново.');
-                            },
-                            complete: function() {
-                                // Reset button state
-                                submitBtn.prop('disabled', false);
-                                submitBtn.find('span').text(originalText);
-                                submitBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-paper-plane');
-                            }
-                        });
-                    });
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const emailInput = document.getElementById('newsletterEmail');
+                const submitBtn = document.getElementById('newsletterSubmitBtn');
+                const btnSpan = submitBtn.querySelector('span');
+                const btnIcon = submitBtn.querySelector('i');
+                const originalText = btnSpan.textContent;
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                btnSpan.textContent = 'Изпраща...';
+                btnIcon.classList.remove('fa-paper-plane');
+                btnIcon.classList.add('fa-spinner', 'fa-spin');
+                
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                
+                const formData = new FormData();
+                formData.append('email', emailInput.value);
+                formData.append('__RequestVerificationToken', token);
+                
+                fetch('/Newsletter/Subscribe', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('newsletterModalMessage').textContent = data.message;
+                        showNewsletterModal();
+                        newsletterForm.reset();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Възникна грешка при абонирането. Моля, опитайте отново.');
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    btnSpan.textContent = originalText;
+                    btnIcon.classList.remove('fa-spinner', 'fa-spin');
+                    btnIcon.classList.add('fa-paper-plane');
                 });
-            }
-            initJQueryDependent();
+            });
         });
 
         // Generate random stars - deferred until after page load for better performance (doesn't need jQuery)

@@ -476,7 +476,7 @@
             <div class="articles-grid">
                 @foreach (var article in Model)
                 {
-                        <div class="article-card" data-article-id="@article.Id" onclick="window.location.href='@Url.Action("Details", "Articles", new { id = article.Id })'">
+                        <div class="article-card" data-article-id="@article.Id" onclick="window.location.href='@Url.Action("Details", "Articles", new { id = !string.IsNullOrEmpty(article.Slug) ? article.Slug : article.Id.ToString() })'">
                         <!-- Article Image -->
                         <div class="article-image">
                             @if (!string.IsNullOrEmpty(article.ImagePath))

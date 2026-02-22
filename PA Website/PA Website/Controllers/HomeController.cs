@@ -20,6 +20,7 @@ namespace PA_Website.Controllers
         }
 
 
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
         public IActionResult Index()
         {
             var latestArticles = _context.Articles
@@ -36,6 +37,8 @@ namespace PA_Website.Controllers
             return View(latestArticles);
             
         }
+
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
         public IActionResult Author()
         {
             return View();

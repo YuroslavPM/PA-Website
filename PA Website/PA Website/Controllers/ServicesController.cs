@@ -11,6 +11,7 @@ using PA_Website.Data;
 using PA_Website.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using PA_Website.Services;
+using PA_Website.Helpers;
 
 namespace PA_Website.Controllers
 {
@@ -47,9 +48,6 @@ namespace PA_Website.Controllers
 
         #region Public Actions
 
-        /// <summary>
-        /// GET: Services - Display all services with promotion eligibility
-        /// </summary>
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 9)
         {
             try
@@ -73,26 +71,43 @@ namespace PA_Website.Controllers
             }
             catch (Exception ex)
             {
-                // Log exception here
                 return View("Error");
             }
         }
 
-        /// <summary>
-        /// GET: Services/Details/5 - Display service details with reserved times
-        /// </summary>
-        public async Task<IActionResult> Details(int? id, string selectedDate)
+        public async Task<IActionResult> Details(string id, string selectedDate)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
                 return NotFound();
 
             try
             {
-                var service = await GetServiceByIdAsync(id.Value);
+                Service? service = null;
+
+                // Check if it's an ID for backward compatibility
+                if (int.TryParse(id, out int serviceId))
+                {
+                    service = await GetServiceByIdAsync(serviceId);
+                    if (service != null)
+                    {
+                        if (string.IsNullOrEmpty(service.Slug))
+                        {
+                            service.Slug = service.NameService.ToSlug();
+                            _context.Update(service);
+                            await _context.SaveChangesAsync();
+                        }
+                        return RedirectToActionPermanent(nameof(Details), new { id = service.Slug, selectedDate });
+                    }
+                }
+                else
+                {
+                    service = await _context.Service.FirstOrDefaultAsync(m => m.Slug == id);
+                }
+
                 if (service == null)
                     return NotFound();
 
-                var reservedTimes = await GetReservedTimesForServiceAsync(id.Value);
+                var reservedTimes = await GetReservedTimesForServiceAsync(service.Id);
                 
                 ViewData["ReservedTimes"] = reservedTimes;
                 ViewData["SelectedDate"] = selectedDate;
@@ -112,14 +127,10 @@ namespace PA_Website.Controllers
             }
             catch (Exception ex)
             {
-                // Log exception here
                 return View("Error");
             }
         }
 
-        /// <summary>
-        /// GET: Services/Create - Display create form for admins
-        /// </summary>
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
@@ -127,9 +138,6 @@ namespace PA_Website.Controllers
             return View();
         }
 
-        /// <summary>
-        /// POST: Services/Create - Create new service
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -143,6 +151,8 @@ namespace PA_Website.Controllers
 
             try
             {
+                service.Slug = service.NameService.ToSlug();
+
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     var imageResult = await ProcessImageUploadAsync(imageFile);
@@ -161,14 +171,11 @@ namespace PA_Website.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Възникна грешка при създаването на услугата. Моля, опитайте отново.");
+                ModelState.AddModelError("", "Възникна грешка при създаването на услугата.");
                 return View(service);
             }
         }
 
-        /// <summary>
-        /// GET: Services/Edit/5 - Display edit form for admins
-        /// </summary>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -190,9 +197,6 @@ namespace PA_Website.Controllers
             }
         }
 
-        /// <summary>
-        /// POST: Services/Edit/5 - Update existing service
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -213,7 +217,7 @@ namespace PA_Website.Controllers
                 if (existingService == null)
                     return NotFound();
 
-                await UpdateServiceAsync(existingService, service, imageFile);
+                await UpdateServiceSlugAsync(existingService, service, imageFile);
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -229,9 +233,6 @@ namespace PA_Website.Controllers
             }
         }
 
-        /// <summary>
-        /// GET: Services/Delete/5 - Display delete confirmation for admins
-        /// </summary>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -252,9 +253,6 @@ namespace PA_Website.Controllers
             }
         }
 
-        /// <summary>
-        /// POST: Services/Delete/5 - Delete service
-        /// </summary>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -265,6 +263,10 @@ namespace PA_Website.Controllers
                 var service = await GetServiceByIdAsync(id);
                 if (service != null)
                 {
+                    if (!string.IsNullOrEmpty(service.ImagePath))
+                    {
+                        await _imageService.DeleteImageAsync(service.ImagePath);
+                    }
                     _context.Service.Remove(service);
                     await _context.SaveChangesAsync();
                 }
@@ -277,9 +279,6 @@ namespace PA_Website.Controllers
             }
         }
 
-        /// <summary>
-        /// POST: Create reservation for a service
-        /// </summary>
         [HttpPost]
         public async Task<IActionResult> CreateReservation(
             int ServiceId, 
@@ -305,21 +304,21 @@ namespace PA_Website.Controllers
                 if (!validationResult.IsValid)
                 {
                     SetErrorMessage(validationResult.ErrorMessage);
-                    return RedirectToAction("Details", new { id = ServiceId });
+                    return RedirectToAction("Details", new { id = service.Slug });
                 }
 
                 var reservationDateTime = ParseReservationDateTime(service, reservationDate, reservationTime, astrologicalDate);
                 if (reservationDateTime == null)
                 {
                     SetErrorMessage("Невалиден формат на датата или часа.");
-                    return RedirectToAction("Details", new { id = ServiceId });
+                    return RedirectToAction("Details", new { id = service.Slug });
                 }
 
                 var reservationValidation = await ValidateReservationAsync(user, service, reservationDateTime.Value);
                 if (!reservationValidation.IsValid)
                 {
                     SetErrorMessage(reservationValidation.ErrorMessage);
-                    return RedirectToAction("Details", new { id = ServiceId });
+                    return RedirectToAction("Details", new { id = service.Slug });
                 }
 
                 var reservation = await CreateUserServiceAsync(user, service, reservationDateTime.Value, reservationTime, birthCity);
@@ -330,13 +329,10 @@ namespace PA_Website.Controllers
             catch (Exception ex)
             {
                 SetErrorMessage("Възникна грешка при създаването на резервацията.");
-                return RedirectToAction("Details", new { id = ServiceId });
+                return RedirectToAction("Index");
             }
         }
 
-        /// <summary>
-        /// GET: Get available times for a specific date and service
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAvailableTimes(DateTime date, int serviceId)
         {
@@ -465,11 +461,10 @@ namespace PA_Website.Controllers
                 return new ImageUploadResult
                 {
                     IsValid = false,
-                    ErrorMessage = "Невалиден формат на изображението. Поддържани формати: JPG, PNG, GIF, WebP (макс. 10MB)."
+                    ErrorMessage = "Невалиден формат на изображението."
                 };
             }
 
-            // Use ImageService for optimization - converts to WebP for best compression
             var result = await _imageService.OptimizeAndSaveAsync(
                 imageFile,
                 "services",
@@ -485,7 +480,7 @@ namespace PA_Website.Controllers
             };
         }
 
-        private async Task UpdateServiceAsync(Service existingService, Service updatedService, IFormFile? imageFile)
+        private async Task UpdateServiceSlugAsync(Service existingService, Service updatedService, IFormFile? imageFile)
         {
             if (imageFile != null && imageFile.Length > 0)
             {
@@ -493,7 +488,6 @@ namespace PA_Website.Controllers
                 if (!imageResult.IsValid)
                     throw new InvalidOperationException(imageResult.ErrorMessage);
 
-                // Delete old image using ImageService
                 if (!string.IsNullOrEmpty(existingService.ImagePath))
                 {
                     await _imageService.DeleteImageAsync(existingService.ImagePath);
@@ -502,12 +496,12 @@ namespace PA_Website.Controllers
                 existingService.ImagePath = imageResult.ImagePath;
             }
 
-            // Update properties
             existingService.NameService = updatedService.NameService;
             existingService.CategoryOfService = updatedService.CategoryOfService;
             existingService.ReservationDate = updatedService.ReservationDate;
             existingService.Description = updatedService.Description;
             existingService.Price = updatedService.Price;
+            existingService.Slug = updatedService.NameService.ToSlug();
 
             await _context.SaveChangesAsync();
         }
@@ -572,7 +566,7 @@ namespace PA_Website.Controllers
                     return new ValidationResult
                     {
                         IsValid = false,
-                        ErrorMessage = "Не можете да резервирате две консултации в една и съща седмица. Моля, изберете дата за следващата седмица."
+                        ErrorMessage = "Не можете да резервирате две консултации в една и съща седмица."
                     };
                 }
             }
@@ -624,7 +618,6 @@ namespace PA_Website.Controllers
             _context.userServices.Add(reservation);
             await _context.SaveChangesAsync();
 
-            // Track used promotions
             foreach (var promotion in usedPromotions)
             {
                 var userPromotion = new UserPromotion

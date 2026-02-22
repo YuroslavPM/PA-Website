@@ -23,11 +23,15 @@
     <meta name="keywords" content="@(ViewData["Keywords"] as string ?? "астрология, психология, хороскоп, консултации, Душевна Мозайка, Мариела Разпопова")" />
     <meta name="author" content="Мариела Разпопова" />
     <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
+    <link rel="alternate" hreflang="bg" href="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
+    <meta name="theme-color" content="#4c1d95" />
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка")" />
     <meta property="og:description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа")" />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="bg_BG" />
     <meta property="og:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")" />
     <meta property="og:url" content="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
     
@@ -62,8 +66,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <!-- Optimized font loading with font-display: swap for faster FCP -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
@@ -263,19 +265,19 @@
                     <h2 class="font-playfair text-xl lg:text-2xl font-bold mb-4 lg:mb-6 relative footer-title">Бързи връзки</h2>
                     <ul class="space-y-3 lg:space-y-4">
                         <li>
-                            <a href="/Home/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Начало</a>
+                            <a asp-controller="Home" asp-action="Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Начало</a>
                         </li>
                         <li>
-                            <a href="/Services/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Услуги</a>
+                            <a asp-controller="Services" asp-action="Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Услуги</a>
                         </li>
                         <li>
-                            <a href="/Articles/Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Блог</a>
+                            <a asp-controller="Articles" asp-action="Index" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Блог</a>
                         </li>
                         <li>
-                            <a href="/Home/Author" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">За мен</a>
+                            <a asp-controller="Home" asp-action="Author" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">За мен</a>
                         </li>
                         <li>
-                            <a href="/Home/Privacy" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Политика за поверителност</a>
+                            <a asp-controller="Home" asp-action="Privacy" class="text-white/80 hover:text-white transition-colors duration-300 text-base lg:text-lg hover:translate-x-2 inline-block focus-visible:focus">Политика за поверителност</a>
                         </li>
                     </ul>
                 </div>
@@ -304,9 +306,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Defer jQuery loading to prevent blocking render -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous" defer></script>
     <script>
         // Enhanced mobile menu toggle with animations - runs immediately without jQuery
         document.addEventListener('DOMContentLoaded', function() {

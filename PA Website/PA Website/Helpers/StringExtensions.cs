@@ -65,4 +65,46 @@ public static class StringExtensions
 
         return truncated;
     }
+
+    public static string ToSlug(this string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return string.Empty;
+
+        // Bulgarian Cyrillic to Latin mapping
+        var transliterationMap = new Dictionary<char, string>
+        {
+            {'а', "a"}, {'б', "b"}, {'в', "v"}, {'г', "g"}, {'д', "d"}, {'е', "e"}, {'ж', "zh"}, {'з', "z"},
+            {'и', "i"}, {'й', "y"}, {'к', "k"}, {'л', "l"}, {'м', "m"}, {'н', "n"}, {'о', "o"}, {'п', "p"},
+            {'р', "r"}, {'с', "s"}, {'т', "t"}, {'у', "u"}, {'ф', "f"}, {'х', "h"}, {'ц', "ts"}, {'ч', "ch"},
+            {'ш', "sh"}, {'щ', "sht"}, {'ъ', "a"}, {'ь', "y"}, {'ю', "yu"}, {'я', "ya"}
+        };
+
+        text = text.ToLowerInvariant();
+        var sb = new System.Text.StringBuilder();
+
+        foreach (char c in text)
+        {
+            if (transliterationMap.TryGetValue(c, out var latin))
+            {
+                sb.Append(latin);
+            }
+            else if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+            {
+                sb.Append(c);
+            }
+            else if (c == ' ' || c == '-' || c == '_')
+            {
+                sb.Append('-');
+            }
+        }
+
+        string slug = sb.ToString();
+
+        // Clean up: remove multiple hyphens, leading/trailing hyphens
+        slug = Regex.Replace(slug, @"-+", "-");
+        slug = slug.Trim('-');
+
+        return slug;
+    }
 }

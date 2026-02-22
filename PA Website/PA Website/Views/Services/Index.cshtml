@@ -738,7 +738,7 @@
                 {
                     <div class="service-card animate-on-scroll cursor-pointer"
                          data-service-id="@service.Id"
-                         onclick="window.location.href='@Url.Action("Details", "Services", new { id = service.Id })'">
+                         onclick="window.location.href='@Url.Action("Details", "Services", new { id = !string.IsNullOrEmpty(service.Slug) ? service.Slug : service.Id.ToString() })'">
                         <div class="service-image @(string.IsNullOrEmpty(service.ImagePath) ? "" : "has-image")">
                             @if (!string.IsNullOrEmpty(service.ImagePath))
                             {
@@ -823,7 +823,7 @@
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("Details", "Services", new { id = service.Id })" class="btn-outline focus-visible:focus" onclick="event.stopPropagation();">
+                                    <a href="@Url.Action("Details", "Services", new { id = !string.IsNullOrEmpty(service.Slug) ? service.Slug : service.Id.ToString() })" class="btn-outline focus-visible:focus" onclick="event.stopPropagation();">
                                         <i class="fas fa-calendar-plus"></i>
                                         <span class="hidden sm:inline">Запази час</span>
                                         <span class="sm:hidden">Запази час</span>

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
 using PA_Website.Services;
+using PA_Website.Helpers;
 
 namespace PA_Website.Controllers
 {
@@ -50,15 +51,36 @@ namespace PA_Website.Controllers
         }
 
         
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var article = await _context.Articles
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Article? article = null;
+
+            // Check if it's an ID for backward compatibility
+            if (int.TryParse(id, out int articleId))
+            {
+                article = await _context.Articles.FindAsync(articleId);
+                if (article != null)
+                {
+                    // Redirect to slug version (301 Permanent Redirect for SEO)
+                    if (string.IsNullOrEmpty(article.Slug))
+                    {
+                        article.Slug = article.Title.ToSlug();
+                        _context.Update(article);
+                        await _context.SaveChangesAsync();
+                    }
+                    return RedirectToActionPermanent(nameof(Details), new { id = article.Slug });
+                }
+            }
+            else
+            {
+                article = await _context.Articles.FirstOrDefaultAsync(m => m.Slug == id);
+            }
+
             if (article == null)
             {
                 return NotFound();
@@ -99,9 +121,6 @@ namespace PA_Website.Controllers
             return View();
         }
 
-        // POST: Articles/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -111,26 +130,16 @@ namespace PA_Website.Controllers
             {
                 try
                 {
-                    // Get current user
                     var currentUser = await _userManager.GetUserAsync(User);
                     if (currentUser == null)
                     {
                         ModelState.AddModelError("", "Потребителят не е намерен.");
-                        ViewData["Categories"] = new SelectList(new[]
-                        {
-                            "Психология",
-                            "Астрология", 
-                            "Личностно развитие",
-                            "Медитация",
-                            "Зодиакални знаци",
-                            "Други"
-                        });
                         return View(article);
                     }
 
-                    // Set creator and publication date
                     article.CreatorId = currentUser.Id;
                     article.PublicationDate = DateTime.Now;
+                    article.Slug = article.Title.ToSlug();
 
                     // Handle image upload with optimization
                     if (article.ImageFile != null && article.ImageFile.Length > 0)
@@ -145,22 +154,12 @@ namespace PA_Website.Controllers
                         if (!imageResult.IsSuccess)
                         {
                             ModelState.AddModelError("ImageFile", imageResult.ErrorMessage ?? "Грешка при качване на изображението.");
-                            ViewData["Categories"] = new SelectList(new[]
-                            {
-                                "Психология",
-                                "Астрология", 
-                                "Личностно развитие",
-                                "Медитация",
-                                "Зодиакални знаци",
-                                "Други"
-                            });
                             return View(article);
                         }
 
                         article.ImagePath = imageResult.ImagePath;
                     }
 
-                    // Now save the article with the image path
                     _context.Add(article);
                     await _context.SaveChangesAsync();
 
@@ -169,37 +168,16 @@ namespace PA_Website.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Възникна грешка при създаването на статията. Моля, опитайте отново.");
-                    ViewData["Categories"] = new SelectList(new[]
-                    {
-                        "Психология",
-                        "Астрология", 
-                        "Личностно развитие",
-                        "Медитация",
-                        "Зодиакални знаци",
-                        "Други"
-                    });
+                    ModelState.AddModelError("", "Възникна грешка при създаването на статията.");
                     return View(article);
                 }
             }
-            
-            // If we got this far, something failed, redisplay form
-            ViewData["Categories"] = new SelectList(new[]
-            {
-                "Психология",
-                "Астрология", 
-                "Личностно развитие",
-                "Медитация",
-                "Зодиакални знаци",
-                "Други"
-            });
             return View(article);
         }
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-
             var tinyMceApiKey = _configuration["TinyMCE:ApiKey"];
             ViewBag.TinyMceApiKey = tinyMceApiKey;
             if (id == null)
@@ -213,7 +191,7 @@ namespace PA_Website.Controllers
                 return NotFound();
             }
             ViewData["Categories"] = new SelectList(new[]
-           {
+            {
                 "Психология",
                 "Астрология",
                 "Личностно развитие",
@@ -224,9 +202,6 @@ namespace PA_Website.Controllers
             return View(article);
         }
 
-        // POST: Articles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -247,15 +222,14 @@ namespace PA_Website.Controllers
                         return NotFound();
                     }
 
-                    // Update editable fields
                     existingArticle.Title = article.Title;
                     existingArticle.Description = article.Description;
                     existingArticle.Category = article.Category;
+                    existingArticle.Slug = article.Title.ToSlug();
                     existingArticle.PublicationDate = DateTime.Now;
 
                     if (article.ImageFile != null && article.ImageFile.Length > 0)
                     {
-                        // Delete old image
                         if (!string.IsNullOrEmpty(existingArticle.ImagePath))
                         {
                             await _imageService.DeleteImageAsync(existingArticle.ImagePath);
@@ -271,15 +245,6 @@ namespace PA_Website.Controllers
                         if (!imageResult.IsSuccess)
                         {
                             ModelState.AddModelError("ImageFile", imageResult.ErrorMessage ?? "Грешка при качване на изображението.");
-                            ViewData["Categories"] = new SelectList(new[]
-                            {
-                                "Психология",
-                                "Астрология", 
-                                "Личностно развитие",
-                                "Медитация",
-                                "Зодиакални знаци",
-                                "Други"
-                            }, article.Category);
                             return View(article);
                         }
 
@@ -302,23 +267,8 @@ namespace PA_Website.Controllers
                     }
                 }
             }
-
-            // Ако ModelState не е валиден, трябва да подадеш ViewData с категориите отново
-            ViewData["Categories"] = new SelectList(new[]
-            {
-                "Психология",
-                "Астрология",
-                "Личностно развитие",
-                "Медитация",
-                "Зодиакални знаци",
-                "Други"
-            }, article.Category);  // подчертавам избраната категория
-
-            // Подай отново модела към изгледа
             return View(article);
         }
-
-
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
@@ -336,17 +286,12 @@ namespace PA_Website.Controllers
             }
             if (!string.IsNullOrEmpty(article.ImagePath))
             {
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", article.ImagePath.TrimStart('/'));
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
+                await _imageService.DeleteImageAsync(article.ImagePath);
             }
 
             return View(article);
         }
 
-        // POST: Articles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -380,10 +325,9 @@ namespace PA_Website.Controllers
 
                 if (!_imageService.IsValidImageFile(upload))
                 {
-                    return Json(new { uploaded = 0, error = new { message = "Invalid file type or size. Supported: JPG, PNG, GIF, WebP (max 10MB)." } });
+                    return Json(new { uploaded = 0, error = new { message = "Invalid file type or size." } });
                 }
 
-                // Optimize and save the image (converted to WebP for best compression)
                 var imageResult = await _imageService.OptimizeAndSaveAsync(
                     upload,
                     "articles/content",
