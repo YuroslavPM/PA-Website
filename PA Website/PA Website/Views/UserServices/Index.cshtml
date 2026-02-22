@@ -580,7 +580,7 @@
                                         <i class="fas fa-info-circle text-purple-500 text-lg"></i>
                                         <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Описание на услугата</label>
                                     </div>
-                                    <div class="text-gray-700 leading-relaxed text-base">@Html.Raw(reservation.Service.Description?.TruncateHtml(30) ?? "")</div>
+                                    <div class="text-gray-700 leading-relaxed text-base">@Html.Raw(reservation.Service.Description?.TruncateHtml(200) ?? "")</div>
                                 </div>
                             }
 
