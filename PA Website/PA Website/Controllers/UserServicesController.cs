@@ -110,14 +110,8 @@ namespace PA_Website.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            // Get available services for scheduling
-            var availableServices = await _context.Service
-                .Where(s => s.CategoryOfService.ToLower() == "психология")
-                .ToListAsync();
-
             ViewData["User"] = user;
             ViewData["RecentReservations"] = recentReservations;
-            ViewData["AvailableServices"] = availableServices;
 
             return View();
         }

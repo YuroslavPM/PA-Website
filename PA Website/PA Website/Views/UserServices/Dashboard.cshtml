@@ -6,7 +6,7 @@
     ViewData["Title"] = "Потребителски Панел";
     var user = ViewData["User"] as User;
     var recentReservations = ViewData["RecentReservations"] as List<PA_Website.Models.UserService>;
-    var availableServices = ViewData["AvailableServices"] as List<PA_Website.Models.Service>;
+
     Layout = "_Layout";
 
 }
@@ -466,10 +466,7 @@
                 <div class="stat-number">@(recentReservations?.Count ?? 0)</div>
                 <div class="stat-label">Активни резервации</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number">@(availableServices?.Count ?? 0)</div>
-                <div class="stat-label">Налични услуги</div>
-            </div>
+
             <div class="stat-card">
                 <div class="stat-number">@(recentReservations?.Where(r => r.Status == "Confirmed").Count() ?? 0)</div>
                 <div class="stat-label">Потвърдени</div>
@@ -526,7 +523,10 @@
                                     <div class="flex justify-between items-start mb-2">
                                         <div>
                                             <h5 class="text-sm font-bold text-gray-800">@reservation.Service.NameService</h5>
-                                            <p class="text-xs text-gray-600">@reservation.ReservationDate.ToString("dd.MM.yyyy")</p>
+                                            @if (reservation.Service.CategoryOfService.ToLower() != "астрология")
+                                            {
+                                                <p class="text-xs text-gray-600">@reservation.ReservationDate.ToString("dd.MM.yyyy")</p>
+                                            }
                                         </div>
                                         <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
                                                               reservation.Status == "Confirmed" ? "status-confirmed" : 
@@ -590,10 +590,13 @@
                                 </span>
                             </div>
                             <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
-                                <div>
-                                    <span class="font-semibold text-gray-600">Дата:</span>
-                                    <span class="text-gray-800">@reservation.ReservationDate.ToString("dd.MM.yyyy")</span>
-                                </div>
+                                @if (reservation.Service.CategoryOfService.ToLower() != "астрология")
+                                {
+                                    <div>
+                                        <span class="font-semibold text-gray-600">Дата:</span>
+                                        <span class="text-gray-800">@reservation.ReservationDate.ToString("dd.MM.yyyy")</span>
+                                    </div>
+                                }
                                 @if (reservation.ReservationTime.HasValue)
                                 {
                                     <div>
