@@ -105,7 +105,6 @@ Sitemap: {sitemapUrl}";
             return Content(robotsContent, "text/plain");
         }
 
-        // Generates sitemap.xml file
         [Route("sitemap.xml")]
         public async Task<IActionResult> SitemapXml()
         {
@@ -113,6 +112,14 @@ Sitemap: {sitemapUrl}";
             {
                 var baseUrl = _configuration["BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}";
                 var nodes = new List<SitemapNode>();
+
+                // Helper: ensure date is UTC-kind and sane (fallback to a known good date)
+                static DateTime UtcDate(DateTime dt)
+                {
+                    if (dt == default || dt == DateTime.MinValue)
+                        return new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                }
 
                 // Static pages
                 nodes.Add(new SitemapNode(baseUrl + Url.Action("Index", "Home"))
@@ -138,7 +145,9 @@ Sitemap: {sitemapUrl}";
 
                 // Services index
                 var services = await _context.Service.ToListAsync();
-                var latestServiceDate = services.Any() ? services.Max(s => s.ReservationDate) : new DateTime(2026, 2, 22, 0, 0, 0, DateTimeKind.Utc);
+                var latestServiceDate = services.Any()
+                    ? UtcDate(services.Max(s => s.ReservationDate))
+                    : new DateTime(2026, 2, 22, 0, 0, 0, DateTimeKind.Utc);
                 nodes.Add(new SitemapNode(baseUrl + Url.Action("Index", "Services"))
                 {
                     ChangeFrequency = ChangeFrequency.Weekly,
@@ -152,45 +161,51 @@ Sitemap: {sitemapUrl}";
                     {
                         ChangeFrequency = ChangeFrequency.Weekly,
                         Priority = (decimal?)0.8,
-                        LastModificationDate = service.ReservationDate
+                        LastModificationDate = UtcDate(service.ReservationDate)
                     });
                 }
 
                 // Articles index
                 var articles = await _context.Articles.ToListAsync();
-                var latestArticleDate = articles.Any() ? articles.Max(a => a.PublicationDate) : new DateTime(2026, 2, 22, 0, 0, 0, DateTimeKind.Utc);
+                var latestArticleDate = articles.Any()
+                    ? UtcDate(articles.Max(a => a.PublicationDate))
+                    : new DateTime(2026, 2, 22, 0, 0, 0, DateTimeKind.Utc);
                 nodes.Add(new SitemapNode(baseUrl + Url.Action("Index", "Articles"))
                 {
                     ChangeFrequency = ChangeFrequency.Weekly,
                     Priority = (decimal?)0.9,
                     LastModificationDate = latestArticleDate
                 });
+
                 foreach (var article in articles)
                 {
                     nodes.Add(new SitemapNode(baseUrl + Url.Action("Details", "Articles", new { id = !string.IsNullOrEmpty(article.Slug) ? article.Slug : article.Id.ToString() }))
                     {
                         ChangeFrequency = ChangeFrequency.Weekly,
                         Priority = (decimal?)0.8,
-                        LastModificationDate = article.PublicationDate
+                        LastModificationDate = UtcDate(article.PublicationDate)
                     });
                 }
 
                 // Promotions index
                 var promotions = await _context.Promotions.ToListAsync();
-                var latestPromotionDate = promotions.Any() ? promotions.Max(p => p.StartDate) : new DateTime(2026, 2, 22, 0, 0, 0, DateTimeKind.Utc);
+                var latestPromotionDate = promotions.Any()
+                    ? UtcDate(promotions.Max(p => p.StartDate))
+                    : new DateTime(2026, 2, 22, 0, 0, 0, DateTimeKind.Utc);
                 nodes.Add(new SitemapNode(baseUrl + Url.Action("Index", "Promotions"))
                 {
                     ChangeFrequency = ChangeFrequency.Weekly,
                     Priority = (decimal?)0.7,
                     LastModificationDate = latestPromotionDate
                 });
+
                 foreach (var promotion in promotions)
                 {
                     nodes.Add(new SitemapNode(baseUrl + Url.Action("Details", "Promotions", new { id = !string.IsNullOrEmpty(promotion.Slug) ? promotion.Slug : promotion.Id.ToString() }))
                     {
                         ChangeFrequency = ChangeFrequency.Weekly,
                         Priority = (decimal?)0.7,
-                        LastModificationDate = promotion.StartDate
+                        LastModificationDate = UtcDate(promotion.StartDate)
                     });
                 }
 
