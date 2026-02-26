@@ -16,11 +16,11 @@
     <link rel="apple-touch-icon" href="~/Images/siteImg/logo-112.webp" asp-append-version="true" />
     
     
-    <!-- DNS Prefetch and Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <!-- Preload critical self-hosted fonts (Inter 400 for body, Playfair 700 for headings) -->
+    <link rel="preload" href="/fonts/inter-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-cyrillic-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/playfair-display-cyrillic-700.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/playfair-display-latin-700.woff2" as="font" type="font/woff2" crossorigin />
     
     <!-- SEO Meta Tags -->
     <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка - Астрологични консултации и психологическа подкрепа")</title>
@@ -50,30 +50,26 @@
         ViewBag.TinyMceApiKey = Configuration["TinyMCE:ApiKey"];
     }
 
-    <!-- Inline Critical CSS: Prevent FOUC for navbar and initial layout -->
+    <!-- Inline Critical CSS: navbar only, no resets (site.css is sync and handles everything else) -->
     <style>
-        .navbar-gradient{background:linear-gradient(135deg,#4a0e78 0%,#6a3093 50%,#7c3aed 100%)}
+        body{font-family:'Inter',system-ui,-apple-system,sans-serif}
+        .navbar-gradient{background:linear-gradient(135deg,#4a0e78 0%,#6a3093 50%,#7c3aed 100%);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
         .footer-gradient{background:linear-gradient(135deg,#4a0e78 0%,#6a3093 50%,#7c3aed 100%)}
-        body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif}
-        .min-h-screen{min-height:100vh}
-        .fixed{position:fixed}
-        .top-0{top:0}
-        .w-full{width:100%}
-        .z-50{z-index:50}
-        .text-white{color:#fff}
-        .font-bold{font-weight:700}
-        .fas,.fab,.far{display:inline-block;width:1em;height:1em}
-        /* Optimize transitions to use transform/opacity only */
-        .transition-all{transition-property:transform,opacity}
+        .navbar-scrolled{-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 10px 40px -10px rgba(0,0,0,.3)}
+        .font-playfair{font-family:'Playfair Display',serif}
+        .font-poppins{font-family:'Poppins',sans-serif}
+        .font-inter{font-family:'Inter',sans-serif}
     </style>
     
+    <!-- Self-hosted fonts (eliminates 2-hop Google Fonts waterfall) -->
+    <link rel="preload" href="~/css/fonts.css" as="style" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/fonts.css" asp-append-version="true" />
+
+    <!-- site.css — synchronous (Tailwind utilities used on every page, can't defer) -->
     <link rel="preload" href="~/css/site.css" as="style" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
-    <!-- Optimized font loading with font-display: swap for faster FCP -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+
 
     <link rel="preload" href="~/lib/font-awesome/css/custom.min.css" as="style" asp-append-version="true" />
     <link href="~/lib/font-awesome/css/custom.min.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null" asp-append-version="true">
