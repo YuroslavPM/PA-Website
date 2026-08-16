@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
+using PA_Website.Helpers;
 using PA_Website.Models;
 
 namespace PA_Website.Services
@@ -80,18 +81,9 @@ namespace PA_Website.Services
                 }
                 else if (newStatus == "Completed" && oldStatus != "Completed")
                 {
-                    if (service.CategoryOfService.ToLower() == "астрология")
-                    {
-                        var subject = "Вашата астрологична услуга е завършена";
-                        var htmlMessage = CreateAstroCardCompletionTemplate(user, reservation, service);
-                        await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
-                    }
-                    else
-                    {
-                        var subject = "Твоята резервация е завършена - Душевна Мозайка";
-                        var htmlMessage = CreateCompletedEmailTemplate(user, reservation, service);
-                        await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
-                    }
+                    var subject = "Твоята резервация е завършена - Душевна Мозайка";
+                    var htmlMessage = CreateCompletedEmailTemplate(user, reservation, service);
+                    await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
                 }
             }
             catch (Exception ex)
@@ -118,7 +110,7 @@ namespace PA_Website.Services
         {
             try
             {
-                var adminEmail = _configuration["EmailSettings:AdminEmail"] ?? "dushevna_mozaika@abv.bg";
+                var adminEmail = _configuration["EmailSettings:AdminEmail"] ?? "mariela.min4eva@gmail.com";
                 var subject = GetAdminNotificationSubject(action);
                 var htmlMessage = CreateAdminNotificationTemplate(user, reservation, service, action);
                 await _emailSender.SendEmailAsync(adminEmail, subject, htmlMessage);
@@ -525,6 +517,7 @@ namespace PA_Website.Services
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
+                            {GetBirthDataHtml(reservation, service)}
                             <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: {color}; font-weight: bold;'>{reservation.Status}</span></p>
                             <p style='margin: 5px 0;'><strong>ID на резервация:</strong> {reservation.Id}</p>
@@ -710,34 +703,26 @@ namespace PA_Website.Services
 
         private string CreateCompletedEmailTemplate(User user, UserService reservation, Service service)
         {
-            var dateTime = GetFormattedDateTime(reservation, service);
-            var baseUrl = GetBaseUrl();
+            var astroCardNote = !string.IsNullOrEmpty(reservation.AstroCardFilePath)
+                ? "<p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>Астрологичната карта е качена и достъпна в профила ти.</p>"
+                : string.Empty;
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
-                    <div style='background-color: #4b5563; background: linear-gradient(135deg, #6b7280, #4b5563); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
+                    <div style='background-color: #4c1d95; background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
                         <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
                         <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>Резервация завършена</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
-                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравей, {user.FName}!</h2>
-                        
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 16px;'>Уважаеми/а {user.FName},</p>
+                        <p style='color: #374151; line-height: 1.6; margin-bottom: 16px;'>Благодаря ти, че избра моите услуги!</p>
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Твоята резервация за <strong>{service.NameService}</strong> бе завършена успешно.
+                            Твоята резервация за {service.NameService} бе завършена успешно.
                         </p>
-                        
-                        <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
-                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
-                            <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
-                            <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
-                            <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
-                            <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
-                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #6b7280; font-weight: bold;'>Завършена</span></p>
-                        </div>
-                        
+                        {astroCardNote}
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Благодаря ти, че избра моите услуги! Ще се радвам да споделиш своето мнение чрез кратката анкета по-долу.
+                            Ще се радвам да дадеш обратна връзка за удовлетвореността си от услугите ми, като попълниш кратка анкета на следния линк:
                         </p>
                         
                         <div style='text-align: center; margin: 25px 0;'>
@@ -746,20 +731,14 @@ namespace PA_Website.Services
                                 Попълни анкета за обратна връзка
                             </a>
                         </div>
+                        <p style='color: #6b7280; font-size: 14px; word-break: break-all;'>https://forms.gle/w9aM8eqcLffQiG447</p>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 5px;'>С уважение,</p>
                         <p style='color: #374151; line-height: 1.6; margin-top: 0;'>Мариела Разпопова</p>
-                        
-                        <div style='text-align: center; margin-top: 30px;'>
-                            <a href='{baseUrl}/Services' 
-                               style='background-color: #4c1d95; background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
-                                Разгледай услуги
-                            </a>
-                        </div>
                     </div>
                     
                     <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
-                        <p>© 2025 Душевна Мозайка. Всички права запазени.</p>
+                        <p>© 2026 Душевна Мозайка. Всички права запазени.</p>
                     </div>
                 </div>";
         }
@@ -770,18 +749,47 @@ namespace PA_Website.Services
 
         private string GetFormattedDateTime(UserService reservation, Service service)
         {
-            if (service.CategoryOfService.ToLower() == "астрология")
+            var parts = new List<string>();
+            var bookingKind = service.GetBookingKind();
+
+            if (bookingKind.NeedsAppointment())
             {
-                return reservation.AstrologicalDate?.ToString("dd.MM.yyyy") ?? "Дата не е посочена";
+                var dateStr = reservation.ReservationDate.ToString("dd.MM.yyyy");
+                parts.Add(reservation.ReservationTime.HasValue
+                    ? $"{dateStr} в {reservation.ReservationTime.Value:hh\\:mm}"
+                    : dateStr);
             }
-            
-            var dateStr = reservation.ReservationDate.ToString("dd.MM.yyyy");
-            if (reservation.ReservationTime.HasValue)
+
+            if (bookingKind.NeedsDualBirthData())
             {
-                return $"{dateStr} в {reservation.ReservationTime.Value:hh\\:mm}";
+                parts.Add($"Партньор 1 раждане: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}");
+                if (reservation.Partner2AstrologicalDate.HasValue)
+                    parts.Add($"Партньор 2 раждане: {reservation.Partner2AstrologicalDate:dd.MM.yyyy HH:mm}");
             }
-            
-            return dateStr;
+            else if (bookingKind.NeedsBirthData())
+            {
+                parts.Add(reservation.AstrologicalDate?.ToString("dd.MM.yyyy HH:mm") ?? "Дата на раждане не е посочена");
+            }
+
+            return parts.Count > 0 ? string.Join(" | ", parts) : reservation.ReservationDate.ToString("dd.MM.yyyy");
+        }
+
+        private string GetBirthDataHtml(UserService reservation, Service service)
+        {
+            var bookingKind = service.GetBookingKind();
+            if (!bookingKind.NeedsBirthData())
+                return string.Empty;
+
+            if (bookingKind.NeedsDualBirthData())
+            {
+                return $@"<p style='margin: 5px 0;'><strong>Партньор 1 — дата и час на раждане:</strong> {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</p>
+                            <p style='margin: 5px 0;'><strong>Партньор 1 — място:</strong> {reservation.AstrologicalPlaceOfBirth}</p>
+                            <p style='margin: 5px 0;'><strong>Партньор 2 — дата и час на раждане:</strong> {reservation.Partner2AstrologicalDate:dd.MM.yyyy HH:mm}</p>
+                            <p style='margin: 5px 0;'><strong>Партньор 2 — място:</strong> {reservation.Partner2PlaceOfBirth}</p>";
+            }
+
+            return $@"<p style='margin: 5px 0;'><strong>Дата и час на раждане:</strong> {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</p>
+                            <p style='margin: 5px 0;'><strong>Място на раждане:</strong> {reservation.AstrologicalPlaceOfBirth}</p>";
         }
 
         private string GetBaseUrl()

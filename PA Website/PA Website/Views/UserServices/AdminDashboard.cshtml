@@ -675,10 +675,17 @@ var recentReservations = reservations.OrderByDescending(r => r.ReservationDate).
                     </div>
                     <div class="reservation-service">@reservation.Service.NameService</div>
                     <div class="reservation-date">
-                        @reservation.ReservationDate.ToString("dd.MM.yyyy")
-                        @if(reservation.ReservationTime.HasValue)
+                        @if (reservation.Service.NeedsAppointment())
                         {
-                        <span>@reservation.ReservationTime.Value.ToString(@"hh\:mm")</span>
+                            @reservation.ReservationDate.ToString("dd.MM.yyyy")
+                            if (reservation.ReservationTime.HasValue)
+                            {
+                                <span>@reservation.ReservationTime.Value.ToString(@"hh\:mm")</span>
+                            }
+                        }
+                        else if (reservation.AstrologicalDate.HasValue)
+                        {
+                            @reservation.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm")
                         }
                     </div>
                 </div>

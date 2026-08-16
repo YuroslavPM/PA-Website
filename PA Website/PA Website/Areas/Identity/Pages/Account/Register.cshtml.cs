@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using PA_Website.Helpers;
 using PA_Website.Models;
 
 namespace PA_Website.Areas.Identity.Pages.Account
@@ -143,7 +144,15 @@ namespace PA_Website.Areas.Identity.Pages.Account
 
                 user.FName = Input.FName;
                 user.LName = Input.LName;
-                user.Birth_Date = DateTime.Parse(Input.Birth_Date);
+                try
+                {
+                    user.Birth_Date = BulgarianDate.ParseBirthDate(Input.Birth_Date);
+                }
+                catch (FormatException)
+                {
+                    ModelState.AddModelError("Input.Birth_Date", "Невалиден формат на датата. Използвайте дд.мм.гггг.");
+                    return Page();
+                }
                 user.PhoneNumber = Input.Phone_Number;
                 user.EmailSend = Input.EmailSend;
 

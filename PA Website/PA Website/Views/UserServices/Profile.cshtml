@@ -256,8 +256,9 @@
 
                     <div class="form-group">
                         <label asp-for="Birth_Date" class="form-label">Дата на раждане</label>
-                        <input asp-for="Birth_Date" type="date" class="form-control" />
+                        <input asp-for="Birth_Date" type="date" class="form-control" lang="bg-BG" />
                         <span asp-validation-for="Birth_Date" class="field-validation-error"></span>
+                        <small class="text-muted">Формат: ден / месец / година</small>
                     </div>
 
                     <div class="form-group">

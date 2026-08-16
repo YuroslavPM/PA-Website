@@ -523,9 +523,13 @@
                                     <div class="flex justify-between items-start mb-2">
                                         <div>
                                             <h5 class="text-sm font-bold text-gray-800">@reservation.Service.NameService</h5>
-                                            @if (reservation.Service.CategoryOfService.ToLower() != "астрология")
+                                            @if (reservation.Service.NeedsAppointment())
                                             {
                                                 <p class="text-xs text-gray-600">@reservation.ReservationDate.ToString("dd.MM.yyyy")</p>
+                                            }
+                                            else if (reservation.AstrologicalDate.HasValue)
+                                            {
+                                                <p class="text-xs text-gray-600">@reservation.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm")</p>
                                             }
                                         </div>
                                         <span class="status-badge @(reservation.Status == "Pending" ? "status-pending" : 
@@ -590,18 +594,25 @@
                                 </span>
                             </div>
                             <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
-                                @if (reservation.Service.CategoryOfService.ToLower() != "астрология")
+                                @if (reservation.Service.NeedsAppointment())
                                 {
                                     <div>
                                         <span class="font-semibold text-gray-600">Дата:</span>
                                         <span class="text-gray-800">@reservation.ReservationDate.ToString("dd.MM.yyyy")</span>
                                     </div>
                                 }
-                                @if (reservation.ReservationTime.HasValue)
+                                @if (reservation.Service.NeedsAppointment() && reservation.ReservationTime.HasValue)
                                 {
                                     <div>
                                         <span class="font-semibold text-gray-600">Час:</span>
                                         <span class="text-gray-800">@reservation.ReservationTime.Value.ToString(@"hh\:mm")</span>
+                                    </div>
+                                }
+                                @if (reservation.AstrologicalDate.HasValue)
+                                {
+                                    <div>
+                                        <span class="font-semibold text-gray-600">Раждане:</span>
+                                        <span class="text-gray-800">@reservation.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
                                     </div>
                                 }
                                 <div>

@@ -3,6 +3,23 @@
     Layout = "_Layout";
 }
 
+@section Head {
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "Person",
+        "name": "Мариела Разпопова",
+        "jobTitle": "Психолог и астролог",
+        "image": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/Author.webp")",
+        "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Home/Author")",
+        "worksFor": {
+            "@@type": "ProfessionalService",
+            "name": "Душевна Мозайка"
+        }
+    }
+    </script>
+}
+
 @section Styles {
     <style>
         .btn-gradient {
@@ -59,12 +76,14 @@
                 
                 <!-- Avatar -->
                 <div class="w-56 h-56 mx-auto mb-6 rounded-full border-4 border-white shadow-lg overflow-hidden relative z-10">
-                    <img src="/Images/siteImg/Author-160.webp"
-                         srcset="/Images/siteImg/Author-160.webp 160w,
-                                 /Images/siteImg/Author-320.webp 320w"
-                         sizes="160px"
-                         width="160"
-                         height="160"
+                    <img src="/Images/siteImg/Author.webp"
+                         srcset="/Images/siteImg/Author-320.webp 320w,
+                                 /Images/siteImg/Author-384.webp 384w,
+                                 /Images/siteImg/Author-800.webp 800w,
+                                 /Images/siteImg/Author.webp 1584w"
+                         sizes="224px"
+                         width="224"
+                         height="224"
                          loading="eager"
                          decoding="async"
                          class="w-full h-full object-cover" alt="Мариела Разпопова">

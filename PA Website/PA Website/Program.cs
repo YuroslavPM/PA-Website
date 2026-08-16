@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
@@ -116,6 +118,16 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+var bulgarianCulture = new CultureInfo("bg-BG");
+CultureInfo.DefaultThreadCurrentCulture = bulgarianCulture;
+CultureInfo.DefaultThreadCurrentUICulture = bulgarianCulture;
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("bg-BG");
+    options.SupportedCultures = new[] { bulgarianCulture };
+    options.SupportedUICultures = new[] { bulgarianCulture };
+});
+
 // Add Response Compression for better performance (fixes slow server response)
 builder.Services.AddResponseCompression(options =>
 {
@@ -207,6 +219,8 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
+
+app.UseRequestLocalization();
 
 app.UseAuthentication();
 app.UseAuthorization();
