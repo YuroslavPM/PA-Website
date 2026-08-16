@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
+using PA_Website.Helpers;
 using PA_Website.Models;
 
 namespace PA_Website.Services
@@ -82,21 +83,30 @@ namespace PA_Website.Services
                 throw new ArgumentException("Service not found");
 
             ValidateReservationRequest(request, service);
+            var bookingKind = service.GetBookingKind();
 
             var userService = new UserService
             {
                 UserId = request.UserId,
                 ServiceId = request.ServiceId,
-                ReservationDate = service.CategoryOfService.ToLower() == "астрология" 
-                    ? DateTime.MinValue 
-                    : request.ReservationDate ?? DateTime.MinValue,
-                ReservationTime = service.CategoryOfService.ToLower() == "астрология" 
-                    ? null 
-                    : request.ReservationTime,
-                AstrologicalDate = service.CategoryOfService.ToLower() == "астрология" 
-                    ? request.AstrologicalDate 
-                    : DateTime.MinValue,
-                AstrologicalPlaceOfBirth = request.AstrologicalPlaceOfBirth ?? string.Empty,
+                ReservationDate = bookingKind.NeedsAppointment()
+                    ? request.ReservationDate ?? DateTime.Now
+                    : DateTime.Now,
+                ReservationTime = bookingKind.NeedsAppointment()
+                    ? request.ReservationTime
+                    : null,
+                AstrologicalDate = bookingKind.NeedsBirthData()
+                    ? request.AstrologicalDate
+                    : null,
+                AstrologicalPlaceOfBirth = bookingKind.NeedsBirthData()
+                    ? request.AstrologicalPlaceOfBirth ?? string.Empty
+                    : string.Empty,
+                Partner2AstrologicalDate = bookingKind.NeedsDualBirthData()
+                    ? request.Partner2AstrologicalDate
+                    : null,
+                Partner2PlaceOfBirth = bookingKind.NeedsDualBirthData()
+                    ? request.Partner2PlaceOfBirth
+                    : null,
                 Status = "Pending"
             };
 
@@ -123,21 +133,32 @@ namespace PA_Website.Services
             if (service == null)
                 throw new ArgumentException("Service not found");
 
-            // Update properties based on service type
-            if (service.CategoryOfService.ToLower() == "астрология")
+            var bookingKind = service.GetBookingKind();
+
+            if (bookingKind.NeedsAppointment())
             {
-                userService.AstrologicalDate = request.AstrologicalDate;
-                userService.AstrologicalPlaceOfBirth = request.AstrologicalPlaceOfBirth ?? string.Empty;
-                userService.ReservationDate = DateTime.MinValue;
-                userService.ReservationTime = null;
+                userService.ReservationDate = request.ReservationDate ?? DateTime.Now;
+                userService.ReservationTime = request.ReservationTime;
             }
             else
             {
-                userService.ReservationDate = request.ReservationDate ?? DateTime.MinValue;
-                userService.ReservationTime = request.ReservationTime;
-                userService.AstrologicalDate = DateTime.MinValue;
+                userService.ReservationDate = userService.ReservationDate == default ? DateTime.Now : userService.ReservationDate;
+                userService.ReservationTime = null;
+            }
+
+            if (bookingKind.NeedsBirthData())
+            {
+                userService.AstrologicalDate = request.AstrologicalDate;
+                userService.AstrologicalPlaceOfBirth = request.AstrologicalPlaceOfBirth ?? string.Empty;
+            }
+            else
+            {
+                userService.AstrologicalDate = null;
                 userService.AstrologicalPlaceOfBirth = string.Empty;
             }
+
+            userService.Partner2AstrologicalDate = bookingKind.NeedsDualBirthData() ? request.Partner2AstrologicalDate : null;
+            userService.Partner2PlaceOfBirth = bookingKind.NeedsDualBirthData() ? request.Partner2PlaceOfBirth : null;
 
             userService.ServiceId = request.ServiceId;
 
@@ -246,6 +267,8 @@ namespace PA_Website.Services
                 ReservationTime = reservation.ReservationTime,
                 AstrologicalDate = reservation.AstrologicalDate,
                 AstrologicalPlaceOfBirth = reservation.AstrologicalPlaceOfBirth,
+                Partner2AstrologicalDate = reservation.Partner2AstrologicalDate,
+                Partner2PlaceOfBirth = reservation.Partner2PlaceOfBirth,
                 Status = reservation.Status,
                 PricePaid = reservation.PricePaid,
                 AstroCardFileName = reservation.AstroCardFileName,
@@ -269,12 +292,14 @@ namespace PA_Website.Services
                 Status = "Pending",
                 AstrologicalDate = reservation.AstrologicalDate,
                 AstrologicalPlaceOfBirth = reservation.AstrologicalPlaceOfBirth,
+                Partner2AstrologicalDate = reservation.Partner2AstrologicalDate,
+                Partner2PlaceOfBirth = reservation.Partner2PlaceOfBirth,
                 AstroCardFileName = reservation.AstroCardFileName,
                 AstroCardFilePath = reservation.AstroCardFilePath,
                 AstroCardFileSize = reservation.AstroCardFileSize,
                 AstroCardContentType = reservation.AstroCardContentType,
                 AstroCardUploadDate = reservation.AstroCardUploadDate,
-                PricePaid = reservation.PricePaid // Preserve the price paid
+                PricePaid = reservation.PricePaid
             };
 
             _context.userServices.Add(newReservation);
@@ -447,7 +472,7 @@ namespace PA_Website.Services
         {
             foreach (var reservation in reservations)
             {
-                if (reservation.Service.CategoryOfService.ToLower() == "психология" &&
+                if (reservation.Service.NeedsAppointment() &&
                     reservation.Status != "Completed" &&
                     reservation.Status != "Cancelled" &&
                     reservation.ReservationDate.Add(reservation.ReservationTime ?? TimeSpan.Zero).AddHours(1) < DateTime.Now)
@@ -466,20 +491,28 @@ namespace PA_Website.Services
 
         private void ValidateReservationRequest(CreateReservationRequest request, Service service)
         {
-            if (service.CategoryOfService.ToLower() == "астрология")
+            var bookingKind = service.GetBookingKind();
+
+            if (bookingKind.NeedsBirthData())
             {
                 if (!request.AstrologicalDate.HasValue || request.AstrologicalDate.Value == DateTime.MinValue)
-                    throw new ArgumentException("Valid astrological date is required for astrology services");
+                    throw new ArgumentException("Валидна дата и час на раждане са задължителни.");
             }
-            else
+
+            if (bookingKind.NeedsDualBirthData())
             {
-                if (!request.ReservationDate.HasValue || request.ReservationDate.Value < DateTime.Now)
-                    throw new ArgumentException("Future reservation date is required");
+                if (!request.Partner2AstrologicalDate.HasValue || request.Partner2AstrologicalDate.Value == DateTime.MinValue)
+                    throw new ArgumentException("Валидни рождени данни за партньор 2 са задължителни.");
+            }
+
+            if (bookingKind.NeedsAppointment())
+            {
+                if (!request.ReservationDate.HasValue || request.ReservationDate.Value.Date < DateTime.Today)
+                    throw new ArgumentException("Датата на консултация трябва да е в бъдещето.");
 
                 if (!request.ReservationTime.HasValue)
-                    throw new ArgumentException("Reservation time is required");
+                    throw new ArgumentException("Часът на консултация е задължителен.");
 
-                // Check for conflicts
                 var hasConflict = _context.userServices.Any(r => 
                     r.ServiceId == request.ServiceId &&
                     r.ReservationDate == request.ReservationDate.Value.Date &&
@@ -487,7 +520,7 @@ namespace PA_Website.Services
                     r.Status != "Cancelled");
 
                 if (hasConflict)
-                    throw new ArgumentException("Selected time is already booked");
+                    throw new ArgumentException("Избраният час вече е зает.");
             }
         }
 

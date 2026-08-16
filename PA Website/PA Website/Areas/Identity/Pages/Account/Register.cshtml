@@ -329,11 +329,14 @@
                             <div class="form-group">
                                 <label asp-for="Input.Birth_Date" class="form-label">Дата на раждане</label>
                                 <input asp-for="Input.Birth_Date" class="form-control"
-                                       type="date"
-                                       max="@DateTime.Today.AddYears(-16).ToString("yyyy-MM-dd")"
+                                       type="text"
+                                       inputmode="numeric"
+                                       placeholder="дд.мм.гггг"
+                                       lang="bg-BG"
+                                       autocomplete="bday"
                                        aria-required="true"/>
                                 <span asp-validation-for="Input.Birth_Date" class="text-danger"></span>
-                                <small class="text-muted">Трябва да сте навършили поне 16 години</small>
+                                <small class="text-muted">Формат: дд.мм.гггг (например 15.06.1990). Трябва да сте навършили поне 16 години.</small>
                             </div>
 
                             <div class="form-group">
@@ -582,17 +585,39 @@
             
             const birthDateInput = document.getElementById('Input_Birth_Date');
             if (birthDateInput) {
+                birthDateInput.addEventListener('input', function() {
+                    let digits = this.value.replace(/[^\d]/g, '').slice(0, 8);
+                    let formatted = digits;
+                    if (digits.length > 4) {
+                        formatted = digits.slice(0, 2) + '.' + digits.slice(2, 4) + '.' + digits.slice(4);
+                    } else if (digits.length > 2) {
+                        formatted = digits.slice(0, 2) + '.' + digits.slice(2);
+                    }
+                    this.value = formatted;
+                });
+
                 birthDateInput.addEventListener('change', function() {
-                    const selectedDate = new Date(this.value);
+                    const parts = this.value.split('.');
+                    if (parts.length !== 3) {
+                        this.setCustomValidity('Използвайте формат дд.мм.гггг');
+                        return;
+                    }
+
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10);
+                    const year = parseInt(parts[2], 10);
+                    const selectedDate = new Date(year, month - 1, day);
                     const today = new Date();
 
-                    if (selectedDate > today) {
+                    if (isNaN(selectedDate.getTime()) || selectedDate.getDate() !== day || selectedDate.getMonth() !== month - 1) {
+                        this.setCustomValidity('Невалидна дата');
+                    } else if (selectedDate > today) {
                         this.setCustomValidity('Датата на раждане не може да бъде в бъдещето');
                     } else {
                         let age = today.getFullYear() - selectedDate.getFullYear();
-                        if (selectedDate > new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-                            age--;
-                        }
+                        const hadBirthday = today.getMonth() > selectedDate.getMonth() ||
+                            (today.getMonth() === selectedDate.getMonth() && today.getDate() >= selectedDate.getDate());
+                        if (!hadBirthday) age--;
 
                         if (age < 16) {
                             this.setCustomValidity('Трябва да сте навършили поне 16 години');
@@ -633,5 +658,3 @@
     </script>
 }
 
-
-}

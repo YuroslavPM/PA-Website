@@ -428,7 +428,7 @@ namespace PA_Website.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,ServiceId,AstrologicalDate,ReservationDate,ReservationTime")] UserService userService)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,ServiceId,AstrologicalDate,ReservationDate,ReservationTime,AstrologicalPlaceOfBirth,Partner2AstrologicalDate,Partner2PlaceOfBirth")] UserService userService)
         {
             if (id != userService.Id)
                 return NotFound();
@@ -440,7 +440,10 @@ namespace PA_Website.Controllers
                     ServiceId = userService.ServiceId,
                     ReservationDate = userService.ReservationDate,
                     ReservationTime = userService.ReservationTime,
-                    AstrologicalDate = userService.AstrologicalDate
+                    AstrologicalDate = userService.AstrologicalDate,
+                    AstrologicalPlaceOfBirth = userService.AstrologicalPlaceOfBirth,
+                    Partner2AstrologicalDate = userService.Partner2AstrologicalDate,
+                    Partner2PlaceOfBirth = userService.Partner2PlaceOfBirth
                 };
 
                 await _userServiceService.UpdateReservationAsync(id, request);

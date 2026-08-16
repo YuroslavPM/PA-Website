@@ -502,52 +502,73 @@
 
                 @if (user != null)
                 {
+                    var bookingKind = Model.GetBookingKind();
                     <div class="reservation-section">
-                        @if (Model.CategoryOfService.ToLower() == "астрология")
-                        {
-                            <h3 class="reservation-title">Резервация за астрологична консултация</h3>
-                            <form id="reservationForm" method="post" action="/Services/CreateReservation" class="mx-auto" style="max-width: 500px;">
-                                <input type="hidden" name="ServiceId" value="@Model.Id"/>
+                        <h3 class="reservation-title">
+                            @(bookingKind.NeedsAppointment() ? "Резервирай консултация" : "Заяви услуга")
+                        </h3>
+                        <form id="reservationForm" method="post" action="/Services/CreateReservation" class="mx-auto" style="max-width: 500px;">
+                            <input type="hidden" name="ServiceId" value="@Model.Id"/>
+
+                            @if (bookingKind.NeedsDualBirthData())
+                            {
+                                <h4 class="text-lg font-semibold text-primary mb-3">Партньор 1</h4>
                                 <div class="mb-3">
                                     <label for="astrologicalDate" class="form-label">Дата и час на раждане</label>
-                                    <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" required/>
+                                    <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" lang="bg-BG" required/>
+                                    <small class="text-muted">Формат: ден.месец.година и час</small>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="birthCity" class="form-label">Град на раждане</label>
+                                    <input type="text" id="birthCity" name="birthCity" class="form-control" required placeholder="Въведете града на раждане"/>
+                                </div>
+                                <h4 class="text-lg font-semibold text-primary mb-3">Партньор 2</h4>
+                                <div class="mb-3">
+                                    <label for="partner2AstrologicalDate" class="form-label">Дата и час на раждане</label>
+                                    <input type="datetime-local" id="partner2AstrologicalDate" name="partner2AstrologicalDate" class="form-control" lang="bg-BG" required/>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="partner2BirthCity" class="form-label">Град на раждане</label>
+                                    <input type="text" id="partner2BirthCity" name="partner2BirthCity" class="form-control" required placeholder="Въведете града на раждане"/>
+                                </div>
+                            }
+                            else if (bookingKind.NeedsBirthData())
+                            {
+                                <div class="mb-3">
+                                    <label for="astrologicalDate" class="form-label">Дата и час на раждане</label>
+                                    <input type="datetime-local" id="astrologicalDate" name="astrologicalDate" class="form-control" lang="bg-BG" required/>
+                                    <small class="text-muted">Въведете точния час на раждане</small>
                                 </div>
                                 <div class="mb-3">
                                     <label for="birthCity" class="form-label">Град на раждане</label>
                                     <input type="text" id="birthCity" name="birthCity" class="form-control" required placeholder="Въведете града, в който сте родени"/>
                                 </div>
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-service">
-                                        <i class="fas fa-calendar-check me-2"></i> Резервирай
-                                    </button>
+                            }
+
+                            @if (bookingKind.NeedsAppointment())
+                            {
+                                <div class="mb-3 text-center">
+                                    <label for="reservationDate" class="form-label">Изберете дата за консултация:</label>
+                                    <input type="date" id="reservationDate" name="reservationDate" class="form-control mx-auto" style="max-width: 250px;"
+                                           lang="bg-BG" min="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                                    <small class="text-muted">Формат: ден / месец / година</small>
                                 </div>
-                            </form>
-                        }
-                        else
-                        {
-                            <h3 class="reservation-title">Изберете дата и час</h3>
-                            <div class="mb-3 text-center">
-                                <label for="reservationDate" class="form-label">Изберете дата:</label>
-                                <input type="date" id="reservationDate" class="form-control mx-auto" style="max-width: 250px;"
-                                       min="@DateTime.Today.ToString("yyyy-MM-dd")">
-                            </div>
 
-                            <div id="timeSlotsContainer" class="text-center hidden">
-                                <h5 class="mb-3">Свободни часове:</h5>
-                                <div id="timeSlots" class="flex flex-wrap justify-center gap-2 mb-4"></div>
-                            </div>
+                                <div id="timeSlotsContainer" class="text-center hidden">
+                                    <h5 class="mb-3">Свободни часове:</h5>
+                                    <div id="timeSlots" class="flex flex-wrap justify-center gap-2 mb-4"></div>
+                                </div>
 
-                            <div id="errorMessage" class="alert alert-danger text-center hidden mt-3"></div>
-
-                            <form id="timeReservationForm" method="post" action="/Services/CreateReservation" class="hidden text-center">
-                                <input type="hidden" name="ServiceId" value="@Model.Id"/>
-                                <input type="hidden" id="selectedReservationDate" name="reservationDate"/>
+                                <div id="errorMessage" class="alert alert-danger text-center hidden mt-3"></div>
                                 <input type="hidden" id="selectedReservationTime" name="reservationTime"/>
+                            }
+
+                            <div class="text-center">
                                 <button type="submit" id="confirmReservationBtn" class="btn btn-service">
-                                    <i class="fas fa-calendar-check me-2"></i> Потвърди резервация
+                                    <i class="fas fa-calendar-check me-2"></i> Резервирай
                                 </button>
-                            </form>
-                        }
+                            </div>
+                        </form>
                     </div>
                 }
                 else
@@ -584,9 +605,9 @@
             const timeSlotsContainer = document.getElementById("timeSlotsContainer");
             const timeSlotsDiv = document.getElementById("timeSlots");
             const errorDiv = document.getElementById("errorMessage");
-            const timeReservationForm = document.getElementById("timeReservationForm");
-            const selectedDateInput = document.getElementById("selectedReservationDate");
+            const reservationForm = document.getElementById("reservationForm");
             const selectedTimeInput = document.getElementById("selectedReservationTime");
+            const confirmBtn = document.getElementById("confirmReservationBtn");
 
             if (reservationDateInput) {
                 reservationDateInput.addEventListener("change", function() {
@@ -598,12 +619,12 @@
                         .then(data => {
                             timeSlotsDiv.innerHTML = "";
                             errorDiv.classList.add("hidden");
+                            if (selectedTimeInput) selectedTimeInput.value = "";
 
                             if (!data.success) {
                                 errorDiv.textContent = data.message;
                                 errorDiv.classList.remove("hidden");
                                 timeSlotsContainer.classList.add("hidden");
-                                timeReservationForm.classList.add("hidden");
                                 return;
                             }
 
@@ -611,7 +632,6 @@
                                 errorDiv.textContent = "Няма свободни часове за избраната дата.";
                                 errorDiv.classList.remove("hidden");
                                 timeSlotsContainer.classList.add("hidden");
-                                timeReservationForm.classList.add("hidden");
                                 return;
                             }
 
@@ -627,10 +647,7 @@
                                     });
                                     this.classList.remove('btn-outline-service');
                                     this.classList.add('btn-service');
-
-                                    selectedDateInput.value = selectedDate;
                                     selectedTimeInput.value = time;
-                                    timeReservationForm.classList.remove("hidden");
                                 };
                                 timeSlotsDiv.appendChild(button);
                             });
@@ -642,20 +659,18 @@
                             errorDiv.textContent = "Възникна грешка при зареждането на часовете.";
                             errorDiv.classList.remove("hidden");
                             timeSlotsContainer.classList.add("hidden");
-                            timeReservationForm.classList.add("hidden");
                         });
                 });
             }
 
-            if (timeReservationForm) {
-                timeReservationForm.addEventListener("submit", function(e) {
-                    if (!selectedDateInput.value || !selectedTimeInput.value) {
+            if (reservationForm) {
+                reservationForm.addEventListener("submit", function(e) {
+                    if (reservationDateInput && (!reservationDateInput.value || !selectedTimeInput.value)) {
                         e.preventDefault();
-                        alert("Моля, изберете дата и час преди да резервирате.");
+                        alert("Моля, изберете дата и час за консултация преди да резервирате.");
                     }
                 });
             }
-
         });
     </script>
 }

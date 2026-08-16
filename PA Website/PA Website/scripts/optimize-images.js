@@ -12,12 +12,12 @@ const IMAGES_DIR = path.join(__dirname, '..', 'wwwroot', 'Images', 'siteImg');
 
 // Image optimization configurations
 const imageConfigs = [
-    // Author image - used at 160px, 256px, 320px, 384px (with 2x for retina)
+    // Author image - keep a large canonical file for Google, plus display sizes
     {
         source: 'Author.webp',
-        sizes: [160, 256, 320, 384],
+        sizes: [160, 256, 320, 384, 800, 1200],
         suffix: (size) => `-${size}`,
-        quality: 85
+        quality: 88
     },
     // Logo image - used at 80px, 96px, 112px (with 2x for retina)
     {
@@ -77,7 +77,7 @@ async function main() {
     
     console.log('\n✨ Image optimization complete!');
     console.log('\nGenerated responsive images for:');
-    console.log('  - Author.webp: 160px, 256px, 320px, 384px variants');
+    console.log('  - Author.webp: 160px, 256px, 320px, 384px, 800px, 1200px variants');
     console.log('  - logo.webp: 80px, 96px, 112px variants');
 }
 
@@ -85,4 +85,14 @@ main().catch(error => {
     console.error('Fatal error:', error);
     process.exit(1);
 });
+
+
+
+
+
+
+
+
+
+
 

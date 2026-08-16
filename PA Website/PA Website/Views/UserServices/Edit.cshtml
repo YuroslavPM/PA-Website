@@ -203,15 +203,37 @@
             </div>
                     
             <div class="form-group">
-                        <label asp-for="ReservationDate" class="form-label">Дата на резервация</label>
-                        <input asp-for="ReservationDate" class="form-input" type="date" />
+                        <label asp-for="ReservationDate" class="form-label">Дата на консултация</label>
+                        <input asp-for="ReservationDate" class="form-input" type="date" lang="bg-BG" />
                 <span asp-validation-for="ReservationDate" class="text-danger"></span>
             </div>
                     
             <div class="form-group">
-                        <label asp-for="ReservationTime" class="form-label">Час на резервация</label>
+                        <label asp-for="ReservationTime" class="form-label">Час на консултация</label>
                         <input asp-for="ReservationTime" class="form-input" type="time" />
                 <span asp-validation-for="ReservationTime" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                        <label asp-for="AstrologicalDate" class="form-label">Дата и час на раждане</label>
+                        <input asp-for="AstrologicalDate" class="form-input" type="datetime-local" lang="bg-BG" />
+                <span asp-validation-for="AstrologicalDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                        <label asp-for="AstrologicalPlaceOfBirth" class="form-label">Място на раждане</label>
+                        <input asp-for="AstrologicalPlaceOfBirth" class="form-input" />
+                <span asp-validation-for="AstrologicalPlaceOfBirth" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                        <label asp-for="Partner2AstrologicalDate" class="form-label">Партньор 2 — дата и час на раждане</label>
+                        <input asp-for="Partner2AstrologicalDate" class="form-input" type="datetime-local" lang="bg-BG" />
+            </div>
+
+            <div class="form-group">
+                        <label asp-for="Partner2PlaceOfBirth" class="form-label">Партньор 2 — място на раждане</label>
+                        <input asp-for="Partner2PlaceOfBirth" class="form-input" />
             </div>
 
                     <div class="action-buttons">

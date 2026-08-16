@@ -19,6 +19,8 @@ namespace PA_Website.Models
         public TimeSpan? ReservationTime { get; set; }
         public DateTime? AstrologicalDate { get; set; }
         public string? AstrologicalPlaceOfBirth { get; set; }
+        public DateTime? Partner2AstrologicalDate { get; set; }
+        public string? Partner2PlaceOfBirth { get; set; }
     }
 
     public class UpdateReservationRequest
@@ -28,6 +30,8 @@ namespace PA_Website.Models
         public TimeSpan? ReservationTime { get; set; }
         public DateTime? AstrologicalDate { get; set; }
         public string? AstrologicalPlaceOfBirth { get; set; }
+        public DateTime? Partner2AstrologicalDate { get; set; }
+        public string? Partner2PlaceOfBirth { get; set; }
     }
 
     public class RescheduleRequest

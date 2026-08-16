@@ -10,11 +10,14 @@ namespace PA_Website.Models
         [ForeignKey("UserId")]
         public string? UserId { get; set; }
         public int ServiceId { get; set; }
-        public DateTime? AstrologicalDate { get; set; } // Add this property
+        public DateTime? AstrologicalDate { get; set; }
         public DateTime ReservationDate { get; set; }
         public TimeSpan? ReservationTime { get; set; }
 
         public string AstrologicalPlaceOfBirth { get; set; }
+
+        public DateTime? Partner2AstrologicalDate { get; set; }
+        public string? Partner2PlaceOfBirth { get; set; }
 
         public string Status { get; set; } = "Pending";
 

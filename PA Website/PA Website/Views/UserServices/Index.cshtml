@@ -534,9 +534,15 @@
                                 <div class="info-item">
                                     <div class="flex items-center gap-3 mb-2">
                                         <i class="fas fa-clock text-purple-500 text-lg"></i>
-                                        <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Час</label>
+                                        <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                                            @(reservation.Service.NeedsAppointment() ? "Час на консултация" : "Час")
+                                        </label>
                                     </div>
-                                    <p class="text-gray-800 font-medium text-lg">@(reservation.ReservationTime?.ToString(@"hh\:mm") ?? "Не е посочен")</p>
+                                    <p class="text-gray-800 font-medium text-lg">
+                                        @(reservation.Service.NeedsAppointment()
+                                            ? (reservation.ReservationTime?.ToString(@"hh\:mm") ?? "Не е посочен")
+                                            : (reservation.AstrologicalDate?.ToString("HH:mm") ?? "Не е посочен"))
+                                    </p>
                                 </div>
                                 
                                 @if (reservation.AstrologicalDate.HasValue)
@@ -544,22 +550,48 @@
                                     <div class="info-item">
                                         <div class="flex items-center gap-3 mb-2">
                                             <i class="fas fa-star text-purple-500 text-lg"></i>
-                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Астрологическа дата</label>
+                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                                                @(reservation.Service.NeedsDualBirthData() ? "Партньор 1 — дата и час на раждане" : "Дата и час на раждане")
+                                            </label>
                                         </div>
-                                        <p class="text-gray-800 font-medium text-lg">@reservation.AstrologicalDate.Value.ToString("dd.MM.yyyy")</p>
+                                        <p class="text-gray-800 font-medium text-lg">@reservation.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm")</p>
                                         </div>
                                     }
+
+                                @if (reservation.Partner2AstrologicalDate.HasValue)
+                                {
+                                    <div class="info-item">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <i class="fas fa-star text-purple-500 text-lg"></i>
+                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Партньор 2 — дата и час на раждане</label>
+                                        </div>
+                                        <p class="text-gray-800 font-medium text-lg">@reservation.Partner2AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm")</p>
+                                    </div>
+                                }
                                 
                                 @if (!string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth))
                                     {
                                     <div class="info-item">
                                         <div class="flex items-center gap-3 mb-2">
                                             <i class="fas fa-map-marker-alt text-purple-500 text-lg"></i>
-                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Място на раждане</label>
+                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                                                @(reservation.Service.NeedsDualBirthData() ? "Партньор 1 — място на раждане" : "Място на раждане")
+                                            </label>
                                         </div>
                                         <p class="text-gray-800 font-medium text-lg">@reservation.AstrologicalPlaceOfBirth</p>
                                         </div>
                                     }
+
+                                @if (!string.IsNullOrEmpty(reservation.Partner2PlaceOfBirth))
+                                {
+                                    <div class="info-item">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <i class="fas fa-map-marker-alt text-purple-500 text-lg"></i>
+                                            <label class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Партньор 2 — място на раждане</label>
+                                        </div>
+                                        <p class="text-gray-800 font-medium text-lg">@reservation.Partner2PlaceOfBirth</p>
+                                    </div>
+                                }
                                 
                                 @if (!string.IsNullOrEmpty(reservation.AstroCardFileName))
                                 {
