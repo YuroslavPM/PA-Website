@@ -41,19 +41,23 @@
                 <td>@item.Service.NameService</td>
                 <td>@item.Service.CategoryOfService</td>
                 <td>
-                    @if (item.Service.CategoryOfService.ToLower() == "астрология")
-                    {
-                        @(item.AstrologicalDate?.ToString("dd.MM.yyyy") ?? "-")
-                    }
-                    else
+                    @if (item.Service.NeedsAppointment())
                     {
                         @item.ReservationDate.ToString("dd.MM.yyyy")
                     }
+                    else
+                    {
+                        @(item.AstrologicalDate?.ToString("dd.MM.yyyy HH:mm") ?? "-")
+                    }
                 </td>
                 <td>
-                    @if (item.Service.CategoryOfService.ToLower() != "астрология" && item.ReservationTime.HasValue)
+                    @if (item.Service.NeedsAppointment() && item.ReservationTime.HasValue)
                     {
                         @item.ReservationTime.Value.ToString(@"hh\:mm")
+                    }
+                    else if (item.AstrologicalDate.HasValue)
+                    {
+                        @item.AstrologicalDate.Value.ToString("HH:mm")
                     }
                     else
                     {

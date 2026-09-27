@@ -37,7 +37,20 @@
     <meta property="og:description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа")" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="bg_BG" />
-    <meta property="og:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")" />
+    @{
+        var ogImage = ViewData["Image"] as string ?? "/Images/siteImg/Author.webp";
+        if (!ogImage.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            ogImage = $"{Context.Request.Scheme}://{Context.Request.Host}{ogImage}";
+        }
+        var ogWidth = ViewData["ImageWidth"] as string ?? "1584";
+        var ogHeight = ViewData["ImageHeight"] as string ?? "2376";
+    }
+    <meta property="og:image" content="@ogImage" />
+    <meta property="og:image:width" content="@ogWidth" />
+    <meta property="og:image:height" content="@ogHeight" />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:alt" content="Мариела Разпопова - психолог и астролог" />
     <meta property="og:url" content="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
     
     <!-- Twitter Card Meta Tags -->
@@ -45,7 +58,7 @@
     <meta name="twitter:site" content="@@dushevnamozaika" />
     <meta name="twitter:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} - Душевна Мозайка" : "Душевна Мозайка")" />
     <meta name="twitter:description" content="@(ViewData["Description"] as string ?? "Душевна Мозайка - Вашето място за астрологични консултации и психологическа подкрепа")" />
-    <meta name="twitter:image" content="@(ViewData["Image"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")" />
+    <meta name="twitter:image" content="@(ViewData["Image"] is string twImg && twImg.StartsWith("http") ? twImg : $"{Context.Request.Scheme}://{Context.Request.Host}{(ViewData["Image"] as string ?? "/Images/siteImg/Author.webp")}")" />
     @{
         ViewBag.TinyMceApiKey = Configuration["TinyMCE:ApiKey"];
     }

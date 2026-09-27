@@ -23,9 +23,9 @@ namespace PA_Website.Controllers
         private readonly IPromotionService _promotionService;
         private readonly IConfiguration _configuration;
         private readonly IImageService _imageService;
+        private readonly IEmailService _emailService;
 
         // Constants
-        private const string AstrologyCategory = "астрология";
         private const string PendingStatus = "Pending";
         private const string CancelledStatus = "Cancelled";
         private const string FirstBookingPromotionType = "FirstBooking";
@@ -36,7 +36,8 @@ namespace PA_Website.Controllers
             UserManager<User> userManager,
             IConfiguration configuration, 
             IPromotionService promotionService,
-            IImageService imageService)
+            IImageService imageService,
+            IEmailService emailService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
@@ -44,6 +45,7 @@ namespace PA_Website.Controllers
             _promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
         }
 
         #region Public Actions
@@ -97,7 +99,6 @@ namespace PA_Website.Controllers
 
                 int totalRecords = services.Count;
                 var pagedServices = services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-
                 var promotionData = await GetPromotionDataAsync();
 
                 ViewBag.FirstBookingPromo = promotionData.FirstBookingPromo;
@@ -329,7 +330,9 @@ namespace PA_Website.Controllers
             string reservationDate,
             string reservationTime, 
             string astrologicalDate, 
-            string birthCity)
+            string birthCity,
+            string partner2AstrologicalDate,
+            string partner2BirthCity)
         {
             try
             {
@@ -344,33 +347,46 @@ namespace PA_Website.Controllers
                 if (service == null)
                     return NotFound();
 
-                var validationResult = ValidateReservationInput(reservationDate, reservationTime, astrologicalDate);
+                var bookingKind = service.GetBookingKind();
+                var validationResult = ValidateReservationInput(bookingKind, reservationDate, reservationTime, astrologicalDate, partner2AstrologicalDate);
                 if (!validationResult.IsValid)
                 {
                     SetErrorMessage(validationResult.ErrorMessage);
                     return RedirectToAction("Details", new { id = service.Slug });
                 }
 
-                var reservationDateTime = ParseReservationDateTime(service, reservationDate, reservationTime, astrologicalDate);
-                if (reservationDateTime == null)
+                var parsed = ParseReservationFields(bookingKind, reservationDate, reservationTime, astrologicalDate, partner2AstrologicalDate);
+                if (!parsed.IsValid)
                 {
-                    SetErrorMessage("Невалиден формат на датата или часа.");
+                    SetErrorMessage(parsed.ErrorMessage);
                     return RedirectToAction("Details", new { id = service.Slug });
                 }
 
-                var reservationValidation = await ValidateReservationAsync(user, service, reservationDateTime.Value);
-                if (!reservationValidation.IsValid)
+                if (bookingKind.NeedsAppointment() && parsed.AppointmentDateTime.HasValue)
                 {
-                    SetErrorMessage(reservationValidation.ErrorMessage);
-                    return RedirectToAction("Details", new { id = service.Slug });
+                    var reservationValidation = await ValidateReservationAsync(user, service, parsed.AppointmentDateTime.Value);
+                    if (!reservationValidation.IsValid)
+                    {
+                        SetErrorMessage(reservationValidation.ErrorMessage);
+                        return RedirectToAction("Details", new { id = service.Slug });
+                    }
                 }
 
-                var reservation = await CreateUserServiceAsync(user, service, reservationDateTime.Value, reservationTime, birthCity);
-                await SendReservationEmailAsync(user, service, reservationDateTime.Value, birthCity);
+                var reservation = await CreateUserServiceAsync(
+                    user,
+                    service,
+                    bookingKind,
+                    parsed,
+                    reservationTime,
+                    birthCity,
+                    partner2BirthCity);
+
+                await SendReservationEmailAsync(user, service, reservation);
+                await _emailService.SendAdminNotificationAsync(user, reservation, service, "created");
 
                 return View("ReservationSuccess");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 SetErrorMessage("Възникна грешка при създаването на резервацията.");
                 return RedirectToAction("Index");
@@ -512,9 +528,9 @@ namespace PA_Website.Controllers
             var result = await _imageService.OptimizeAndSaveAsync(
                 imageFile,
                 "services",
-                maxWidth: 800,
-                maxHeight: 600,
-                quality: 80);
+                maxWidth: 1920,
+                maxHeight: 1080,
+                quality: 85);
 
             return new ImageUploadResult
             {
@@ -550,10 +566,15 @@ namespace PA_Website.Controllers
             await _context.SaveChangesAsync();
         }
 
-        private ValidationResult ValidateReservationInput(string reservationDate, string reservationTime, string astrologicalDate)
+        private ValidationResult ValidateReservationInput(
+            ServiceBookingKind bookingKind,
+            string reservationDate,
+            string reservationTime,
+            string astrologicalDate,
+            string partner2AstrologicalDate)
         {
-            if ((string.IsNullOrEmpty(reservationDate) || string.IsNullOrEmpty(reservationTime)) &&
-                string.IsNullOrEmpty(astrologicalDate))
+            if (bookingKind.NeedsAppointment() &&
+                (string.IsNullOrWhiteSpace(reservationDate) || string.IsNullOrWhiteSpace(reservationTime)))
             {
                 return new ValidationResult
                 {
@@ -562,31 +583,73 @@ namespace PA_Website.Controllers
                 };
             }
 
+            if (bookingKind.NeedsBirthData() && string.IsNullOrWhiteSpace(astrologicalDate))
+            {
+                return new ValidationResult
+                {
+                    IsValid = false,
+                    ErrorMessage = "Трябва да въведете дата и час на раждане."
+                };
+            }
+
+            if (bookingKind.NeedsDualBirthData() && string.IsNullOrWhiteSpace(partner2AstrologicalDate))
+            {
+                return new ValidationResult
+                {
+                    IsValid = false,
+                    ErrorMessage = "Трябва да въведете рождени данни за партньор 2."
+                };
+            }
+
             return new ValidationResult { IsValid = true };
         }
 
-        private DateTime? ParseReservationDateTime(Service service, string reservationDate, string reservationTime, string astrologicalDate)
+        private ParsedReservation ParseReservationFields(
+            ServiceBookingKind bookingKind,
+            string reservationDate,
+            string reservationTime,
+            string astrologicalDate,
+            string partner2AstrologicalDate)
         {
-            try
+            var parsed = new ParsedReservation { IsValid = true };
+
+            if (bookingKind.NeedsAppointment())
             {
-                if (service.CategoryOfService.ToLower() == AstrologyCategory)
+                if (!BulgarianDate.TryParseDate(reservationDate, out var date) ||
+                    !TimeSpan.TryParse(reservationTime, out var time))
                 {
-                    return DateTime.ParseExact(astrologicalDate, "yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture);
+                    return new ParsedReservation { IsValid = false, ErrorMessage = "Невалиден формат на датата или часа за консултация." };
                 }
-                else
-                {
-                    return DateTime.ParseExact($"{reservationDate} {reservationTime}", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-                }
+
+                parsed.AppointmentDateTime = date.Date.Add(time);
             }
-            catch
+
+            if (bookingKind.NeedsBirthData())
             {
-                return null;
+                if (!BulgarianDate.TryParseDateTime(astrologicalDate, out var birthDateTime))
+                {
+                    return new ParsedReservation { IsValid = false, ErrorMessage = "Невалиден формат на датата и часа на раждане." };
+                }
+
+                parsed.BirthDateTime = birthDateTime;
             }
+
+            if (bookingKind.NeedsDualBirthData())
+            {
+                if (!BulgarianDate.TryParseDateTime(partner2AstrologicalDate, out var partner2DateTime))
+                {
+                    return new ParsedReservation { IsValid = false, ErrorMessage = "Невалиден формат на рождените данни за партньор 2." };
+                }
+
+                parsed.Partner2BirthDateTime = partner2DateTime;
+            }
+
+            return parsed;
         }
 
         private async Task<ValidationResult> ValidateReservationAsync(User user, Service service, DateTime reservationDateTime)
         {
-            if (service.CategoryOfService.ToLower() == AstrologyCategory)
+            if (!service.NeedsAppointment())
                 return new ValidationResult { IsValid = true };
 
             var lastActiveReservation = await _context.userServices
@@ -627,37 +690,38 @@ namespace PA_Website.Controllers
             return date1.Year == date2.Year && week1 == week2;
         }
 
-        private async Task<UserService> CreateUserServiceAsync(User user, Service service, DateTime reservationDateTime, string reservationTime, string birthCity)
+        private async Task<UserService> CreateUserServiceAsync(
+            User user,
+            Service service,
+            ServiceBookingKind bookingKind,
+            ParsedReservation parsed,
+            string reservationTime,
+            string birthCity,
+            string partner2BirthCity)
         {
             var (pricePaid, usedPromotions) = await _promotionService.CalculatePricePaidWithTracking(user.Id, service);
 
-            UserService reservation;
-            if (service.CategoryOfService.ToLower() == AstrologyCategory)
+            TimeSpan? appointmentTime = null;
+            if (bookingKind.NeedsAppointment() && !string.IsNullOrWhiteSpace(reservationTime) && TimeSpan.TryParse(reservationTime, out var parsedTime))
             {
-                reservation = new UserService
-                {
-                    UserId = user.Id,
-                    ServiceId = service.Id,
-                    AstrologicalDate = reservationDateTime,
-                    ReservationTime = null,
-                    AstrologicalPlaceOfBirth = birthCity,
-                    Status = PendingStatus,
-                    PricePaid = pricePaid
-                };
+                appointmentTime = parsedTime;
             }
-            else
+
+            var reservation = new UserService
             {
-                reservation = new UserService
-                {
-                    UserId = user.Id,
-                    ServiceId = service.Id,
-                    ReservationDate = reservationDateTime,
-                    ReservationTime = TimeSpan.Parse(reservationTime),
-                    AstrologicalPlaceOfBirth = "",
-                    Status = PendingStatus,
-                    PricePaid = pricePaid
-                };
-            }
+                UserId = user.Id,
+                ServiceId = service.Id,
+                ReservationDate = bookingKind.NeedsAppointment()
+                    ? parsed.AppointmentDateTime ?? DateTime.Now
+                    : DateTime.Now,
+                ReservationTime = appointmentTime,
+                AstrologicalDate = bookingKind.NeedsBirthData() ? parsed.BirthDateTime : null,
+                AstrologicalPlaceOfBirth = bookingKind.NeedsBirthData() ? birthCity ?? string.Empty : string.Empty,
+                Partner2AstrologicalDate = bookingKind.NeedsDualBirthData() ? parsed.Partner2BirthDateTime : null,
+                Partner2PlaceOfBirth = bookingKind.NeedsDualBirthData() ? partner2BirthCity : null,
+                Status = PendingStatus,
+                PricePaid = pricePaid
+            };
 
             _context.userServices.Add(reservation);
             await _context.SaveChangesAsync();
@@ -679,25 +743,43 @@ namespace PA_Website.Controllers
             return reservation;
         }
 
-        private async Task SendReservationEmailAsync(User user, Service service, DateTime reservationDateTime, string birthCity)
+        private async Task SendReservationEmailAsync(User user, Service service, UserService reservation)
 {
     if (string.IsNullOrEmpty(user.Email))
         return;
 
     var subject = "Потвърждение на резервация";
     var iban = "BG89CECB979010G3001000";
-    
-    var dateInfo = service.CategoryOfService.ToLower() == AstrologyCategory
-        ? $"<li>Дата за астрологичен анализ: {reservationDateTime:dd.MM.yyyy HH:mm}</li>"
-        : $"<li>Дата на консултация: {reservationDateTime:dd.MM.yyyy HH:mm}</li>";
-    
-    var birthCityInfo = service.CategoryOfService.ToLower() == AstrologyCategory && !string.IsNullOrEmpty(birthCity)
-        ? $"<li>Място на раждане: {birthCity}</li>"
-        : string.Empty;
+    var bookingKind = service.GetBookingKind();
 
-    var paymentDeadline = service.CategoryOfService.ToLower() == AstrologyCategory
-        ? "в рамките на 3 работни дни"
-        : "най-късно 2 работни дни преди датата на консултацията";
+    var details = new List<string>();
+    if (bookingKind.NeedsAppointment() && reservation.ReservationTime.HasValue)
+    {
+        details.Add($"<li>Дата на консултация: {reservation.ReservationDate:dd.MM.yyyy} в {reservation.ReservationTime.Value:hh\\:mm}</li>");
+    }
+
+    if (bookingKind.NeedsDualBirthData())
+    {
+        details.Add($"<li>Партньор 1 — дата и час на раждане: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>");
+        if (!string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth))
+            details.Add($"<li>Партньор 1 — място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>");
+        details.Add($"<li>Партньор 2 — дата и час на раждане: {reservation.Partner2AstrologicalDate:dd.MM.yyyy HH:mm}</li>");
+        if (!string.IsNullOrEmpty(reservation.Partner2PlaceOfBirth))
+            details.Add($"<li>Партньор 2 — място на раждане: {reservation.Partner2PlaceOfBirth}</li>");
+    }
+    else if (bookingKind.NeedsBirthData())
+    {
+        details.Add($"<li>Дата и час на раждане: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>");
+        if (!string.IsNullOrEmpty(reservation.AstrologicalPlaceOfBirth))
+            details.Add($"<li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>");
+    }
+
+    var dateInfo = string.Join(Environment.NewLine, details);
+    var birthCityInfo = string.Empty;
+
+    var paymentDeadline = bookingKind.NeedsAppointment()
+        ? "най-късно 2 работни дни преди датата на консултацията"
+        : "в рамките на 3 работни дни";
 
     var htmlMessage = $@"
 <h3>Здравей, {user.FName}!</h3>
@@ -753,6 +835,15 @@ namespace PA_Website.Controllers
             public Promotion? FirstBookingPromo { get; set; }
             public bool IsEligible { get; set; }
             public object? DebugInfo { get; set; }
+        }
+
+        private class ParsedReservation
+        {
+            public bool IsValid { get; set; }
+            public string ErrorMessage { get; set; } = string.Empty;
+            public DateTime? AppointmentDateTime { get; set; }
+            public DateTime? BirthDateTime { get; set; }
+            public DateTime? Partner2BirthDateTime { get; set; }
         }
 
         #endregion

@@ -415,15 +415,33 @@
                                         <div class="reservation-meta-label">Категория</div>
                                         <div class="reservation-meta-value">@item.Service.CategoryOfService</div>
                                     </div>
-                                    @if(item.Service.CategoryOfService.ToLower() == "психология"){
+                                    @if(item.Service.NeedsAppointment()){
                                     <div class="reservation-meta-item">
-                                        <div class="reservation-meta-label">Дата на резервация</div>
+                                        <div class="reservation-meta-label">Дата на консултация</div>
                                         <div class="reservation-meta-value">
                                             @item.ReservationDate.ToString("dd.MM.yyyy")
                                             @if(item.ReservationTime.HasValue)
                                             {
                                                 <span>@item.ReservationTime.Value.ToString(@"hh\:mm")</span>
                                             }
+                                        </div>
+                                    </div>
+                                    }
+                                    @if (item.Service.NeedsBirthData())
+                                    {
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">@(item.Service.NeedsDualBirthData() ? "Партньор 1 раждане" : "Дата и час на раждане")</div>
+                                        <div class="reservation-meta-value">
+                                            @(item.AstrologicalDate?.ToString("dd.MM.yyyy HH:mm") ?? "—")
+                                        </div>
+                                    </div>
+                                    }
+                                    @if (item.Service.NeedsDualBirthData())
+                                    {
+                                    <div class="reservation-meta-item">
+                                        <div class="reservation-meta-label">Партньор 2 раждане</div>
+                                        <div class="reservation-meta-value">
+                                            @(item.Partner2AstrologicalDate?.ToString("dd.MM.yyyy HH:mm") ?? "—")
                                         </div>
                                     </div>
                                     }

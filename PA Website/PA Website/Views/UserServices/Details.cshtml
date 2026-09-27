@@ -364,15 +364,15 @@
                         <div class="details-value">@Html.DisplayFor(model => model.Service.CategoryOfService)</div>
                     </div>
 
-                    @if (Model.Service.CategoryOfService.ToLower() == "психология")
+                    @if (Model.Service.NeedsAppointment())
                     {
                         <div class="details-item">
-                            <div class="details-label">Дата на резервация</div>
+                            <div class="details-label">Дата на консултация</div>
                             <div class="details-value">@Model.ReservationDate.ToString("dd.MM.yyyy")</div>
                         </div>
 
                         <div class="details-item">
-                            <div class="details-label">Час на резервация</div>
+                            <div class="details-label">Час на консултация</div>
                             <div class="details-value">
                                 @if(Model.ReservationTime.HasValue)
                                 {
@@ -385,14 +385,39 @@
                             </div>
                         </div>
                     }
-                    else
+
+                    @if (Model.Service.NeedsBirthData())
                     {
                         <div class="details-item">
-                            <div class="details-label">Рожденна дата за астрология</div>
+                            <div class="details-label">@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — дата и час на раждане" : "Дата и час на раждане")</div>
                             <div class="details-value">
-                                @(Model.AstrologicalDate.HasValue ? Model.AstrologicalDate.Value.ToString("dd.MM.yyyy") : "—")
+                                @(Model.AstrologicalDate.HasValue ? Model.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")
                             </div>
                         </div>
+                        @if (!string.IsNullOrEmpty(Model.AstrologicalPlaceOfBirth))
+                        {
+                            <div class="details-item">
+                                <div class="details-label">@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — място на раждане" : "Място на раждане")</div>
+                                <div class="details-value">@Model.AstrologicalPlaceOfBirth</div>
+                            </div>
+                        }
+                    }
+
+                    @if (Model.Service.NeedsDualBirthData())
+                    {
+                        <div class="details-item">
+                            <div class="details-label">Партньор 2 — дата и час на раждане</div>
+                            <div class="details-value">
+                                @(Model.Partner2AstrologicalDate.HasValue ? Model.Partner2AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Partner2PlaceOfBirth))
+                        {
+                            <div class="details-item">
+                                <div class="details-label">Партньор 2 — място на раждане</div>
+                                <div class="details-value">@Model.Partner2PlaceOfBirth</div>
+                            </div>
+                        }
                     }
 
                     <div class="details-item">
