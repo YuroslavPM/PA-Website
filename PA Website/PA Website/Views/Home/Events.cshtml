@@ -1,0 +1,28 @@
+@{
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="h-56 sm:h-80 overflow-hidden">
+                <img src="/Images/siteImg/events-coming-soon.png"
+                     alt="Очаквайте скоро — групи и събития на Душевна Мозайка"
+                     class="w-full h-full object-cover object-top"
+                     width="1536" height="1024" />
+            </div>
+            <div class="text-center px-6 sm:px-12 py-12 sm:py-16">
+                <p class="text-secondary font-medium mb-3">Групи и събития</p>
+                <h1 class="font-playfair text-4xl sm:text-5xl font-bold text-primary mb-6">Очаквайте скоро</h1>
+                <p class="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-xl mx-auto mb-10">
+                    Тук ще се появяват предстоящите групи, срещи и събития. Страницата остава постоянна част от сайта — записите ще се публикуват с кратко описание и пълна информация.
+                </p>
+                <a href="@Url.Action("Index", "Home")"
+                   class="inline-flex items-center border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 rounded-full font-medium transition-all duration-300">
+                    <i class="fas fa-home mr-3"></i>
+                    Начална страница
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

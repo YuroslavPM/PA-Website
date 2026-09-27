@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
 using PA_Website.Models;
+using PA_Website.Helpers;
 using SimpleMvcSitemap;
 
 namespace PA_Website.Controllers
@@ -143,6 +144,34 @@ Sitemap: {sitemapUrl}";
                     LastModificationDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 });
 
+                nodes.Add(new SitemapNode(baseUrl + Url.Action("Program", "Home"))
+                {
+                    ChangeFrequency = ChangeFrequency.Monthly,
+                    Priority = (decimal?)0.8,
+                    LastModificationDate = new DateTime(2026, 9, 6, 0, 0, 0, DateTimeKind.Utc)
+                });
+
+                nodes.Add(new SitemapNode(baseUrl + Url.Action("Events", "Home"))
+                {
+                    ChangeFrequency = ChangeFrequency.Weekly,
+                    Priority = (decimal?)0.7,
+                    LastModificationDate = new DateTime(2026, 9, 6, 0, 0, 0, DateTimeKind.Utc)
+                });
+
+                nodes.Add(new SitemapNode(baseUrl + Url.Action("Psychology", "Services"))
+                {
+                    ChangeFrequency = ChangeFrequency.Weekly,
+                    Priority = (decimal?)0.9,
+                    LastModificationDate = new DateTime(2026, 9, 6, 0, 0, 0, DateTimeKind.Utc)
+                });
+
+                nodes.Add(new SitemapNode(baseUrl + Url.Action("Astrology", "Services"))
+                {
+                    ChangeFrequency = ChangeFrequency.Weekly,
+                    Priority = (decimal?)0.9,
+                    LastModificationDate = new DateTime(2026, 9, 6, 0, 0, 0, DateTimeKind.Utc)
+                });
+
                 // Services index
                 var services = await _context.Service.ToListAsync();
                 var latestServiceDate = services.Any()
@@ -155,7 +184,7 @@ Sitemap: {sitemapUrl}";
                     LastModificationDate = latestServiceDate
                 });
 
-                foreach (var service in services)
+                foreach (var service in services.Where(s => s.IsPublicCatalogService()))
                 {
                     nodes.Add(new SitemapNode(baseUrl + Url.Action("Details", "Services", new { id = !string.IsNullOrEmpty(service.Slug) ? service.Slug : service.Id.ToString() }))
                     {

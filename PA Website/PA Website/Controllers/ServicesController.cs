@@ -50,26 +50,70 @@ namespace PA_Website.Controllers
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 9)
         {
+            if (!User.IsInRole("Admin"))
+            {
+                ViewBag.ShowPathHub = true;
+                ViewBag.PathCards = SitePathCatalog.Create(Url);
+                ViewData["Title"] = "Услуги";
+                ViewData["Description"] = "Избери своя път към себепознанието.";
+                return View(Enumerable.Empty<Service>());
+            }
+
+            return await RenderCatalogAsync(null, "Услуги", "Избери услугата, която най-силно резонира с теб в момента.", "Index", pageNumber, pageSize);
+        }
+
+        public Task<IActionResult> Psychology(int pageNumber = 1, int pageSize = 9)
+            => RenderCatalogAsync(
+                ServicePublicGroup.Psychology,
+                "Психологично консултиране",
+                "Индивидуално пространство за разговор, осмисляне и подкрепа.",
+                nameof(Psychology),
+                pageNumber,
+                pageSize);
+
+        public Task<IActionResult> Astrology(int pageNumber = 1, int pageSize = 9)
+            => RenderCatalogAsync(
+                ServicePublicGroup.Astrology,
+                "Астрологични услуги",
+                "Поглед към вътрешния свят през символния език на астрологията.",
+                nameof(Astrology),
+                pageNumber,
+                pageSize);
+
+        private async Task<IActionResult> RenderCatalogAsync(
+            ServicePublicGroup? group,
+            string title,
+            string subtitle,
+            string actionName,
+            int pageNumber,
+            int pageSize)
+        {
             try
             {
-                var services = _context.Service
-                    .OrderBy(s => s.NameService)
-                    .AsQueryable();
+                var services = (await _context.Service.ToListAsync())
+                    .Where(s => group is null || s.GetPublicGroup() == group)
+                    .OrderForDisplay()
+                    .ToList();
 
-                int totalRecords = await _context.Service.CountAsync();
-                var pagedServices = await services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-                
+                int totalRecords = services.Count;
+                var pagedServices = services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
                 var promotionData = await GetPromotionDataAsync();
 
                 ViewBag.FirstBookingPromo = promotionData.FirstBookingPromo;
                 ViewBag.IsEligibleForFirstBookingPromo = promotionData.IsEligible;
                 ViewBag.DebugInfo = promotionData.DebugInfo;
+                ViewBag.PageTitle = title;
+                ViewBag.PageSubtitle = subtitle;
+                ViewBag.CatalogAction = actionName;
+                ViewData["Title"] = title;
+                ViewData["Description"] = subtitle;
                 ViewData["CurrentPage"] = pageNumber;
-                ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
+                ViewData["TotalPages"] = Math.Max(1, (int)Math.Ceiling((double)totalRecords / pageSize));
 
-                return View(pagedServices);
+                return View("Index", pagedServices);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return View("Error");
             }

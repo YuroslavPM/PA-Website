@@ -6,11 +6,14 @@
 @model IEnumerable<PA_Website.Models.Service>
 
 @{
-    ViewData["Title"] = "Услуги";
+    var pageTitle = ViewBag.PageTitle as string ?? "Услуги";
+    var pageSubtitle = ViewBag.PageSubtitle as string ?? "Избери своя път към себепознанието:";
+    var catalogAction = ViewBag.CatalogAction as string ?? "Index";
+    var showPathHub = ViewBag.ShowPathHub as bool? == true;
+    ViewData["Title"] = pageTitle;
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
     Layout = "_Layout";
-
 }
 
 @section Styles {
@@ -715,8 +718,8 @@
         <div class="services-header">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 class="services-title">Услуги</h1>
-                    <p class="services-subtitle">Избери услугата, която най-силно резонира с теб в момента.</p>
+                    <h1 class="services-title">@pageTitle</h1>
+                    <p class="services-subtitle">@pageSubtitle</p>
                 </div>
                 
                 @if (isAdmin)
@@ -731,7 +734,11 @@
         </div>
 
         <!-- Services Grid -->
-        @if (Model.Any())
+        @if (showPathHub && ViewBag.PathCards is IEnumerable<PathCard> pathCards)
+        {
+            <partial name="_PathCards" model="pathCards" />
+        }
+        else if (Model.Any())
         {
             <div class="services-grid">
                 @foreach (var service in Model)
@@ -835,7 +842,7 @@
                 }
             </div>
         }
-        else
+        else if (!showPathHub)
         {
             <div class="empty-state">
                 <div class="empty-icon">
@@ -864,7 +871,7 @@
                             if (currentPage > 1)
                             {
                                 <li class="pagination-item">
-                                    <a href="@Url.Action("Index", "Services", new { pageNumber = currentPage - 1 })" 
+                                    <a href="@Url.Action(catalogAction, "Services", new { pageNumber = currentPage - 1 })" 
                                        class="pagination-link pagination-prev" aria-label="Previous page">
                                         <i class="fas fa-chevron-left"></i>
                                         <span>Предишна</span>
@@ -880,7 +887,7 @@
                             if (startPage > 1)
                             {
                                 <li class="pagination-item">
-                                    <a href="@Url.Action("Index", "Services", new { pageNumber = 1 })" class="pagination-link">1</a>
+                                    <a href="@Url.Action(catalogAction, "Services", new { pageNumber = 1 })" class="pagination-link">1</a>
                                 </li>
                                 if (startPage > 2)
                                 {
@@ -900,7 +907,7 @@
                                     }
                                     else
                                     {
-                                        <a href="@Url.Action("Index", "Services", new { pageNumber = i })" class="pagination-link">@i</a>
+                                        <a href="@Url.Action(catalogAction, "Services", new { pageNumber = i })" class="pagination-link">@i</a>
                                     }
                                 </li>
                             }
@@ -915,7 +922,7 @@
                                     </li>
                                 }
                                 <li class="pagination-item">
-                                    <a href="@Url.Action("Index", "Services", new { pageNumber = totalPages })" class="pagination-link">@totalPages</a>
+                                    <a href="@Url.Action(catalogAction, "Services", new { pageNumber = totalPages })" class="pagination-link">@totalPages</a>
                                 </li>
                             }
 
@@ -923,7 +930,7 @@
                             if (currentPage < totalPages)
                             {
                                 <li class="pagination-item">
-                                    <a href="@Url.Action("Index", "Services", new { pageNumber = currentPage + 1 })" 
+                                    <a href="@Url.Action(catalogAction, "Services", new { pageNumber = currentPage + 1 })" 
                                        class="pagination-link pagination-next" aria-label="Next page">
                                         <span>Следваща</span>
                                         <i class="fas fa-chevron-right"></i>
@@ -940,7 +947,7 @@
             </div>
         }
 
-        @if (Model.Any())
+        @if (Model.Any() || showPathHub)
         {
             <div class="cta-section">
                 <h3 class="cta-title">Готови сте да започнете?</h3>

@@ -1,10 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
-using PA_Website.Models;
+using PA_Website.Helpers;
 using PA_Website.ViewModels;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace PA_Website.Controllers
 {
@@ -28,12 +26,10 @@ namespace PA_Website.Controllers
             .Take(3)
             .ToList();
 
-            var services = _context.Service
-                .OrderBy(x => Guid.NewGuid())
-                .Take(3)
-                .ToList();
-
-            ViewBag.Services = services;
+            ViewBag.PathCards = SitePathCatalog.Create(Url);
+            ViewData["Image"] = "/Images/siteImg/Author.webp";
+            ViewData["ImageWidth"] = "1584";
+            ViewData["ImageHeight"] = "2376";
             return View(latestArticles);
             
         }
@@ -41,6 +37,31 @@ namespace PA_Website.Controllers
         [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
         public IActionResult Author()
         {
+            ViewData["Title"] = "За мен";
+            ViewData["Description"] = "Мариела Разпопова – психолог и астролог, създател на Душевна Мозайка.";
+            ViewData["Image"] = "/Images/siteImg/Author.webp";
+            ViewData["ImageWidth"] = "1584";
+            ViewData["ImageHeight"] = "2376";
+            return View();
+        }
+
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+        public IActionResult Program()
+        {
+            ViewData["Title"] = "Пътешествие към себе си";
+            ViewData["Description"] = "8-седмична авторска програма по терапевтично писане за себепознание и личностно развитие.";
+            ViewData["Keywords"] = "терапевтично писане, пътешествие към себе си, себепознание, Душевна Мозайка";
+            ViewData["Image"] = "/Images/siteImg/program-writing.png";
+            return View();
+        }
+
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+        public IActionResult Events()
+        {
+            ViewData["Title"] = "Групи и събития";
+            ViewData["Description"] = "Предстоящи групи, срещи и събития на Душевна Мозайка.";
+            ViewData["Keywords"] = "групи, събития, работилници, Душевна Мозайка";
+            ViewData["Image"] = "/Images/siteImg/events-coming-soon.png";
             return View();
         }
 
