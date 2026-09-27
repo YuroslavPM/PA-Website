@@ -262,6 +262,7 @@
 .nav-link-hover {
   position: relative;
   overflow: hidden;
+  letter-spacing: 0.06em;
 }
 
 .nav-link-hover::before {
