@@ -16,7 +16,7 @@
         "@@type": "ProfessionalService",
         "name": "Душевна Мозайка",
         "alternateName": "Dushevna Mozaika",
-        "description": "Психологически и астрологични консултации от Мариела Разпопова. Пространство за споделяне и преоткриване.",
+        "description": "Психологически и астрологични консултации от Мариела Разпопова. Пространство за среща със себе си.",
         "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")",
         "logo": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Images/siteImg/logo.webp")",
         "image": "@($"{Context.Request.Scheme}://{Context.Request.Host}/Images/therapy.webp")",
@@ -809,7 +809,7 @@
                         Мариела Разпопова – психолог и астролог
                         </p>
                     <p class="hero-description-responsive text-base sm:text-lg md:text-xl mb-8 lg:mb-10 text-white/80">
-                        Пространство за споделяне и преоткриване
+                        Пространство за среща със себе си
                     </p>
                     <div>
                         <a href="#services" 
@@ -823,7 +823,91 @@
         </div>
     </section>
 
-    <!-- Services Section -->
+    <section class="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-purple-50 to-indigo-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center mb-10 sm:mb-14">
+                <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-4 relative inline-block gradient-text">
+                    Опознай частиците. Открий цялото.
+                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                </h2>
+            </div>
+            <div class="max-w-3xl mx-auto space-y-5 sm:space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
+                <p>Всеки човек, като една мозайка, е съвкупност от хиляди красиви малки частици. Те олицетворяват твоите ценности, вярвания, преживявания, емоции, мечти и страхове. Понякога тези частици си пасват естествено, а друг път са трудни за съчетаване и ти причиняват главоблъсканица.</p>
+                <p>Но ако можеше да надникнеш навътре и да започнеш да събираш тези частици една по една, постепенно би могъл да видиш поне част от голямата картина.</p>
+                <p>Това е същността на себепознанието – да откриваш различните части от себе си, които те правят такъв, какъвто си, и да се учиш да ги разбираш и приемаш. Да виждаш себе си по-цялостно – и в красивите, и в предизвикателните моменти от живота. Защото колкото по-добре познаваш себе си, толкова по-осъзнато можеш да избираш посоката, в която искаш да вървиш.</p>
+                <p>А себепознанието е път, по който можеш да поемеш с помощта на различни ресурси. Понякога споделянето в пространство без осъждане и с емпатия е достатъчно. Друг път на помощ идват символите, метафорите, ароматите или звездното небе.</p>
+                <p>Точно затова Душевна мозайка обединява различни подходи и инструменти, които могат да бъдат твои спътници в изследването на вътрешния ти свят.</p>
+                <p>Защото вярвам, че когато опознаем частиците, започваме да откриваме цялото.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 sm:py-16 md:py-24 bg-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\" 60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236a3093\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center author-content">
+                <div class="text-center lg:text-left">
+                    <img src="/Images/siteImg/Author.webp"
+                         srcset="/Images/siteImg/Author-256.webp 256w,
+                                 /Images/siteImg/Author-320.webp 320w,
+                                 /Images/siteImg/Author-384.webp 384w,
+                                 /Images/siteImg/Author-800.webp 800w,
+                                 /Images/siteImg/Author-1200.webp 1200w,
+                                 /Images/siteImg/Author.webp 1584w"
+                         sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
+                         alt="Мариела Разпопова - психолог и астролог"
+                         width="384"
+                         height="384"
+                         loading="lazy"
+                         decoding="async"
+                         class="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full object-cover border-8 border-white shadow-2xl mx-auto lg:mx-0 hover:scale-105 transition-transform duration-600 author-image">
+                </div>
+                <div class="text-center lg:text-left">
+                    <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6 sm:mb-8 relative inline-block gradient-text">
+                        За мен
+                        <div class="absolute bottom-0 left-0 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                    </h2>
+                    <div class="space-y-4 sm:space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
+                        <p>
+                            Аз съм Мариела Разпопова - психолог и астролог.
+                        </p>
+                        <p>
+                            Създадох това пространство като място, в което да се чувстваш сигурно, за да се
+                            срещнеш със себе си – когато се колебаеш, преминаваш през промяна в живота си
+                            или искаш да надникнеш по-дълбоко във вътрешния си свят. Моята роля ще е да те
+                            подкрепя в този процес.
+                        </p>
+                        <p>
+                            Подходът ми се базира на метода на Позитивната психотерапия на д-р Носрат Песешкиан, в
+                            който съм сертифицирана като консултант и към момента продължавам обучението си за
+                            психотерапевт.
+                        </p>
+                        <p>
+                            В работата си обединявам и астрология, аромапсихологията, работата със сънища и
+                            метафорично-асоциативни карти – като различни пътища за себепознание.
+                        </p>
+                    </div>
+                    <div class="mt-6 sm:mt-8 p-6 sm:p-8 bg-white rounded-2xl shadow-lg relative">
+                        <div class="absolute -top-4 left-8 text-4xl sm:text-6xl text-primary/20 font-serif">"</div>
+                        <p class="text-lg sm:text-xl italic text-primary font-medium leading-relaxed relative z-10">
+                            „Който гледа навън, сънува. Който се вгледа навътре, се пробужда.” – К. Г. Юнг
+                        </p>
+                    </div>
+                    <div class="mt-8">
+                        <a href="@Url.Action("Author", "Home")"
+                           class="inline-flex items-center border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 sm:px-8 py-3 rounded-full font-medium transition-colors duration-300">
+                            Прочети повече
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="services" class="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-purple-50 to-indigo-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12 sm:mb-16">
@@ -832,138 +916,15 @@
                     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
                 </h2>
                 <p class="text-lg sm:text-xl text-gray-600 section-description">
-                    Холистичен подход, който те подкрепя в твоята житейска ситуация – избери услугата, която най-силно откликва на теб в този момент.                </p>
+                    Избери своя път към себепознанието:
+                </p>
             </div>
-
-            @if (ViewBag.Services != null && ((List<PA_Website.Models.Service>)ViewBag.Services).Any())
+            @if (ViewBag.PathCards is IEnumerable<PathCard> pathCards)
             {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 services-grid">
-                    @foreach (var service in (List<PA_Website.Models.Service>)ViewBag.Services)
-                    {
-                        <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
-                             data-service-id="@service.Id"
-                             onclick="window.location.href='@Url.Action("Details", "Services", new { id = !string.IsNullOrEmpty(service.Slug) ? service.Slug : service.Id.ToString() })'">
-                            @if (!string.IsNullOrEmpty(service.ImagePath))
-                            {
-                                <div class="h-48 sm:h-64 overflow-hidden">
-                                    <img src="@service.ImagePath" alt="@service.NameService"
-                                         loading="lazy" decoding="async" width="400" height="256"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="h-48 sm:h-64 bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
-                                    @if (service.CategoryOfService.ToLower().Contains("психология") || service.CategoryOfService.ToLower().Contains("психологически"))
-                                    {
-                                        <i class="fas fa-brain text-3xl sm:text-4xl text-primary opacity-50"></i>
-                                    }
-                                    else if (service.CategoryOfService.ToLower().Contains("астрология") || service.CategoryOfService.ToLower().Contains("астрологически"))
-                                    {
-                                        <i class="fas fa-star text-3xl sm:text-4xl text-primary opacity-50"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="fas fa-cog text-3xl sm:text-4xl text-primary opacity-50"></i>
-                                    }
-                                </div>
-                            }
-                            <div class="p-4 sm:p-6">
-                                <div class="flex items-center text-xs sm:text-sm text-secondary mb-2 sm:mb-3">
-                                    <i class="fas fa-tag mr-2"></i>
-                                    @service.CategoryOfService
-                                    <span class="mx-2">•</span>
-                                    <i class="fas fa-money-bill-wave mr-2"></i>
-                                    @service.Price.ToString("0.00") €
-                                </div>
-                                <h3 class="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3 line-clamp-2">@service.NameService</h3>
-                                @if (!string.IsNullOrEmpty(service.Description))
-                                {
-                                    <p class="text-gray-600 mb-3 sm:mb-4 line-clamp-3 text-sm sm:text-base">@Html.Raw(service.Description.Length > 100 ? service.Description.Substring(0, 100) + "..." : service.Description)</p>
-                                }
-                                <div class="inline-flex items-center text-primary hover:text-secondary font-medium transition-colors duration-300 text-sm sm:text-base">
-                                    Научи повече
-                                    <i class="fas fa-arrow-right ml-2"></i>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="text-center mt-8">
-                    <a href="@Url.Action("Index", "Services")" class="inline-flex items-center border-2 border-primary btn-purple-text hover:bg-primary hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium btn-hover-effect text-sm sm:text-base">
-                        Виж всички услуги
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div>
-            }
-            else
-            {
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 sm:p-8 text-center max-w-2xl mx-auto">
-                    <i class="fas fa-info-circle text-2xl sm:text-3xl text-blue-500 mb-4"></i>
-                    <p class="text-blue-700 text-base sm:text-lg">Все още няма налични услуги.</p>
-                </div>
+                <partial name="_PathCards" model="pathCards" />
             }
         </div>
     </section>
- <!-- Author Section -->
-    <section class="py-12 sm:py-16 md:py-24 bg-white relative overflow-hidden">
-    <div class="absolute inset-0 opacity-5">
-        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\" 60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236a3093\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-    </div>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center author-content">
-            <div class="text-center lg:text-left">
-                <img src="/Images/siteImg/Author.webp"
-                     srcset="/Images/siteImg/Author-256.webp 256w,
-                             /Images/siteImg/Author-320.webp 320w,
-                             /Images/siteImg/Author-384.webp 384w,
-                             /Images/siteImg/Author-800.webp 800w,
-                             /Images/siteImg/Author-1200.webp 1200w,
-                             /Images/siteImg/Author.webp 1584w"
-                     sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
-                     alt="Мариела Разпопова - психолог и астролог"
-                     width="384"
-                     height="384"
-                     loading="lazy"
-                     decoding="async"
-                     class="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full object-cover border-8 border-white shadow-2xl mx-auto lg:mx-0 hover:scale-105 transition-transform duration-600 author-image">
-            </div>
-            <div class="text-center lg:text-left">
-                <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6 sm:mb-8 relative inline-block gradient-text">
-                    За мен
-                    <div class="absolute bottom-0 left-0 w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-                </h2>
-                <div class="space-y-4 sm:space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
-                    <p>
-                        Аз съм Мариела Разпопова - психолог и астролог.
-                    </p>
-                    <p>
-                        Създадох това пространство като място, в което да се чувстваш сигурно, за да се
-                        срещнеш със себе си – когато се колебаеш, преминаваш през промяна в живота си
-                        или искаш да надникнеш по-дълбоко във вътрешния си свят. Моята роля ще е да те
-                        подкрепя в този процес.
-                    </p>
-                    <p>
-                        Подходът ми се базира на метода на Позитивната психотерапия на д-р Носрат Песешкиан, в
-                        който съм сертифицирана като консултант и към момента продължавам обучението си за
-                        психотерапевт.
-                    </p>
-                    <p>
-                        В работата си обединявам и астрология, аромапсихологията, работата със сънища и
-                        метафорично-асоциативни карти – като различни пътища за себепознание.
-                    </p>
-                </div>
-                <div class="mt-6 sm:mt-8 p-6 sm:p-8 bg-white rounded-2xl shadow-lg relative">
-                    <div class="absolute -top-4 left-8 text-4xl sm:text-6xl text-primary/20 font-serif">"</div>
-                    <p class="text-lg sm:text-xl italic text-primary font-medium leading-relaxed relative z-10">
-                        „Който гледа навън, сънува. Който се вгледа навътре, се пробужда.” – К. Г. Юнг
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
     
     <!-- Articles Section -->
     <section class="py-12 sm:py-16 md:py-24 bg-white">

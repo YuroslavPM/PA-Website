@@ -10,6 +10,13 @@ public enum ServiceBookingKind
     DualBirthData
 }
 
+public enum ServicePublicGroup
+{
+    None,
+    Psychology,
+    Astrology
+}
+
 public static class ServiceBookingHelper
 {
     public static bool IsAstrology(this Service service)
@@ -53,6 +60,38 @@ public static class ServiceBookingHelper
 
     public static bool NeedsDualBirthData(this Service service)
         => service.GetBookingKind().NeedsDualBirthData();
+
+    /// <summary>
+    /// Public catalog grouping from the 26.07.2026 IA brief.
+    /// Matches by service name so leftover/test rows stay hidden without deleting them.
+    /// Does not change CategoryOfService (booking still depends on those stored values).
+    /// </summary>
+    public static ServicePublicGroup GetPublicGroup(this Service service)
+    {
+        var name = service.NameService?.ToLowerInvariant() ?? string.Empty;
+
+        if (name.Contains("психологичн") && name.Contains("консултация")
+            && !name.Contains("бременн")
+            && !name.Any(char.IsDigit))
+            return ServicePublicGroup.Psychology;
+
+        if (name.Contains("астропсихолог"))
+            return ServicePublicGroup.Astrology;
+
+        if (name.Contains("партньор") && (name.Contains("хороскоп") || name.Contains("анализ")))
+            return ServicePublicGroup.Astrology;
+
+        if (name.Contains("рожден") && name.Contains("хороскоп"))
+            return ServicePublicGroup.Astrology;
+
+        if (name.Contains("прогноз") && (name.Contains("2") || name.Contains("две") || name.Contains("годишн")))
+            return ServicePublicGroup.Astrology;
+
+        return ServicePublicGroup.None;
+    }
+
+    public static bool IsPublicCatalogService(this Service service)
+        => service.GetPublicGroup() != ServicePublicGroup.None;
 
     public static int GetDisplayOrder(this Service service)
     {
