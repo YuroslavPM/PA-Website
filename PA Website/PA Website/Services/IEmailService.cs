@@ -10,6 +10,7 @@ namespace PA_Website.Services
         Task SendStatusUpdateAsync(User user, UserService reservation, Service service, string oldStatus, string newStatus);
         Task SendAstroCardCompletionAsync(User user, UserService reservation, Service service);
         Task SendAdminNotificationAsync(User user, UserService reservation, Service service, string action);
+        void RememberBaseUrl(string baseUrl);
         Task SendBulkEmailAsync(List<EmailRecipient> recipients, string subject, string message, string emailType);
         Task SendCustomEmailAsync(User user, UserService reservation, Service service, string subject, string message, string emailType);
     }

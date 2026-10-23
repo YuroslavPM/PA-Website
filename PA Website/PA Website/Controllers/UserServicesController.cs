@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PA_Website.Data;
+using PA_Website.Helpers;
 using PA_Website.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using PA_Website.Services;
@@ -72,7 +73,7 @@ namespace PA_Website.Controllers
             var reservations = await _userServiceService.GetUserReservationsAsync(user.Id, filter);
 
             // Set view data for pagination and filters
-            SetViewDataForIndex(filter, reservations.Count());
+            SetViewDataForIndex(filter, filter.TotalCount);
 
             return View(reservations);
         }
@@ -357,7 +358,7 @@ namespace PA_Website.Controllers
             var reservations = await _userServiceService.GetAllReservationsAsync(filter);
 
             // Set view data for pagination and filters
-            SetViewDataForIndex(filter, reservations.Count());
+            SetViewDataForIndex(filter, filter.TotalCount);
 
             return View(reservations);
         }
@@ -496,7 +497,8 @@ namespace PA_Website.Controllers
         // POST: UserServices/UpdateStatus
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> UpdateStatus(int id, string newStatus)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int id, string newStatus, IFormFile? astroCardFile)
         {
             try
             {
@@ -505,27 +507,77 @@ namespace PA_Website.Controllers
                     return NotFound();
 
                 var oldStatus = reservation.Status;
-                var success = await _userServiceService.UpdateReservationStatusAsync(id, newStatus);
 
-                if (success)
+                if (astroCardFile != null && astroCardFile.Length > 0)
                 {
-                    var service = await _context.Service.FindAsync(reservation.ServiceId);
-                    var user = await _userManager.FindByIdAsync(reservation.UserId);
+                    if (!reservation.Service.IsAstrology())
+                    {
+                        TempData["ErrorMessage"] = "Може да качвате файлове само за астрологични услуги.";
+                        return RedirectToAction("Details", new { id });
+                    }
 
-                    // Send email notifications
-                    await _emailService.SendStatusUpdateAsync(user, reservation, service, oldStatus, newStatus);
+                    if (!_fileService.IsValidAstroCardFile(astroCardFile))
+                    {
+                        TempData["ErrorMessage"] = "Невалиден файл. Разрешени са само JPG, PNG, PDF и DOCX файлове до 6MB.";
+                        return RedirectToAction("Details", new { id });
+                    }
 
-                    TempData["SuccessMessage"] = $"Статусът е променен на {newStatus}.";
+                    var storedPath = await _fileService.UploadAstroCardAsync(astroCardFile);
+                    var uploaded = await _userServiceService.UploadAstroCardAsync(id, astroCardFile, storedPath);
+                    if (!uploaded)
+                    {
+                        TempData["ErrorMessage"] = "Грешка при качване на файла.";
+                        return RedirectToAction("Details", new { id });
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(newStatus) && newStatus != oldStatus)
+                {
+                    var success = await _userServiceService.UpdateReservationStatusAsync(id, newStatus);
+                    if (!success)
+                    {
+                        TempData["ErrorMessage"] = "Невалиден статус.";
+                        return RedirectToAction("Details", new { id });
+                    }
+
+                    reservation = await _userServiceService.GetReservationByIdAsync(id);
+                    if (reservation?.Service != null && reservation.UserId != null)
+                    {
+                        var user = await _userManager.FindByIdAsync(reservation.UserId);
+                        if (user != null)
+                        {
+                            await _emailService.SendStatusUpdateAsync(user, reservation, reservation.Service, oldStatus, newStatus);
+                        }
+                    }
+
+                    TempData["SuccessMessage"] = "Промените са запазени.";
+                }
+                else if (astroCardFile != null && astroCardFile.Length > 0)
+                {
+                    if (oldStatus == "Completed")
+                    {
+                        reservation = await _userServiceService.GetReservationByIdAsync(id);
+                        if (reservation?.Service != null && !string.IsNullOrEmpty(reservation.AstroCardFilePath))
+                        {
+                            var user = await _userManager.FindByIdAsync(reservation.UserId);
+                            if (user != null)
+                            {
+                                await _emailService.SendAstroCardCompletionAsync(user, reservation, reservation.Service);
+                            }
+                        }
+                    }
+
+                    TempData["SuccessMessage"] = "Файлът е качен.";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Невалиден статус.";
+                    TempData["SuccessMessage"] = "Няма промени за запазване.";
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to update status for reservation {ReservationId}", id);
-                TempData["ErrorMessage"] = "Грешка при обновяване на статуса.";
+                TempData["ErrorMessage"] = "Грешка при обновяване на резервацията.";
             }
 
             return RedirectToAction("Details", new { id });
@@ -548,25 +600,17 @@ namespace PA_Website.Controllers
                 if (reservation == null)
                     return NotFound();
 
-                if (reservation.Service.CategoryOfService.ToLower() != "астрология")
+                if (!reservation.Service.IsAstrology())
                 {
                     TempData["ErrorMessage"] = "Може да качвате файлове само за астрологични услуги.";
                     return RedirectToAction("Details", new { id });
                 }
 
-                // Upload file
                 var filePath = await _fileService.UploadAstroCardAsync(astroCardFile);
-
-                // Update reservation
-                var success = await _userServiceService.UploadAstroCardAsync(id, astroCardFile);
+                var success = await _userServiceService.UploadAstroCardAsync(id, astroCardFile, filePath);
                 if (success)
                 {
-                    // Send completion email
-                    var user = await _userManager.FindByIdAsync(reservation.UserId);
-                    var service = await _context.Service.FindAsync(reservation.ServiceId);
-                    await _emailService.SendAstroCardCompletionAsync(user, reservation, service);
-
-                    TempData["SuccessMessage"] = "Астрологичната карта е качена успешно!";
+                    TempData["SuccessMessage"] = "Файлът е качен. Запази статуса, за да изпратиш имейл на клиента.";
                 }
                 else
                 {
@@ -807,7 +851,8 @@ namespace PA_Website.Controllers
         private void SetViewDataForIndex(ReservationFilter filter, int totalCount)
         {
             ViewData["CurrentPage"] = filter.PageNumber;
-            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalCount / filter.PageSize);
+            var totalPages = filter.PageSize <= 0 ? 1 : (int)Math.Ceiling((double)totalCount / filter.PageSize);
+            ViewData["TotalPages"] = totalPages < 1 ? 1 : totalPages;
             ViewData["SortOrder"] = filter.SortOrder;
             ViewData["CategoryFilter"] = filter.CategoryFilter;
             ViewData["StatusFilter"] = filter.StatusFilter;

@@ -49,7 +49,7 @@ namespace PA_Website.Controllers
         public IActionResult Program()
         {
             ViewData["Title"] = "Пътешествие към себе си";
-            ViewData["Description"] = "8-седмична авторска програма по терапевтично писане за себепознание и личностно развитие.";
+            ViewData["Description"] = "8 седмична програма по терапевтично писане.";
             ViewData["Keywords"] = "терапевтично писане, пътешествие към себе си, себепознание, Душевна Мозайка";
             ViewData["Image"] = "/Images/siteImg/program-writing.png";
             return View();

@@ -9,6 +9,7 @@ namespace PA_Website.Models
         public DateTime? EndDate { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 12;
+        public int TotalCount { get; set; }
     }
 
     public class CreateReservationRequest

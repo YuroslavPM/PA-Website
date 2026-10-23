@@ -14,7 +14,7 @@ namespace PA_Website.Services
         Task<bool> CancelReservationAsync(int id, string userId);
         Task<bool> RescheduleReservationAsync(int id, RescheduleRequest request, string userId);
         Task<(UserService OldReservation, UserService NewReservation)?> RescheduleReservationWithDetailsAsync(int id, RescheduleRequest request, string userId);
-        Task<bool> UploadAstroCardAsync(int id, IFormFile file);
+        Task<bool> UploadAstroCardAsync(int id, IFormFile file, string storedPath);
         Task<bool> DeleteAstroCardAsync(int id);
         Task<AstroCardFileResult?> DownloadAstroCardAsync(int id);
         Task<IEnumerable<TimeSpan>> GetAvailableTimesAsync(int serviceId, DateTime date);

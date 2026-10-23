@@ -263,19 +263,26 @@
                                         }
                                     </p>
                                     <p class="text-gray-700 mt-2">
-                                        <strong>Услуга:</strong> @reservation.Service.NameService<br>
-                                        <strong>Дата:</strong> 
-                                        @if (reservation.Service.NeedsAppointment())
+                                        @if (reservation.Service == null)
                                         {
-                                            @reservation.ReservationDate.ToString("dd.MM.yyyy")
-                                            @if (reservation.ReservationTime != null)
-                                            {
-                                                <span>@reservation.ReservationTime.ToString(@"hh\:mm")</span>
-                                            }
+                                            <strong>Услуга:</strong> <span class="text-gray-500 italic">Изтрита услуга</span>
                                         }
                                         else
                                         {
-                                            @reservation.AstrologicalDate?.ToString("dd.MM.yyyy HH:mm")
+                                            <strong>Услуга:</strong> @reservation.Service.NameService<br>
+                                            <strong>Дата:</strong>
+                                            @if (reservation.Service.NeedsAppointment())
+                                            {
+                                                @reservation.ReservationDate.ToString("dd.MM.yyyy")
+                                                @if (reservation.ReservationTime != null)
+                                                {
+                                                    <span>@reservation.ReservationTime.ToString(@"hh\:mm")</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @reservation.AstrologicalDate?.ToString("dd.MM.yyyy HH:mm")
+                                            }
                                         }
                                     </p>
                                 </div>
