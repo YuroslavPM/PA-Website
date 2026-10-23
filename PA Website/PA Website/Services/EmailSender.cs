@@ -107,7 +107,7 @@ namespace PA_Website.Services
                 client.EnableSsl = _enableSsl;
                 client.UseDefaultCredentials = false;
                 client.Credentials = new NetworkCredential(_fromEmail, _password);
-                client.Timeout = 30000; // 30 seconds timeout for sending
+                client.Timeout = 8000;
 
                 using var mailMessage = new MailMessage();
                 mailMessage.From = new MailAddress(_fromEmail, _fromName);

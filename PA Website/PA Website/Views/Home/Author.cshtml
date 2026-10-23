@@ -54,6 +54,30 @@
             background: linear-gradient(90deg, transparent, #6a3093, transparent);
             height: 1px;
         }
+
+        .author-home-btn {
+            display: inline-flex;
+            align-items: center;
+            border: 2px solid #4c1d95;
+            color: #4c1d95;
+            background: #ffffff;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .author-home-btn:hover,
+        .author-home-btn:focus-visible {
+            background: #4c1d95;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(76, 29, 149, 0.25);
+        }
+
+        .author-home-btn:hover i,
+        .author-home-btn:focus-visible i {
+            color: #ffffff;
+        }
     </style>
 }
 
@@ -263,8 +287,7 @@
                             <i class="fas fa-magic mr-3"></i>
                             Започни своето пътуване
                         </a>
-                        <a href="@Url.Action("Index", "Home")" 
-                           class="inline-flex items-center border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 rounded-full font-medium transition-all duration-300 hover:shadow-md">
+                        <a href="@Url.Action("Index", "Home")" class="author-home-btn">
                             <i class="fas fa-home mr-3"></i>
                             Начална страница
                         </a>

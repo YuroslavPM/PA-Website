@@ -24,6 +24,7 @@ namespace PA_Website.Controllers
         private readonly IConfiguration _configuration;
         private readonly IImageService _imageService;
         private readonly IEmailService _emailService;
+        private readonly ILogger<ServicesController> _logger;
 
         // Constants
         private const string PendingStatus = "Pending";
@@ -37,7 +38,8 @@ namespace PA_Website.Controllers
             IConfiguration configuration, 
             IPromotionService promotionService,
             IImageService imageService,
-            IEmailService emailService)
+            IEmailService emailService,
+            ILogger<ServicesController> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
@@ -46,6 +48,7 @@ namespace PA_Website.Controllers
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         #region Public Actions
@@ -381,8 +384,7 @@ namespace PA_Website.Controllers
                     birthCity,
                     partner2BirthCity);
 
-                await SendReservationEmailAsync(user, service, reservation);
-                await _emailService.SendAdminNotificationAsync(user, reservation, service, "created");
+                QueueReservationEmails(user, service, reservation);
 
                 return View("ReservationSuccess");
             }
@@ -743,12 +745,34 @@ namespace PA_Website.Controllers
             return reservation;
         }
 
+        private void QueueReservationEmails(User user, Service service, UserService reservation)
+        {
+            _emailService.RememberBaseUrl($"{Request.Scheme}://{Request.Host}");
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.WhenAll(
+                        SendReservationEmailAsync(user, service, reservation),
+                        _emailService.SendAdminNotificationAsync(user, reservation, service, "created")
+                    ).WaitAsync(TimeSpan.FromSeconds(12));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send booking emails for reservation {ReservationId}", reservation.Id);
+                }
+            });
+        }
+
         private async Task SendReservationEmailAsync(User user, Service service, UserService reservation)
 {
     if (string.IsNullOrEmpty(user.Email))
         return;
 
-    var subject = "Потвърждение на резервация";
+    var isAppointment = service.NeedsAppointment();
+    var noun = isAppointment ? "резервация" : "заявка";
+    var nounThe = isAppointment ? "резервацията" : "заявката";
+    var subject = isAppointment ? "Потвърждение на резервация" : "Потвърждение на заявка";
     var iban = "BG89CECB979010G3001000";
     var bookingKind = service.GetBookingKind();
 
@@ -784,12 +808,12 @@ namespace PA_Website.Controllers
     var htmlMessage = $@"
 <h3>Здравей, {user.FName}!</h3>
 <p>Благодаря ти, че избра моите услуги!</p>
-<p>Твоята заявка за <b>{service.NameService}</b> е получена успешно.</p>
+<p>Твоята {noun} за <b>{service.NameService}</b> е получена успешно.</p>
 <div style='background-color: #fff3cd; padding: 15px; border-left: 5px solid #ffeeba; margin: 15px 0;'>
-    <h4 style='color: #856404; margin-top: 0;'>Статус на резервацията: <strong>ИЗЧАКВАНЕ</strong></h4>
-    <p>Твоята резервация е в процес на обработка. За да бъде активирана, е необходимо да извършиш плащане {paymentDeadline}.</p>
+    <h4 style='color: #856404; margin-top: 0;'>Статус на {nounThe}: <strong>ИЗЧАКВАНЕ</strong></h4>
+    <p>Твоята {noun} е в процес на обработка. За да бъде активирана, е необходимо да извършиш плащане {paymentDeadline}.</p>
 </div>
-<p><strong>Данни за резервация:</strong></p>
+<p><strong>Данни за {noun}:</strong></p>
 <ul>
     <li>Услуга: {service.NameService}</li>
     {dateInfo}
@@ -802,7 +826,7 @@ namespace PA_Website.Controllers
     <li>Титуляр на сметката: Мариела Разпопова</li>
     <li>В основание на плащането моля посочи: Имената си, {service.NameService}</li>
 </ol>
-<p>След получаване на плащането, ще получиш потвърждение за активиране на резервацията.</p>
+<p>След получаване на плащането, ще получиш потвърждение за активиране на {nounThe}.</p>
 <p>Ако имаш въпроси, не се колебай да се свържеш с мен.</p>
 <p>С уважение,<br>Мариела Разпопова</p>";
 

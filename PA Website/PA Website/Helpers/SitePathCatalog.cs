@@ -20,7 +20,7 @@ public static class SitePathCatalog
         {
             Title = "Астрологични услуги",
             Description = "Поглед към вътрешния свят през символния език на астрологията.",
-            ImagePath = "/Images/articles/ast.jpg",
+            ImagePath = "/Images/siteImg/astrology.jpg",
             Url = url.Action("Astrology", "Services") ?? "/Services/Astrology"
         },
         new PathCard

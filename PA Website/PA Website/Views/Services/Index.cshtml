@@ -140,17 +140,9 @@
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+            gap: 1.25rem;
             margin-bottom: 1.5rem;
-        }
-
-        @@media (min-width: 768px) {
-            .services-grid {
-                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-                gap: 2rem;
-                margin-bottom: 2rem;
-            }
         }
 
         .service-card {
@@ -177,7 +169,7 @@
 
         @@media (min-width: 768px) {
             .service-image {
-                height: 200px;
+                height: 140px;
             }
         }
 
@@ -559,11 +551,6 @@
 
         /* Responsive improvements */
         @@media (max-width: 640px) {
-            .services-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
             .service-actions {
                 flex-direction: column;
             }
@@ -950,12 +937,23 @@
         @if (Model.Any() || showPathHub)
         {
             <div class="cta-section">
-                <h3 class="cta-title">Готови сте да започнете?</h3>
-                <p class="cta-description">Изберете услуга и запазете час за консултация</p>
-                <a href="@Url.Action("Index", "Home")" class="btn-home focus-visible:focus">
-                    <i class="fas fa-arrow-left"></i>
-                    Обратно към началната страница
-                </a>
+                @if (catalogAction == "Astrology")
+                {
+                    <h3 class="cta-title">Избери своя път на себепознание сред предлаганите опции и резервирай лесно.</h3>
+                    <a href="@Url.Action("Index", "Home")#services" class="btn-home focus-visible:focus">
+                        <i class="fas fa-arrow-left"></i>
+                        Към услугите
+                    </a>
+                }
+                else
+                {
+                    <h3 class="cta-title">Готови сте да започнете?</h3>
+                    <p class="cta-description">Изберете услуга и запазете час за консултация</p>
+                    <a href="@Url.Action("Index", "Home")" class="btn-home focus-visible:focus">
+                        <i class="fas fa-arrow-left"></i>
+                        Обратно към началната страница
+                    </a>
+                }
             </div>
         }
     </div>

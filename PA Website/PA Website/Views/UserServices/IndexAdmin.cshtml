@@ -324,10 +324,10 @@
 
             <div class="admin-panel-body">
             <div class="mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form method="get" asp-action="IndexAdmin" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                             <label for="sortDropdown" class="form-label">Сортиране по:</label>
-                            <select id="sortDropdown" class="form-select">
+                            <select id="sortDropdown" name="sortOrder" class="form-select" onchange="this.form.submit()">
                             @foreach (var so in sortOrders)
                             {
                                 if (so.Value == selectedSort)
@@ -343,7 +343,7 @@
                         </div>
                     <div>
                             <label for="statusFilter" class="form-label">Филтър по статус:</label>
-                            <select id="statusFilter" class="form-select">
+                            <select id="statusFilter" name="statusFilter" class="form-select" onchange="this.form.submit()">
                             @foreach (var status in statuses)
                             {
                                 if (status.Value == selectedStatus)
@@ -357,7 +357,7 @@
                             }
                             </select>
                         </div>
-                    </div>
+                </form>
                 </div>
 
                 <div id="reservationsTable">
@@ -465,66 +465,18 @@
                 <div class="pagination-container">
                     @if (currentPage > 1)
                     {
-                    <button id="prevPage" class="btn-outline-admin">
+                    <a class="btn-outline-admin" href="@Url.Action("IndexAdmin", new { pageNumber = currentPage - 1, sortOrder = selectedSort, statusFilter = selectedStatus })">
                         <i class="fas fa-chevron-left mr-2"></i> Предишна
-                        </button>
+                        </a>
                     }
                     <span class="page-info">Страница @currentPage от @totalPages</span>
                     @if (currentPage < totalPages)
                     {
-                    <button id="nextPage" class="btn-outline-admin">
+                    <a class="btn-outline-admin" href="@Url.Action("IndexAdmin", new { pageNumber = currentPage + 1, sortOrder = selectedSort, statusFilter = selectedStatus })">
                         Следваща <i class="fas fa-chevron-right ml-2"></i>
-                        </button>
+                        </a>
                     }
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            function loadReservations(page, sort) {
-                $.ajax({
-                    url: '@Url.Action("IndexAdmin", "UserServices")',
-                    type: 'GET',
-                    data: { pageNumber: page, sortOrder: sort },
-                    success: function (data) {
-                        $('#reservationsTable').html($(data).find('#reservationsTable').html());
-                        $('.pagination-container').html($(data).find('.pagination-container').html());
-                    },
-                    error: function () {
-                        alert("Грешка при зареждане на данните.");
-                    }
-                });
-            }
-
-            $('#sortDropdown').change(function () {
-                var selectedSort = $(this).val();
-                loadReservations(1, selectedSort);
-            });
-
-            $(document).on('click', '#prevPage', function () {
-                var currentPage = parseInt($('.page-info').text().match(/\d+/)[0]);
-                if (currentPage > 1) {
-                    loadReservations(currentPage - 1, $('#sortDropdown').val());
-                }
-            });
-
-            $(document).on('click', '#nextPage', function () {
-                var currentPage = parseInt($('.page-info').text().match(/\d+/)[0]);
-                var totalPages = parseInt($('.page-info').text().match(/\d+/g)[1]);
-                if (currentPage < totalPages) {
-                    loadReservations(currentPage + 1, $('#sortDropdown').val());
-                }
-            });
-            
-            $('#statusFilter').change(function() {
-            var status = $(this).val();
-            window.location.href = '@Url.Action("IndexAdmin")' +
-                '?statusFilter=' + status +
-                '&sortOrder=@ViewData["SortOrder"]';
-        });
-        });
-    </script>
-}

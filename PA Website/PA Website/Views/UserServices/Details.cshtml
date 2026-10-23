@@ -95,6 +95,23 @@
             margin-bottom: 2rem;
         }
 
+        .details-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            grid-column: 1 / -1;
+        }
+
+        .details-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .details-stack p {
+            margin: 0;
+        }
+
         .details-item {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             border-radius: 16px;
@@ -283,7 +300,8 @@
         }
 
         @@media (max-width: 768px) {
-            .details-grid {
+            .details-grid,
+            .details-columns {
                 grid-template-columns: 1fr;
             }
 
@@ -317,28 +335,38 @@
             </div>
 
             <div class="details-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="mb-4 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 px-4 py-3">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-800 px-4 py-3">@TempData["ErrorMessage"]</div>
+                }
+                @if (isAdmin)
+                {
+                    <form id="reservationSaveForm" asp-action="UpdateStatus" method="post" enctype="multipart/form-data"></form>
+                }
                 <div class="details-grid">
                     <div class="details-item">
                         <div class="details-label">Статус</div>
                         <div class="details-value">
                             @if (isAdmin)
                             {
-                                <form asp-action="UpdateStatus" method="post" class="d-inline">
-                                    <input type="hidden" name="id" value="@Model.Id" />
-                                    <select name="newStatus" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
-                                        @foreach (var status in statuses)
+                                <input type="hidden" name="id" value="@Model.Id" form="reservationSaveForm" />
+                                <select name="newStatus" form="reservationSaveForm" class="form-select d-inline-block" style="width: auto;">
+                                    @foreach (var status in statuses)
+                                    {
+                                        if (status.Value == selectedStatus)
                                         {
-                                            if (status.Value == selectedStatus)
-                                            {
-                                                @:<option value="@status.Value" selected>@status.Text</option>
-                                            }
-                                            else
-                                            {
-                                                @:<option value="@status.Value">@status.Text</option>
-                                            }
+                                            @:<option value="@status.Value" selected>@status.Text</option>
                                         }
-                                    </select>
-                                </form>
+                                        else
+                                        {
+                                            @:<option value="@status.Value">@status.Text</option>
+                                        }
+                                    }
+                                </select>
                             }
                             else
                             {
@@ -364,60 +392,54 @@
                         <div class="details-value">@Html.DisplayFor(model => model.Service.CategoryOfService)</div>
                     </div>
 
-                    @if (Model.Service.NeedsAppointment())
+                    @if (Model.Service.NeedsAppointment() && Model.Service.NeedsBirthData())
                     {
-                        <div class="details-item">
-                            <div class="details-label">Дата на консултация</div>
-                            <div class="details-value">@Model.ReservationDate.ToString("dd.MM.yyyy")</div>
-                        </div>
-
-                        <div class="details-item">
-                            <div class="details-label">Час на консултация</div>
-                            <div class="details-value">
-                                @if(Model.ReservationTime.HasValue)
-                                {
-                                    @Model.ReservationTime.Value.ToString(@"hh\:mm")
-                                }
-                                else
-                                {
-                                    <span>Не е посочен</span>
-                                }
+                        <div class="details-columns">
+                            <div class="details-item">
+                                <div class="details-label">Дата и час на консултация</div>
+                                <div class="details-value">
+                                    @Model.ReservationDate.ToString("dd.MM.yyyy")
+                                    @(Model.ReservationTime.HasValue ? Model.ReservationTime.Value.ToString(@" HH\:mm") : "")
+                                </div>
+                            </div>
+                            <div class="details-item">
+                                <div class="details-label">Данни за раждане</div>
+                                <div class="details-value details-stack">
+                                    <p><strong>@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — дата и час:" : "Дата и час:")</strong> @(Model.AstrologicalDate.HasValue ? Model.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")</p>
+                                    <p><strong>@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — място:" : "Място:")</strong> @(string.IsNullOrEmpty(Model.AstrologicalPlaceOfBirth) ? "—" : Model.AstrologicalPlaceOfBirth)</p>
+                                    @if (Model.Service.NeedsDualBirthData())
+                                    {
+                                        <p><strong>Партньор 2 — дата и час:</strong> @(Model.Partner2AstrologicalDate.HasValue ? Model.Partner2AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")</p>
+                                        <p><strong>Партньор 2 — място:</strong> @(string.IsNullOrEmpty(Model.Partner2PlaceOfBirth) ? "—" : Model.Partner2PlaceOfBirth)</p>
+                                    }
+                                </div>
                             </div>
                         </div>
                     }
-
-                    @if (Model.Service.NeedsBirthData())
+                    else if (Model.Service.NeedsAppointment())
                     {
                         <div class="details-item">
-                            <div class="details-label">@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — дата и час на раждане" : "Дата и час на раждане")</div>
+                            <div class="details-label">Дата и час на консултация</div>
                             <div class="details-value">
-                                @(Model.AstrologicalDate.HasValue ? Model.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")
+                                @Model.ReservationDate.ToString("dd.MM.yyyy")
+                                @(Model.ReservationTime.HasValue ? Model.ReservationTime.Value.ToString(@" HH\:mm") : "")
                             </div>
                         </div>
-                        @if (!string.IsNullOrEmpty(Model.AstrologicalPlaceOfBirth))
-                        {
-                            <div class="details-item">
-                                <div class="details-label">@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — място на раждане" : "Място на раждане")</div>
-                                <div class="details-value">@Model.AstrologicalPlaceOfBirth</div>
-                            </div>
-                        }
                     }
-
-                    @if (Model.Service.NeedsDualBirthData())
+                    else if (Model.Service.NeedsBirthData())
                     {
                         <div class="details-item">
-                            <div class="details-label">Партньор 2 — дата и час на раждане</div>
-                            <div class="details-value">
-                                @(Model.Partner2AstrologicalDate.HasValue ? Model.Partner2AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")
+                            <div class="details-label">Данни за раждане</div>
+                            <div class="details-value details-stack">
+                                <p><strong>@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — дата и час:" : "Дата и час:")</strong> @(Model.AstrologicalDate.HasValue ? Model.AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")</p>
+                                <p><strong>@(Model.Service.NeedsDualBirthData() ? "Партньор 1 — място:" : "Място:")</strong> @(string.IsNullOrEmpty(Model.AstrologicalPlaceOfBirth) ? "—" : Model.AstrologicalPlaceOfBirth)</p>
+                                @if (Model.Service.NeedsDualBirthData())
+                                {
+                                    <p><strong>Партньор 2 — дата и час:</strong> @(Model.Partner2AstrologicalDate.HasValue ? Model.Partner2AstrologicalDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")</p>
+                                    <p><strong>Партньор 2 — място:</strong> @(string.IsNullOrEmpty(Model.Partner2PlaceOfBirth) ? "—" : Model.Partner2PlaceOfBirth)</p>
+                                }
                             </div>
                         </div>
-                        @if (!string.IsNullOrEmpty(Model.Partner2PlaceOfBirth))
-                        {
-                            <div class="details-item">
-                                <div class="details-label">Партньор 2 — място на раждане</div>
-                                <div class="details-value">@Model.Partner2PlaceOfBirth</div>
-                            </div>
-                        }
                     }
 
                     <div class="details-item">
@@ -482,30 +504,19 @@
                         @if (isAdmin)
                         {
                             <div class="upload-form">
-                                <h4 class="text-center mb-4 font-semibold text-gray-800">@(string.IsNullOrEmpty(Model.AstroCardFilePath) ? "Качи астрологична карта" : "Обнови карта")</h4>
-                                <form asp-action="UploadAstroCard" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="id" value="@Model.Id" />
-                                    <div class="mb-4">
-                                        <input type="file" class="form-control-file" name="astroCardFile" accept=".jpg,.jpeg,.png,.pdf" required>
-                                        <small class="text-gray-500">(JPG, PNG или PDF, DOCX, до 6MB)</small>
-                                    </div>
-                                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                                        <button type="submit" class="btn-primary">
-                                            <i class="fas fa-upload"></i> @(string.IsNullOrEmpty(Model.AstroCardFilePath) ? "Качи" : "Обнови")
-                                        </button>
-
-                                        @if (!string.IsNullOrEmpty(Model.AstroCardFilePath))
-                                        {
-                                            <button type="button" class="btn-outline"
-                                                    onclick="if(confirm('Сигурни ли сте, че искате да изтриете астрологичната карта?')) { document.getElementById('deleteForm').submit(); }">
-                                                <i class="fas fa-trash"></i> Изтрий
-                                            </button>
-                                        }
-                                    </div>
-                                </form>
-
+                                <h4 class="text-center mb-4 font-semibold text-gray-800">@(string.IsNullOrEmpty(Model.AstroCardFilePath) ? "Качи астрологичен анализ" : "Обнови анализа")</h4>
+                                <div class="mb-4">
+                                    <input type="file" class="form-control-file" name="astroCardFile" form="reservationSaveForm" accept=".jpg,.jpeg,.png,.pdf,.docx">
+                                    <small class="text-gray-500">JPG, PNG, PDF или DOCX, до 6MB. Файлът се запазва заедно със статуса.</small>
+                                </div>
                                 @if (!string.IsNullOrEmpty(Model.AstroCardFilePath))
                                 {
+                                    <div class="text-center mb-4">
+                                        <button type="button" class="btn-outline"
+                                                onclick="if(confirm('Сигурни ли сте, че искате да изтриете астрологичния анализ?')) { document.getElementById('deleteForm').submit(); }">
+                                            <i class="fas fa-trash"></i> Изтрий
+                                        </button>
+                                    </div>
                                     <form id="deleteForm" asp-action="DeleteAstroCard" method="post" style="display: none;">
                                         <input type="hidden" name="id" value="@Model.Id" />
                                     </form>
@@ -518,6 +529,9 @@
                 <div class="action-buttons">
                     @if (isAdmin)
                     {
+                        <button type="submit" form="reservationSaveForm" class="btn-primary">
+                            <i class="fas fa-save"></i> Запази
+                        </button>
                         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-primary">
                             <i class="fas fa-edit"></i> Редактирай
                         </a>
@@ -536,4 +550,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

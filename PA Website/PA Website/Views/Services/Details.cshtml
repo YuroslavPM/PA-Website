@@ -265,8 +265,9 @@
         }
 
         .alert-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
+            background: #f5f3ff;
+            color: #4c1d95;
+            border: 1px solid #ddd6fe;
         }
 
         .alert-danger {
@@ -442,9 +443,8 @@
             <div class="service-detail-header">
                 @if (TempData["SuccessMessage"] != null)
                 {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success" role="status">
                         @TempData["SuccessMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 }
                 @if (TempData["ErrorMessage"] != null)

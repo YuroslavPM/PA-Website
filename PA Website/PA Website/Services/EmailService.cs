@@ -10,6 +10,7 @@ namespace PA_Website.Services
         private readonly ILogger<EmailService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private string? _baseUrlOverride;
 
         public EmailService(IEmailSender emailSender, ILogger<EmailService> logger, 
             IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
@@ -24,7 +25,7 @@ namespace PA_Website.Services
         {
             try
             {
-                var subject = "Нова резервация - Душевна Мозайка";
+                var subject = $"Нова {RequestNoun(service)} - Душевна Мозайка";
                 var htmlMessage = CreateReservationEmailTemplate(user, reservation, service);
                 await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
             }
@@ -38,7 +39,7 @@ namespace PA_Website.Services
         {
             try
             {
-                var subject = "Резервация отменена - Душевна Мозайка";
+                var subject = $"{RequestNoun(service, capital: true)} отменена - Душевна Мозайка";
                 var htmlMessage = CreateCancellationEmailTemplate(user, reservation, service);
                 await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
             }
@@ -52,7 +53,7 @@ namespace PA_Website.Services
         {
             try
             {
-                var subject = "Резервация пренасрочена - Душевна Мозайка";
+                var subject = $"{RequestNoun(service, capital: true)} пренасрочена - Душевна Мозайка";
                 var htmlMessage = CreateRescheduleEmailTemplate(user, oldReservation, newReservation, service);
                 await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
                 _logger.LogInformation("Successfully sent reschedule email to {Email} for reservation {ReservationId}", user.Email, newReservation.Id);
@@ -69,21 +70,27 @@ namespace PA_Website.Services
             {
                 if (newStatus == "Confirmed" && oldStatus != "Confirmed")
                 {
-                    var subject = "Потвърждение на плащането - Резервацията е активирана";
+                    var subject = $"Потвърждение на плащането - {RequestNoun(service, definite: true, capital: true)} е активирана";
                     var htmlMessage = CreateConfirmationEmailTemplate(user, reservation, service);
                     await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
                 }
-                else if (newStatus == "Rejected" && oldStatus != "Rejected")
+                else if ((newStatus == "Rejected" && oldStatus != "Rejected") ||
+                         (newStatus == "Cancelled" && oldStatus != "Cancelled"))
                 {
-                    var subject = "Резервацията е отхвърлена - Душевна Мозайка";
+                    var subject = $"{RequestNoun(service, definite: true, capital: true)} е отказана - Душевна Мозайка";
                     var htmlMessage = CreateRejectedEmailTemplate(user, reservation, service);
                     await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
                 }
                 else if (newStatus == "Completed" && oldStatus != "Completed")
                 {
-                    var subject = "Твоята резервация е завършена - Душевна Мозайка";
+                    var subject = $"Твоята {RequestNoun(service)} е завършена - Душевна Мозайка";
                     var htmlMessage = CreateCompletedEmailTemplate(user, reservation, service);
                     await _emailSender.SendEmailAsync(user.Email, subject, htmlMessage);
+
+                    if (service.IsAstrology() && !string.IsNullOrEmpty(reservation.AstroCardFilePath))
+                    {
+                        await SendAstroCardCompletionAsync(user, reservation, service);
+                    }
                 }
             }
             catch (Exception ex)
@@ -104,6 +111,12 @@ namespace PA_Website.Services
             {
                 _logger.LogError(ex, "Failed to send astro card completion email to {Email}", user.Email);
             }
+        }
+
+        public void RememberBaseUrl(string baseUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(baseUrl))
+                _baseUrlOverride = baseUrl.TrimEnd('/');
         }
 
         public async Task SendAdminNotificationAsync(User user, UserService reservation, Service service, string action)
@@ -184,23 +197,25 @@ namespace PA_Website.Services
         {
             var dateTime = GetFormattedDateTime(reservation, service);
             var baseUrl = GetBaseUrl();
+            var noun = RequestNoun(service);
+            var nounThe = RequestNoun(service, definite: true);
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
                     <div style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
                         <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Нова резервация</p>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Нова {noun}</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
                         <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Вашата резервация е създадена успешно. Ето детайлите:
+                            Вашата {noun} е създадена успешно. Ето детайлите:
                         </p>
                         
                         <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
-                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на {nounThe}</h3>
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
@@ -215,7 +230,7 @@ namespace PA_Website.Services
                         <div style='text-align: center; margin-top: 30px;'>
                             <a href='{baseUrl}/UserServices/Dashboard' 
                                style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
-                                Преглед на резервациите
+                                Преглед
                             </a>
                         </div>
                     </div>
@@ -231,23 +246,25 @@ namespace PA_Website.Services
         {
             var dateTime = GetFormattedDateTime(reservation, service);
             var baseUrl = GetBaseUrl();
+            var noun = RequestNoun(service);
+            var nounCap = RequestNoun(service, capital: true);
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
                     <div style='background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
                         <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Резервация отменена</p>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{nounCap} отменена</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
                         <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Вашата резервация е отменена успешно. Ето детайлите:
+                            Вашата {noun} е отменена успешно. Ето детайлите:
                         </p>
                         
                         <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
-                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на отменената резервация</h3>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на отменената {noun}</h3>
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
@@ -256,13 +273,13 @@ namespace PA_Website.Services
                         </div>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Ако имате въпроси или искате да направите нова резервация, не се колебайте да се свържете с нас.
+                            Ако имате въпроси или искате да направите нова {noun}, не се колебайте да се свържете с нас.
                         </p>
                         
                         <div style='text-align: center; margin-top: 30px;'>
                             <a href='{baseUrl}/UserServices/Dashboard' 
                                style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;'>
-                                Нова резервация
+                                Нова {noun}
                             </a>
                         </div>
                     </div>
@@ -279,19 +296,21 @@ namespace PA_Website.Services
             var oldDateTime = GetFormattedDateTime(oldReservation, service);
             var newDateTime = GetFormattedDateTime(newReservation, service);
             var baseUrl = GetBaseUrl();
+            var noun = RequestNoun(service);
+            var nounCap = RequestNoun(service, capital: true);
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
                     <div style='background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
                         <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Резервация пренасрочена</p>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>{nounCap} пренасрочена</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
                         <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Вашата резервация е пренасрочена успешно. Ето промените:
+                            Вашата {noun} е пренасрочена успешно. Ето промените:
                         </p>
                         
                         <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
@@ -299,10 +318,10 @@ namespace PA_Website.Services
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <div style='background: #fee2e2; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ef4444;'>
-                                <p style='margin: 5px 0; color: #991b1b;'><strong>❌ Стара резервация:</strong> {oldDateTime}</p>
+                                <p style='margin: 5px 0; color: #991b1b;'><strong>❌ Стара {noun}:</strong> {oldDateTime}</p>
                             </div>
                             <div style='background: #dcfce7; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #10b981;'>
-                                <p style='margin: 5px 0; color: #166534;'><strong>✅ Нова резервация:</strong> {newDateTime}</p>
+                                <p style='margin: 5px 0; color: #166534;'><strong>✅ Нова {noun}:</strong> {newDateTime}</p>
                             </div>
                             <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
                             <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #f59e0b; font-weight: bold;'>Чакаща</span></p>
@@ -334,23 +353,25 @@ namespace PA_Website.Services
         {
             var dateTime = GetFormattedDateTime(reservation, service);
             var baseUrl = GetBaseUrl();
+            var noun = RequestNoun(service);
+            var nounThe = RequestNoun(service, definite: true);
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
                     <div style='background-color: #059669; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
                         <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>Потвърждение на резервация</p>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>Потвърждение на {noun}</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
                         <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравей, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Твоята резервация е потвърдена. Ето детайлите:
+                            Твоята {noun} е потвърдена. Ето детайлите:
                         </p>
                         
                         <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
-                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Детайли на {nounThe}</h3>
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
@@ -359,7 +380,7 @@ namespace PA_Website.Services
                         </div>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Очаквам те в посочения час. Ако имаш въпроси, не се колебай да се свържеш с мен.
+                            {(service.NeedsAppointment() ? "Очаквам те в посочения час." : "Ще получиш резултата, когато заявката е готова.")} Ако имаш въпроси, не се колебай да се свържеш с мен.
                         </p>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 5px;'>С уважение,</p>
@@ -383,23 +404,25 @@ namespace PA_Website.Services
         {
             var dateTime = GetFormattedDateTime(reservation, service);
             var baseUrl = GetBaseUrl();
+            var noun = RequestNoun(service);
+            var nounThe = RequestNoun(service, definite: true);
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
                     <div style='background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
                         <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Напомняне за резервация</p>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Напомняне за {noun}</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
                         <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Това е напомняне за вашата предстояща резервация. Ето детайлите:
+                            Това е напомняне за вашата предстояща {noun}. Ето детайлите:
                         </p>
                         
                         <div style='background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f59e0b;'>
-                            <h3 style='color: #92400e; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <h3 style='color: #92400e; margin: 0 0 15px 0;'>Детайли на {nounThe}</h3>
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
@@ -408,7 +431,7 @@ namespace PA_Website.Services
                         </div>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Моля, не забравяйте за вашата резервация. Очакваме ви в посочения час.
+                            Моля, не забравяйте за вашата {noun}. Очакваме ви в посочения час.
                         </p>
                         
                         <div style='text-align: center; margin-top: 30px;'>
@@ -430,61 +453,65 @@ namespace PA_Website.Services
         {
             var baseUrl = GetBaseUrl();
             var userServiceUrl = $"{baseUrl}/UserServices/Details/{reservation.Id}";
+            var noun = RequestNoun(service);
+            var birthDetails = service.NeedsDualBirthData()
+                ? $@"<li>Партньор 1 — дата и час на раждане: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>
+                            <li>Партньор 1 — място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>
+                            <li>Партньор 2 — дата и час на раждане: {reservation.Partner2AstrologicalDate:dd.MM.yyyy HH:mm}</li>
+                            <li>Партньор 2 — място на раждане: {reservation.Partner2PlaceOfBirth}</li>"
+                : $@"<li>Дата за астрологичен анализ: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>
+                            <li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>";
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
-                    <div style='background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
-                        <h1 style='margin: 0; font-size: 28px;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;'>Астрологична услуга завършена</p>
+                    <div style='background-color: #4c1d95; color: #ffffff; padding: 30px; border-radius: 15px; text-align: center;'>
+                        <h1 style='margin: 0; font-size: 28px; color: #ffffff;'>Душевна Мозайка</h1>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: #ffffff;'>Астрологична услуга завършена</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
-                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
+                        <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравей, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Радваме се да Ви информираме, че вашата астрологична услуга е успешно завършена!
+                            Радвам се да те информирам, че твоята астрологична услуга е успешно завършена!
                         </p>
                         
-                        <div style='background: #dbeafe; padding: 15px; border-left: 5px solid #3b82f6; margin: 15px 0;'>
-                            <h4 style='color: #1e40af; margin-top: 0;'>Статус на услугата: <strong>ЗАВЪРШЕНА</strong></h4>
-                            <p>Вашата астрологична карта е готова и качена в системата.</p>
+                        <div style='background: #f3e8ff; padding: 15px; border-left: 5px solid #4c1d95; margin: 15px 0;'>
+                            <h4 style='color: #4c1d95; margin-top: 0;'>Статус на услугата: <strong>ЗАВЪРШЕНА</strong></h4>
+                            <p style='margin-bottom: 0;'>Твоят астрологичен анализ е готов и качен в системата.</p>
                         </div>
                         
                         <p><strong>Детайли за услугата:</strong></p>
                         <ul>
                             <li>Услуга: {service.NameService}</li>
                             <li>Категория: {service.CategoryOfService}</li>
-                            <li>Дата за астрологичен анализ: {reservation.AstrologicalDate:dd.MM.yyyy HH:mm}</li>
-                            <li>Място на раждане: {reservation.AstrologicalPlaceOfBirth}</li>
+                            {birthDetails}
                             <li>Цена: {service.Price:F2} €</li>
                         </ul>
                         
                         <p><strong>Какво следва:</strong></p>
                         <ul>
-                            <li>Вашата астрологична карта е качена и достъпна</li>
-                            <li>Можете да я изтеглите от вашия профил</li>
-                            <li>Ще получите подробен анализ на вашата астрологична карта</li>
+                            <li>Твоят астрологичен анализ е качен и достъпен за теб.</li>
+                            <li>Можеш да го изтеглиш от своя профил.</li>
+                            <li>Кликни на бутона по-долу и влез в профила си, в Моите резервации и избери детайли на своята {noun}.</li>
                         </ul>
                         
                         <div style='text-align: center; margin: 30px 0;'>
-                            <a href='{userServiceUrl}' style='background-color: #7c3aed; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>
-                                <i class='fas fa-download' style='margin-right: 8px;'></i>
+                            <a href='{userServiceUrl}' style='background-color: #4c1d95; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>
                                 Преглед на резервацията
                             </a>
                         </div>
                         
                         <p style='font-size: 14px; color: #6b7280;'>
-                            <strong>Забележка:</strong> Бутонът по-горе ще Ви отведе директно към страницата с детайлите на вашата резервация, 
-                            където можете да изтеглите астрологичната карта.
+                            <strong>Забележка:</strong> Бутонът по-горе ще те отведе директно към страницата с детайлите на твоята {noun}, където можеш да изтеглиш астрологичния анализ.
                         </p>
                         
-                        <p>Благодарим Ви, че избрахте нашите услуги!</p>
-                        <p>С уважение,<br>Екипът на Душевна Мозайка</p>
+                        <p>Благодаря че избра моите услуги!</p>
+                        <p>С уважение,<br>Мариела Разпопова</p>
                     </div>
                     
                     <div style='text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;'>
-                        <p>Този имейл е изпратен автоматично. Моля, не отговаряйте на него.</p>
-                        <p>© 2024 Душевна Мозайка. Всички права запазени.</p>
+                        <p>© 2026 Душевна Мозайка. Всички права запазени.</p>
                     </div>
                 </div>";
         }
@@ -626,7 +653,7 @@ namespace PA_Website.Services
                         <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравейте, {user.FName}!</h2>
                         
                         <div style='background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;'>
-                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Вашата резервация</h3>
+                            <h3 style='color: #4c1d95; margin: 0 0 15px 0;'>Вашата {RequestNoun(service)}</h3>
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
                         </div>
@@ -655,28 +682,31 @@ namespace PA_Website.Services
         {
             var dateTime = GetFormattedDateTime(reservation, service);
             var baseUrl = GetBaseUrl();
+            var noun = RequestNoun(service);
+            var nounThe = RequestNoun(service, definite: true);
+            var nounCap = RequestNoun(service, capital: true);
 
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
                     <div style='background-color: #dc2626; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 30px; border-radius: 15px; text-align: center;'>
                         <h1 style='margin: 0; font-size: 28px; color: white;'>Душевна Мозайка</h1>
-                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>Резервация отхвърлена</p>
+                        <p style='margin: 10px 0 0 0; font-size: 16px; color: rgba(255,255,255,0.9);'>{nounCap} отказана</p>
                     </div>
                     
                     <div style='background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
                         <h2 style='color: #4c1d95; margin-bottom: 20px;'>Здравей, {user.FName}!</h2>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            За съжаление, твоята резервация за <strong>{service.NameService}</strong> бе отхвърлена, вероятно не е получено плащане.
+                            За съжаление, твоята {noun} за <strong>{service.NameService}</strong> е отказана.
                         </p>
                         
                         <div style='background: #fef2f2; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ef4444;'>
-                            <h3 style='color: #991b1b; margin: 0 0 15px 0;'>Детайли на резервацията</h3>
+                            <h3 style='color: #991b1b; margin: 0 0 15px 0;'>Детайли на {nounThe}</h3>
                             <p style='margin: 5px 0;'><strong>Услуга:</strong> {service.NameService}</p>
                             <p style='margin: 5px 0;'><strong>Категория:</strong> {service.CategoryOfService}</p>
                             <p style='margin: 5px 0;'><strong>Дата и час:</strong> {dateTime}</p>
                             <p style='margin: 5px 0;'><strong>Цена:</strong> {service.Price:F2} €</p>
-                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #ef4444; font-weight: bold;'>Отхвърлена</span></p>
+                            <p style='margin: 5px 0;'><strong>Статус:</strong> <span style='color: #ef4444; font-weight: bold;'>Отказана</span></p>
                         </div>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
@@ -718,7 +748,7 @@ namespace PA_Website.Services
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 16px;'>Уважаеми/а {user.FName},</p>
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 16px;'>Благодаря ти, че избра моите услуги!</p>
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
-                            Твоята резервация за {service.NameService} бе завършена успешно.
+                            Твоята {RequestNoun(service)} за {service.NameService} бе завършена успешно.
                         </p>
                         {astroCardNote}
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 20px;'>
@@ -731,7 +761,6 @@ namespace PA_Website.Services
                                 Попълни анкета за обратна връзка
                             </a>
                         </div>
-                        <p style='color: #6b7280; font-size: 14px; word-break: break-all;'>https://forms.gle/w9aM8eqcLffQiG447</p>
                         
                         <p style='color: #374151; line-height: 1.6; margin-bottom: 5px;'>С уважение,</p>
                         <p style='color: #374151; line-height: 1.6; margin-top: 0;'>Мариела Разпопова</p>
@@ -794,10 +823,36 @@ namespace PA_Website.Services
 
         private string GetBaseUrl()
         {
+            if (!string.IsNullOrEmpty(_baseUrlOverride))
+                return _baseUrlOverride;
+
             var request = _httpContextAccessor.HttpContext?.Request;
             if (request == null) return "https://localhost:5001";
             
             return $"{request.Scheme}://{request.Host}";
+        }
+
+        private static string RequestNoun(Service service, bool definite = false, bool capital = false)
+        {
+            var online = service.NeedsAppointment();
+            if (capital)
+            {
+                return (online, definite) switch
+                {
+                    (true, true) => "Резервацията",
+                    (true, false) => "Резервация",
+                    (false, true) => "Заявката",
+                    _ => "Заявка"
+                };
+            }
+
+            return (online, definite) switch
+            {
+                (true, true) => "резервацията",
+                (true, false) => "резервация",
+                (false, true) => "заявката",
+                _ => "заявка"
+            };
         }
 
         private string GetAdminNotificationSubject(string action)

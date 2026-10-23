@@ -38,6 +38,7 @@ namespace PA_Website.Services
                 result = ApplyStatusFilter(result, filter.StatusFilter);
             }
 
+            filter.TotalCount = result.Count;
             return result
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize);
@@ -63,6 +64,7 @@ namespace PA_Website.Services
                 result = ApplyStatusFilter(result, filter.StatusFilter);
             }
 
+            filter.TotalCount = result.Count;
             return result
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize);
@@ -311,25 +313,23 @@ namespace PA_Website.Services
             return (oldReservation, newReservation);
         }
 
-        public async Task<bool> UploadAstroCardAsync(int id, IFormFile file)
+        public async Task<bool> UploadAstroCardAsync(int id, IFormFile file, string storedPath)
         {
             var reservation = await _context.userServices
                 .Include(u => u.Service)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (reservation == null)
+            if (reservation == null || string.IsNullOrEmpty(storedPath))
                 return false;
 
-            if (reservation.Service.CategoryOfService.ToLower() != "астрология")
+            if (!reservation.Service.IsAstrology())
                 return false;
 
-            // File validation would be handled by FileService
-            // This is just the database update part
             reservation.AstroCardFileName = file.FileName;
+            reservation.AstroCardFilePath = storedPath;
             reservation.AstroCardFileSize = file.Length;
             reservation.AstroCardContentType = file.ContentType;
             reservation.AstroCardUploadDate = DateTime.Now;
-            reservation.Status = "Completed";
 
             _context.Update(reservation);
             await _context.SaveChangesAsync();

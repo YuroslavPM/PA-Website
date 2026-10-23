@@ -1,39 +1,149 @@
 ﻿@model IEnumerable<PA_Website.Models.User>
 
 @{
-    ViewData["Title"] = "Users";
+    ViewData["Title"] = "Управление на потребители";
+    Layout = "_Layout";
 }
 
-<h1>Users</h1>
-
-<p>
-    <a href="@Url.Action("Create")" class="btn btn-primary">Create New User</a>
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.FName)</th>
-            <th>@Html.DisplayNameFor(model => model.LName)</th>
-            <th>@Html.DisplayNameFor(model => model.Email)</th>
-            <th>@Html.DisplayNameFor(model => model.UserName)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.FName</td>
-                <td>@user.LName</td>
-                <td>@user.Email</td>
-                <td>@user.UserName</td>
-                <td>
-                    <a href="@Url.Action("Details", new { id = user.Id })" class="btn btn-info">Details</a>
-                    <a href="@Url.Action("Edit", new { id = user.Id })" class="btn btn-warning">Edit</a>
-                    <a href="@Url.Action("Delete", new { id = user.Id })" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
+@section Styles {
+    <style>
+        .users-admin {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
         }
-    </tbody>
-</table>
+
+        .users-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .users-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #4c1d95, #7c3aed);
+        }
+
+        .users-header,
+        .users-body {
+            padding: 2rem;
+        }
+
+        .users-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4c1d95;
+            margin: 0 0 0.25rem;
+        }
+
+        .users-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1.4fr auto;
+            gap: 1rem;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .users-row:last-child {
+            border-bottom: none;
+        }
+
+        .users-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .users-email {
+            color: #475569;
+            word-break: break-word;
+        }
+
+        .users-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .users-btn {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 10px;
+            padding: 0.45rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .users-btn-primary {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed);
+            color: white;
+        }
+
+        .users-btn-outline {
+            border: 1px solid #4c1d95;
+            color: #4c1d95;
+            background: white;
+        }
+
+        .users-btn-danger {
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            background: white;
+        }
+
+        @@media (max-width: 768px) {
+            .users-row {
+                grid-template-columns: 1fr;
+            }
+
+            .users-actions {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+}
+
+<div class="users-admin">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="users-card">
+            <div class="users-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="users-title">Управление на потребители</h1>
+                    <p class="text-gray-600 mb-0">Преглед на регистрираните акаунти</p>
+                </div>
+                <a href="@Url.Action("Create")" class="users-btn users-btn-primary">Нов потребител</a>
+            </div>
+            <div class="users-body">
+                @if (!Model.Any())
+                {
+                    <p class="text-gray-600 mb-0">Няма регистрирани потребители.</p>
+                }
+                else
+                {
+                    @foreach (var user in Model)
+                    {
+                        <div class="users-row">
+                            <div class="users-name">@user.FName @user.LName</div>
+                            <div class="users-email">@user.Email</div>
+                            <div class="users-actions">
+                                <a href="@Url.Action("Details", new { id = user.Id })" class="users-btn users-btn-outline">Детайли</a>
+                                <a href="@Url.Action("Edit", new { id = user.Id })" class="users-btn users-btn-outline">Редактирай</a>
+                                <a href="@Url.Action("Delete", new { id = user.Id })" class="users-btn users-btn-danger">Изтрий</a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
