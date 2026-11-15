@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "PA Website (http)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/PA Website/PA Website/bin/Debug/net8.0/PA Website.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/PA Website/PA Website",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5256"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/PA Website/PA Website/Views"
+      }
+    },
+    {
+      "name": "PA Website (https)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/PA Website/PA Website/bin/Debug/net8.0/PA Website.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/PA Website/PA Website",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:7187;http://localhost:5256"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/PA Website/PA Website/Views"
+      }
+    },
+    {
+      "name": "Attach to PA Website",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}
